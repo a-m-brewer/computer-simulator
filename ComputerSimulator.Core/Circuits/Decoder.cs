@@ -25,7 +25,8 @@ public class Decoder : ComponentBase, IDecoder
     private bool[][] _truthTable = Array.Empty<bool[]>();
     private int _inputSize;
 
-    public Decoder(IWireCupboard wireCupboard) : base(wireCupboard)
+    public Decoder(
+        IWireCupboard wireCupboard) : base(wireCupboard)
     {
     }
 
@@ -78,6 +79,11 @@ public class Decoder : ComponentBase, IDecoder
         }
     }
 
+    public void SetInputs(IBus bus)
+    {
+        throw new NotImplementedException();
+    }
+
     public void SetInputWire(int index, IWire<bool> wire)
     {
         if (_inputs.TryGetValue(index, out var oldWire))
@@ -112,6 +118,11 @@ public class Decoder : ComponentBase, IDecoder
         }
         
         _outputs[index] = wire;
+    }
+
+    public IWire<bool> GetOutputWire(int index)
+    {
+        throw new NotImplementedException();
     }
 
     public bool GetOutputWireValue(int index)

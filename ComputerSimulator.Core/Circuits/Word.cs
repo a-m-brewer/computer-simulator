@@ -1,5 +1,6 @@
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Factories;
+using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
@@ -16,8 +17,9 @@ public class Word : WordComponentBase, IWord
     private readonly IMemoryBit[] _memory;
 
     public Word(
+        ComputerSettings computerSettings,
         IComponentFactory componentFactory,
-        IWireCupboard wireCupboard) : base(wireCupboard)
+        IWireCupboard wireCupboard) : base( wireCupboard)
     {
         _set = WireCupboard.Retrieve(false, this.GenerateLabel(nameof(_set)));
         _memory = componentFactory.CreateSet<IMemoryBit>();

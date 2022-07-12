@@ -43,6 +43,14 @@ public class Register : ComponentBase, IRegister
         set => _enabler.Enable = value;
     }
 
+    public void SetInputs(IBus bus)
+    {
+        for (var i = 0; i < bus.Length; i++)
+        {
+            SetInputWire(i, bus.GetWire(i));
+        }
+    }
+
     public void SetInputWire(int index, IWire<bool> wire)
     {
         _word.SetInputWire(index, wire);
@@ -51,6 +59,11 @@ public class Register : ComponentBase, IRegister
     public void SetOutputWire(int index, IWire<bool> wire)
     {
         _enabler.SetOutputWire(index, wire);
+    }
+
+    public IWire<bool> GetOutputWire(int index)
+    {
+        return _enabler.GetOutputWire(index);
     }
 
     public void SetInputWireValue(int index, bool value)

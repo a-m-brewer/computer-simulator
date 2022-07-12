@@ -4,6 +4,8 @@ namespace ComputerSimulator.Core;
 
 public interface IInputComponent : IComponent
 {
+    void SetInputs(IBus bus);
+
     void SetInputWire(int index, IWire<bool> wire);
 
     void SetInputWireValue(int index, bool value);
@@ -15,6 +17,8 @@ public interface IOutputComponent : IComponent
 {
     void SetOutputWire(int index, IWire<bool> wire);
 
+    IWire<bool> GetOutputWire(int index);
+    
     bool GetOutputWireValue(int index);
 }
 

@@ -10,6 +10,12 @@ public interface IWire : ILabel
 public interface IWire<T> : IWire
 {
     T Value { get; set; }
+
+    /// <summary>
+    /// Set the value of the wire without triggering the ValueChanged event.
+    /// useful for initializing values
+    /// </summary>
+    void SetInitialValue(T value);
 }
 
 public class Wire
@@ -74,6 +80,11 @@ public class Wire<T> : Wire, IWire<T>
             _value = value;
             ValueChanged?.Invoke(this, EventArgs.Empty);
         }
+    }
+
+    public void SetInitialValue(T value)
+    {
+        _value = value;
     }
 
     public event EventHandler? ValueChanged;
