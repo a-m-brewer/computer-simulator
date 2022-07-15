@@ -1,4 +1,5 @@
 ﻿using ComputerSimulator.Core.Circuits;
+using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Models;
 
@@ -6,6 +7,13 @@ namespace ComputerSimulator.Core.Parts;
 
 public interface IRam : IComponent
 {
+    IRegister Mar { get; }
+    
+    IBus Io { get; }
+
+    IWire<bool> Set { get; }
+
+    IWire<bool> Enable { get; }
 }
 
 public class Ram : ComponentBase, IRam
@@ -13,10 +21,11 @@ public class Ram : ComponentBase, IRam
     private readonly IRegister _mar;
     private readonly IDecoder _decoderX;
     private readonly IDecoder _decoderY;
-    private readonly IBus _inputBus;
-    private readonly IBus _outputBus;
+    private readonly IBus _ioBus;
     private readonly int _decoderInputSize;
     private IRamSlot[][] _slots;
+    private readonly IWire<bool> _set;
+    private readonly IWire<bool> _enable;
 
     public Ram(
         IComponentFactory componentFactory,
@@ -25,16 +34,17 @@ public class Ram : ComponentBase, IRam
         IRegister mar,
         IDecoder decoderX,
         IDecoder decoderY,
-        IBus inputBus,
-        IBus outputBus) : base(wireCupboard)
+        IBus ioBus) : base(wireCupboard)
     {
+        _set = WireCupboard.Retrieve(false, this.GenerateLabel(nameof(_set)));
+        _enable = WireCupboard.Retrieve(false, this.GenerateLabel(nameof(_enable)));
+
         _mar = mar;
         _decoderX = decoderX;
         _decoderY = decoderY;
-        _inputBus = inputBus;
-        _outputBus = outputBus;
+        _ioBus = ioBus;
 
-        SetMarInputsAndOutputs();
+        _ioBus.SetWires(_mar);
 
         _decoderInputSize = settings.WordSize / 2;
         _decoderX.Initialize(_decoderInputSize);
@@ -49,15 +59,17 @@ public class Ram : ComponentBase, IRam
             for (var x = 0; x < _decoderX.OutputSize; x++)
             {
                 _slots[y][x] = componentFactory.Create<IRamSlot>();
-                _slots[y][x].Register.SetInputs(_outputBus);
-                _slots[y][x].Register.SetOutputs(_outputBus);
+                _slots[y][x].Register.SetInputs(_ioBus);
+                _slots[y][x].Register.SetOutputs(_ioBus);
             }
         }
     }
 
-    private void SetMarInputsAndOutputs()
-    {
-        _mar.SetInputs(_inputBus);
-        _outputBus.SetWires(_mar);
-    }
+    public IRegister Mar => _mar;
+
+    public IBus Io => _ioBus;
+
+    public IWire<bool> Set { get; }
+
+    public IWire<bool> Enable { get; }
 }
