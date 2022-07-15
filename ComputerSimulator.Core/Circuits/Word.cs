@@ -1,6 +1,5 @@
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Factories;
-using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
@@ -17,7 +16,6 @@ public class Word : WordComponentBase, IWord
     private readonly IMemoryBit[] _memory;
 
     public Word(
-        ComputerSettings computerSettings,
         IComponentFactory componentFactory,
         IWireCupboard wireCupboard) : base( wireCupboard)
     {

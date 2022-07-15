@@ -46,7 +46,12 @@ public class NAnd : ComponentBase, INAnd
             _andToNand.Label = this.GenerateLabel(nameof(_andToNand));
         }
     }
-    
+
+    public void SetInputs(IBus bus)
+    {
+        _and.SetInputs(bus);
+    }
+
     public void SetInputWire(int index, IWire<bool> wire)
     {
         _and.SetInputWire(index, wire);

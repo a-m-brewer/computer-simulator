@@ -41,7 +41,15 @@ public class And : ComponentBase, IAnd
             GenerateLabels();
         }
     }
-    
+
+    public void SetInputs(IBus bus)
+    {
+        for (int i = 0; i < bus.Length; i++)
+        {
+            SetInputWire(i, bus.GetWire(i));
+        }
+    }
+
     public void SetInputWire(int index, IWire<bool> wire)
     {
         if (_inputs.TryGetValue(index, out var existingWire))

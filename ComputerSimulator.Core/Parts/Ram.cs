@@ -16,8 +16,10 @@ public class Ram : ComponentBase, IRam
     private readonly IBus _inputBus;
     private readonly IBus _outputBus;
     private readonly int _decoderInputSize;
+    private IRamSlot[][] _slots;
 
     public Ram(
+        IComponentFactory componentFactory,
         ComputerSettings settings,
         IWireCupboard wireCupboard,
         IRegister mar,
@@ -39,6 +41,18 @@ public class Ram : ComponentBase, IRam
         _decoderY.Initialize(_decoderInputSize);
 
         _mar.Enable.SetInitialValue(true);
+        
+        _slots = new IRamSlot[_decoderY.OutputSize][];
+        for (var y = 0; y < _decoderY.OutputSize; y++)
+        {
+            _slots[y] = new IRamSlot[_decoderX.OutputSize];
+            for (var x = 0; x < _decoderX.OutputSize; x++)
+            {
+                _slots[y][x] = componentFactory.Create<IRamSlot>();
+                _slots[y][x].Register.SetInputs(_outputBus);
+                _slots[y][x].Register.SetOutputs(_outputBus);
+            }
+        }
     }
 
     private void SetMarInputsAndOutputs()

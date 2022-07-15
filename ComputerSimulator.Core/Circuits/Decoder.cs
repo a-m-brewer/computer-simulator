@@ -81,7 +81,10 @@ public class Decoder : ComponentBase, IDecoder
 
     public void SetInputs(IBus bus)
     {
-        throw new NotImplementedException();
+        for (var i = 0; i < bus.Length; i++)
+        {
+            SetInputWire(i, bus.GetWire(i));
+        }
     }
 
     public void SetInputWire(int index, IWire<bool> wire)
@@ -108,6 +111,14 @@ public class Decoder : ComponentBase, IDecoder
     public IWire<bool> GetInputWire(int index)
     {
         return _inputs[index];
+    }
+
+    public void SetOutputs(IBus bus)
+    {
+        for (var i = 0; i < bus.Length; i++)
+        {
+            SetOutputWire(i, bus.GetWire(i));
+        }
     }
 
     public void SetOutputWire(int index, IWire<bool> wire)

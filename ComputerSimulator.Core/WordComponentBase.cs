@@ -30,6 +30,14 @@ public abstract class WordComponentBase : ComponentBase, IWordComponent
         Inputs[index] = wire;
     }
 
+    public void SetOutputs(IBus bus)
+    {
+        for (var i = 0; i < bus.Length; i++)
+        {
+            Outputs[i] = bus.GetWire(i);
+        }
+    }
+
     public virtual void SetOutputWire(int index, IWire<bool> wire)
     {
         Outputs[index] = wire;

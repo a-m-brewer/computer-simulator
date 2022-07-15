@@ -56,6 +56,14 @@ public class Register : ComponentBase, IRegister
         _word.SetInputWire(index, wire);
     }
 
+    public void SetOutputs(IBus bus)
+    {
+        for (var i = 0; i < bus.Length; i++)
+        {
+            SetOutputWire(i, bus.GetWire(i));
+        }
+    }
+
     public void SetOutputWire(int index, IWire<bool> wire)
     {
         _enabler.SetOutputWire(index, wire);

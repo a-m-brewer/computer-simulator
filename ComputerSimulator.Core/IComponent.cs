@@ -15,6 +15,8 @@ public interface IInputComponent : IComponent
 
 public interface IOutputComponent : IComponent
 {
+    void SetOutputs(IBus bus);
+
     void SetOutputWire(int index, IWire<bool> wire);
 
     IWire<bool> GetOutputWire(int index);
