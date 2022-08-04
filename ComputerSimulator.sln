@@ -12,6 +12,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionF
 		ComputerSimulator.sln = ComputerSimulator.sln
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avoid.MessageBroker", "Avoid.MessageBroker\Avoid.MessageBroker.csproj", "{31560884-C68A-4473-81C3-60FE3A056DB4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MessageBroker", "MessageBroker", "{3B90A01A-F5E5-4CDA-B005-0988D1E9D162}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avoid.MessageBroker.TestBed", "Avoid.MessageBroker.TestBed\Avoid.MessageBroker.TestBed.csproj", "{8576CFFA-6FB8-4908-A561-E34123811B41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +36,17 @@ Global
 		{E0214582-E8BC-4D2C-8FE5-454507EBA3B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0214582-E8BC-4D2C-8FE5-454507EBA3B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0214582-E8BC-4D2C-8FE5-454507EBA3B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31560884-C68A-4473-81C3-60FE3A056DB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31560884-C68A-4473-81C3-60FE3A056DB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31560884-C68A-4473-81C3-60FE3A056DB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31560884-C68A-4473-81C3-60FE3A056DB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8576CFFA-6FB8-4908-A561-E34123811B41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8576CFFA-6FB8-4908-A561-E34123811B41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8576CFFA-6FB8-4908-A561-E34123811B41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8576CFFA-6FB8-4908-A561-E34123811B41}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{31560884-C68A-4473-81C3-60FE3A056DB4} = {3B90A01A-F5E5-4CDA-B005-0988D1E9D162}
+		{8576CFFA-6FB8-4908-A561-E34123811B41} = {3B90A01A-F5E5-4CDA-B005-0988D1E9D162}
 	EndGlobalSection
 EndGlobal

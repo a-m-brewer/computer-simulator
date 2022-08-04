@@ -30,8 +30,6 @@ public class Computer  : IComputer
     public void Run()
     {
         var address = 65535.ToBinaryBools(_computerSettings.WordSize);
-        
-        _ram.InputBus.
     }
     
     public void Dispose()
