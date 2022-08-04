@@ -2,7 +2,14 @@
 
 namespace Avoid.MessageBroker;
 
-public class MessageBroker
+public interface IMessageBroker
+{
+    void AddQueue<TMessageType>(IMessageQueue<TMessageType> queue);
+    void AddHandler<TMessageType>(string topic, IMessageHandler<TMessageType> handler);
+    void Publish<T>(string topic, T message);
+}
+
+public class MessageBroker : IMessageBroker
 {
     private readonly IMessageListenerFactory _messageListenerFactory;
     private readonly ConcurrentDictionary<string, IMessageQueue> _queues = new();

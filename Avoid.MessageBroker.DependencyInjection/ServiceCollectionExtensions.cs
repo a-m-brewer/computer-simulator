@@ -4,4 +4,10 @@ namespace Avoid.MessageBroker.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection RegisterMessageBusServices(this IServiceCollection services)
+    {
+        services.AddSingleton<IMessageBroker, MessageBroker>();
+        
+        return services;
+    }
 }

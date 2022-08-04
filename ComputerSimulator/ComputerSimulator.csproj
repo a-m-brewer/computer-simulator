@@ -8,6 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Avoid.MessageBroker.DependencyInjection\Avoid.MessageBroker.DependencyInjection.csproj" />
+      <ProjectReference Include="..\Avoid.MessageBroker\Avoid.MessageBroker.csproj" />
       <ProjectReference Include="..\ComputerSimulator.Core\ComputerSimulator.Core.csproj" />
       <ProjectReference Include="..\ComputerSimulator.Graphics\ComputerSimulator.Graphics.csproj" />
     </ItemGroup>

@@ -1,3 +1,5 @@
+using Avoid.MessageBroker.DependencyInjection;
+using ComputerSimulator.Core;
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Models;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +19,9 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.RegisterCoreServices(Configuration.GetSection("Computer").Get<ComputerSettings>());
+        services.RegisterMessageBusServices();
         
+        services.AddTransient<IComputer, Computer>();
         services.AddHostedService<ComputerService>();
     }
 }
