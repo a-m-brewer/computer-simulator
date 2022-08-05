@@ -14,6 +14,11 @@ public static class ServiceCollectionExtensions
             .AddClasses(f => f.AssignableTo<IComponent>())
             .AsImplementedInterfaces()
             .WithTransientLifetime());
+        
+        services.Scan(s => s.FromAssemblyOf<IComponent2>()
+            .AddClasses(f => f.AssignableTo<IComponent2>())
+            .AsImplementedInterfaces()
+            .WithTransientLifetime());
 
         services.AddTransient<IComputer, Computer>();
         services.AddSingleton<IWireCupboard, WireCupboard>();
