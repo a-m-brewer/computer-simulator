@@ -26,13 +26,13 @@ public class Computer  : IComputer
     {
         var broker = new MessageBroker(new MessageListenerFactory());
 
-        var andInputWire = new MessageBrokerWire(broker)
+        var andInputWire = new MessageBrokerWire<bool>(broker, false)
         {
             Label = "and_input_1"
         };
         
         
-        var andOutputWire = new MessageBrokerWire(broker)
+        var andOutputWire = new MessageBrokerWire<bool>(broker, false)
         {
             Label = "and_output"
         };

@@ -4,19 +4,17 @@ namespace ComputerSimulator.Core.Gates;
 
 public class And2
 {
-    private IWire2 _input = DisconnectedWire.Instance;
+    private IWire2<bool> _input = DisconnectedWire<bool>.Instance;
 
-    public IWire2 Input
+    public Guid Id { get; } = Guid.NewGuid();
+    
+    public IWire2<bool> Input
     {
         get => _input;
-        set
-        {
-            _input = value;
-            _input.ConnectOutput(HandleInputChanged);
-        }
+        set => WireHelper.SetWire(ref _input, value, Id, HandleInputChanged);
     }
 
-    public IWire2 Output { get; set; } = DisconnectedWire.Instance;
+    public IWire2<bool> Output { get; set; } = DisconnectedWire<bool>.Instance;
     
     private void HandleInputChanged(bool newInputValue)
     {
