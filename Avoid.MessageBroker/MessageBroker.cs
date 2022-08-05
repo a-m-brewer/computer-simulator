@@ -4,9 +4,12 @@ namespace Avoid.MessageBroker;
 
 public interface IMessageBroker
 {
+    void AddQueue<T>(string topic);
     void AddQueue<TMessageType>(IMessageQueue<TMessageType> queue);
     void AddHandler<TMessageType>(string topic, IMessageHandler<TMessageType> handler);
     void Publish<T>(string topic, T message);
+    void ReplaceQueue<T>(string oldTopic, string newTopic);
+    void ReplaceHandler<TMessageType>(string oldTopic, string newTopic, IMessageHandler<TMessageType> handler);
 }
 
 public class MessageBroker : IMessageBroker
@@ -19,7 +22,12 @@ public class MessageBroker : IMessageBroker
     {
         _messageListenerFactory = messageListenerFactory;
     }
-    
+
+    public void AddQueue<T>(string topic)
+    {
+        AddQueue(new MessageQueue<T>(topic));
+    }
+
     public void AddQueue<TMessageType>(IMessageQueue<TMessageType> queue)
     {
         if (_queues.ContainsKey(queue.Topic))
@@ -64,6 +72,18 @@ public class MessageBroker : IMessageBroker
     {
         var queue = GetQueueOrThrow<T>(topic);
         queue.Publish(message);
+    }
+
+    public void ReplaceQueue<T>(string oldTopic, string newTopic)
+    {
+        _queues.TryRemove(oldTopic, out _);
+        AddQueue(new MessageQueue<T>(newTopic));
+    }
+
+    public void ReplaceHandler<TMessageType>(string oldTopic, string newTopic, IMessageHandler<TMessageType> handler)
+    {
+        _listeners.TryRemove(oldTopic, out _);
+        AddHandler(newTopic, handler);
     }
 
     private IMessageQueue<TMessageType> GetQueueOrThrow<TMessageType>(string topic)

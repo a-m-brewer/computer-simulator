@@ -1,6 +1,5 @@
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Factories;
-using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core;

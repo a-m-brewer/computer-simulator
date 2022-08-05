@@ -1,50 +1,25 @@
-﻿namespace ComputerSimulator.Core.Gates;
+﻿using ComputerSimulator.Core.Parts;
+
+namespace ComputerSimulator.Core.Gates;
 
 public class And2
 {
-    private bool _input;
-    private readonly EventHandler<string> _propertyChanged;
-    private bool _output;
+    private IWire2 _input = DisconnectedWire.Instance;
 
-    public And2()
-    {
-        _propertyChanged += PropertyChanged;
-    }
-
-    public bool Input
+    public IWire2 Input
     {
         get => _input;
         set
         {
             _input = value;
-            RaisePropertyChanged(nameof(Input));
-        }
-    }
-    
-    public bool Output
-    {
-        get => _output;
-        set
-        {
-            _output = value;
-            RaisePropertyChanged(nameof(Output));
+            _input.ConnectOutput(HandleInputChanged);
         }
     }
 
-    private void RaisePropertyChanged(string property)
-    {
-        _propertyChanged(this, property);
-    }
+    public IWire2 Output { get; set; } = DisconnectedWire.Instance;
     
-    private void PropertyChanged(object? sender, string property)
+    private void HandleInputChanged(bool newInputValue)
     {
-        switch (property)
-        {
-            case nameof(Input):
-                Output = Input;
-                break;
-            case nameof(Output):
-                break;
-        }
+        Output.Value = newInputValue;
     }
 }

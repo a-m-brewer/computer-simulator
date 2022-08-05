@@ -1,38 +1,84 @@
-﻿using Avoid.MessageBroker;
+using Avoid.MessageBroker;
 
 namespace ComputerSimulator.Core.Parts;
 
-public class Wire2
+public interface IWire2
+{
+    string Label { get; set; }
+    bool Value { get; set; }
+
+    void ConnectOutput(Action<bool> action);
+}
+
+public class MessageBrokerWire : IWire2, IMessageHandler<bool>
 {
     private readonly IMessageBroker _messageBroker;
-    private bool _firstValueSet;
     private bool _value;
+    private string _label = string.Empty;
+    private readonly List<Action<bool>> _actions = new();
 
-    public Wire2(
-        string label,
-        IMessageBroker messageBroker)
+    public MessageBrokerWire(IMessageBroker messageBroker)
     {
         _messageBroker = messageBroker;
-        Label = label;
-        
-        _messageBroker.AddQueue(new MessageQueue<bool>(label));
     }
 
-    public string Label { get; }
-    
-    public void SetValue(bool value)
+    public string Label
     {
-        if (_firstValueSet)
+        get => _label;
+        set
         {
-            if (_value == value)
+            if (_label == value)
             {
                 return;
             }
+            
+            _messageBroker.ReplaceQueue<bool>(_label, value);
+            _messageBroker.ReplaceHandler(_label, value, this);
+            _label = value;
         }
-
-        _value = value;
-        _firstValueSet = true;
-        
-        _messageBroker.Publish(Label, _value);
     }
+
+    public bool Value
+    {
+        get => _value;
+        set
+        {
+            _value = value;
+            ValueChanged();
+        }
+    }
+
+    public void ConnectOutput(Action<bool> action)
+    {
+        _actions.Add(action);
+    }
+
+    private void ValueChanged()
+    {
+        if (string.IsNullOrWhiteSpace(Label))
+        {
+            return;
+        }
+        
+        _messageBroker.Publish(Label, Value);
+    }
+
+    public void Handle(bool message)
+    {
+        foreach (var action in _actions)
+        {
+            action.Invoke(message);
+        }
+    }
+}
+
+public class DisconnectedWire : IWire2
+{
+    public string Label { get; set; } = string.Empty;
+    public bool Value { get; set; }
+    public void ConnectOutput(Action<bool> action)
+    {
+    }
+
+    public static IWire2 Instance => new DisconnectedWire();
 }
