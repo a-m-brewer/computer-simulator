@@ -4,7 +4,6 @@ namespace ComputerSimulator.Core.Gates;
 
 public interface IAnd : IComponent2
 {
-    public Guid Id { get; }
     IWireGroup<bool> Inputs { get; set; }
     IWire2<bool> Output { get; set; }
 }
@@ -21,7 +20,7 @@ public class And : IAnd
         set => WireGroupHelper.SetWireGroup(ref _inputs, value, Id, HandleInputChanged);
     }
 
-    public IWire2<bool> Output { get; set; } = new DisconnectedWire<bool>();
+    public IWire2<bool> Output { get; set; } = DisconnectedWire<bool>.Instance;
     
     private void HandleInputChanged(IEnumerable<bool> wireValues)
     {

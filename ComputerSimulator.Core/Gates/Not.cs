@@ -1,69 +1,27 @@
-﻿using ComputerSimulator.Core.Extensions;
-using ComputerSimulator.Core.Factories;
-using ComputerSimulator.Core.Parts;
+﻿using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Gates;
 
-public interface INot : IComponent
+public interface INot : IComponent2
 {
-    IWire<bool> Input { get; set; }
-    IWire<bool> Output { get; set; }
+    IWire2<bool> Input { get; set; }
+    IWire2<bool> Output { get; set; }
 }
 
-public class Not : ComponentBase, INot
+public class Not : ComponentBase2, INot
 {
-    private IWire<bool> _input;
-    private IWire<bool> _output;
-    private string _label = nameof(Not);
+    private IWire2<bool> _input = DisconnectedWire<bool>.Instance;
 
-    public Not(IWireCupboard wireCupboard) : base(wireCupboard)
-    {
-        _input = WireCupboard.Retrieve(false, $"{nameof(Not)}.{nameof(Input)}");
-        _output = WireCupboard.Retrieve(false, $"{nameof(Not)}.{nameof(Output)}");
-        
-        Input.ValueChanged += InputChanged;
-        
-        GenerateLabels();
-    }
-
-    public IWire<bool> Input
+    public IWire2<bool> Input
     {
         get => _input;
-        set => Wire.SetWire(ref _input, value, InputChanged);
+        set => WireHelper.SetWire(ref _input, value, Id, HandleInputChanged);
     }
 
-    public IWire<bool> Output
+    public IWire2<bool> Output { get; set; }  = DisconnectedWire<bool>.Instance;
+    
+    private void HandleInputChanged(bool newValue)
     {
-        get => _output;
-        set => Wire.SetWire(ref _output, value);
-    }
-
-    private void InputChanged(object? sender, EventArgs e)
-    {
-        Output.Value = !Input.Value;
-    }
-
-    public override string Label
-    {
-        get => _label;
-        set
-        {
-            _label = value;
-            GenerateLabels();
-        }
-    }
-
-    private void GenerateLabels()
-    {
-        Input.Label = this.GenerateLabel(nameof(Input));
-        Output.Label = this.GenerateLabel(nameof(Output));
-    }
-
-    public override void Dispose()
-    {
-        Input.ValueChanged -= InputChanged;
-        
-        base.Dispose();
-        GC.SuppressFinalize(this);
+        Output.Value = !newValue;
     }
 }
