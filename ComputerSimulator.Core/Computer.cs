@@ -1,4 +1,5 @@
 using Avoid.MessageBroker;
+using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Gates;
 using ComputerSimulator.Core.Parts;
 
@@ -11,44 +12,33 @@ public interface IComputer : IDisposable
 
 public class Computer  : IComputer
 {
-    // private readonly ComputerSettings _computerSettings;
-    // private readonly ILogger<Computer> _logger;
+    private readonly IRam _ram;
+    private readonly IBus _ioBus;
+    private readonly IBus _marBus;
+    private readonly IWire2Factory _wire2Factory;
 
-    // public Computer(
-    //     ComputerSettings computerSettings,
-    //     ILogger<Computer> logger)
-    // {
-    //     _computerSettings = computerSettings;
-    //     _logger = logger;
-    // }
+    public Computer(
+        IRam ram,
+        IBus ioBus,
+        IBus marBus,
+        IWire2Factory wire2Factory)
+    {
+        _ram = ram;
+        _ioBus = ioBus;
+        _marBus = marBus;
+        _wire2Factory = wire2Factory;
+    }
     
     public void Run()
     {
-        var broker = new MessageBroker(new MessageListenerFactory());
-
-        var andInputWire = new MessageBrokerWire<bool>(broker, false)
-        {
-            Label = "and_input_1"
-        };
+        _marBus.SetWires(_wire2Factory.CreateGroup("mar_bus", false));
         
-        
-        var andOutputWire = new MessageBrokerWire<bool>(broker, false)
-        {
-            Label = "and_output"
-        };
+        _ram.MarInputBus = _marBus;
+        _ram.MarSet = _wire2Factory.Create("mar_set", false);
 
-        var wireGroup = new WireGroup<bool>();
-        wireGroup.SetWire(0, andInputWire);
-        
-        var and2 = new And
-        {
-            Inputs = wireGroup,
-            Output = andOutputWire
-        };
-
-        andInputWire.Label = "and_input_2";
-
-        andInputWire.Value = true;
+        _ram.Io = _ioBus;
+        _ram.Set = _wire2Factory.Create("ram_set", false);
+        _ram.Enable = _wire2Factory.Create("ram_enable", false);
     }
     
     public void Dispose()

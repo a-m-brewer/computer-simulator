@@ -27,9 +27,14 @@ public class MessageBrokerWireFactory : IWire2Factory
 
     public IWireGroup<T> CreateGroup<T>(string label, T initialValue)
     {
+        return CreateGroup(label, initialValue, _computerSettings.WordSize);
+    }
+
+    public IWireGroup<T> CreateGroup<T>(string label, T initialValue, int size)
+    {
         var group = new WireGroup<T>();
 
-        for (var i = 0; i < _computerSettings.WordSize; i++)
+        for (var i = 0; i < size; i++)
         {
             group.SetWire(i, Create($"{label}-{i}", initialValue));
         }
