@@ -4,7 +4,7 @@ using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface IDecoder : IInputComponent, IOutputComponent
+public interface IDecoder : IComponent2
 {
     /// <summary>
     /// Initialize the decode e.g passing 3 will make a 3x8 decoder and so on.
@@ -15,18 +15,19 @@ public interface IDecoder : IInputComponent, IOutputComponent
     int EnabledIndex { get; }
     
     int OutputSize { get; }
+
+    public IWireGroup<bool> Inputs { get; set; }
+
+    public IWireGroup<bool> Outputs { get; set; }
 }
 
-public class Decoder : ComponentBase, IDecoder
+public class Decoder : CircuitBase, IDecoder
 {
-    private readonly Dictionary<int, IWire<bool>> _inputs = new();
-    private readonly Dictionary<int, IWire<bool>> _outputs = new();
-    
     private bool[][] _truthTable = Array.Empty<bool[]>();
     private int _inputSize;
 
     public Decoder(
-        IWireCupboard wireCupboard) : base(wireCupboard)
+        IWire2Factory wireFactory) : base(wireFactory)
     {
     }
 
@@ -79,68 +80,6 @@ public class Decoder : ComponentBase, IDecoder
         }
     }
 
-    public void SetInputs(IBus bus)
-    {
-        for (var i = 0; i < bus.Length; i++)
-        {
-            SetInputWire(i, bus.GetWire(i));
-        }
-    }
-
-    public void SetInputWire(int index, IWire<bool> wire)
-    {
-        if (_inputs.TryGetValue(index, out var oldWire))
-        {
-            oldWire.ValueChanged -= InputsChanged;
-        }
-
-        _inputs[index] = wire;
-        _inputs[index].ValueChanged += InputsChanged;
-    }
-
-    public void SetInputWireValue(int index, bool value)
-    {
-        if (_inputSize <= index)
-        {
-            throw new ArgumentException($"{index} is out of range of {_inputSize}");
-        }
-        
-        _inputs[index].Value = value;
-    }
-
-    public IWire<bool> GetInputWire(int index)
-    {
-        return _inputs[index];
-    }
-
-    public void SetOutputs(IBus bus)
-    {
-        for (var i = 0; i < bus.Length; i++)
-        {
-            SetOutputWire(i, bus.GetWire(i));
-        }
-    }
-
-    public void SetOutputWire(int index, IWire<bool> wire)
-    {
-        if (OutputSize <= index)
-        {
-            throw new ArgumentException($"{index} is out of range of {OutputSize}");
-        }
-        
-        _outputs[index] = wire;
-    }
-
-    public IWire<bool> GetOutputWire(int index)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool GetOutputWireValue(int index)
-    {
-        return _outputs[index].Value;
-    }
-    
     private bool[][] GenerateCombinations()
     {
         var output = new bool[OutputSize][];

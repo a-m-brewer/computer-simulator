@@ -36,11 +36,13 @@ public class Computer  : IComputer
         {
             Label = "and_output"
         };
+
+        var wireGroup = new WireGroup<bool>();
+        wireGroup.SetWire(0, andInputWire);
         
-        
-        var and2 = new And2
+        var and2 = new And
         {
-            Input = andInputWire,
+            Inputs = wireGroup,
             Output = andOutputWire
         };
 

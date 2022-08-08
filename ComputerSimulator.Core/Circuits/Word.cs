@@ -1,43 +1,36 @@
-using ComputerSimulator.Core.Extensions;
+using ComputerSimulator.Core.Events;
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface IWord : IWordComponent
+public interface IWord : IComponent2
 {
-    IWire<bool> Set { get; set; }
+    IWire2<bool> Set { get; set; }
+    
+    IWireGroup<bool> Inputs { get; set; }
+    
+    IWireGroup<bool> Outputs { get; set; }
 }
 
-public class Word : WordComponentBase, IWord
+public class Word : CircuitBase, IWord
 {
-    private string _label = nameof(Word);
-    private IWire<bool> _set;
+    // Wires
+    private IWire2<bool> _set = DisconnectedWire<bool>.Instance;
+    private IWireGroup<bool> _inputs = DisconnectedWireGroup<bool>.Instance;
+    private IWireGroup<bool> _outputs = DisconnectedWireGroup<bool>.Instance;
+    
+    // Circuits
     private readonly IMemoryBit[] _memory;
 
     public Word(
-        IComponentFactory componentFactory,
-        IWireCupboard wireCupboard) : base( wireCupboard)
+        IComponentFactory2 componentFactory,
+        IWire2Factory wireFactory) : base(wireFactory)
     {
-        _set = WireCupboard.Retrieve(false, this.GenerateLabel(nameof(_set)));
         _memory = componentFactory.CreateSet<IMemoryBit>();
-
-        for (var i = 0; i < _memory.Length; i++)
-        {
-            _memory[i].Label = this.GenerateLabel($"{nameof(_memory)}[{i}]");
-            _memory[i].Set = _set;
-            _memory[i].Input = Inputs[i];
-            _memory[i].Output = Outputs[i];
-        }
     }
 
-    public override string Label
-    {
-        get => _label;
-        set => _label = value;
-    }
-
-    public IWire<bool> Set
+    public IWire2<bool> Set
     {
         get => _set;
         set
@@ -50,25 +43,25 @@ public class Word : WordComponentBase, IWord
         }
     }
 
-    public override void SetInputWire(int index, IWire<bool> wire)
+    public IWireGroup<bool> Inputs
     {
-        base.SetInputWire(index, wire);
-        _memory[index].Input = Inputs[index];
+        get => _inputs;
+        set => WireGroupHelper.SetWireGroup(ref _inputs, value, InputsOnWireChanged);
     }
 
-    public override void SetOutputWire(int index, IWire<bool> wire)
+    public IWireGroup<bool> Outputs
     {
-        base.SetOutputWire(index, wire);
-        _memory[index].Output = Outputs[index];
+        get => _outputs;
+        set => WireGroupHelper.SetWireGroup(ref _outputs, value, OutputsOnWireChanged);
     }
 
-    public override void Dispose()
+    private void InputsOnWireChanged(object? sender, WireGroupWireChangedEventArgs<bool> eventArgs)
     {
-        foreach (var bit in _memory)
-        {
-            bit.Dispose();
-        }
-        
-        GC.SuppressFinalize(this);
+        _memory[eventArgs.Index].Input = eventArgs.NewWire;
+    }
+    
+    private void OutputsOnWireChanged(object? sender, WireGroupWireChangedEventArgs<bool> eventArgs)
+    {
+        _memory[eventArgs.Index].Output = eventArgs.NewWire;
     }
 }

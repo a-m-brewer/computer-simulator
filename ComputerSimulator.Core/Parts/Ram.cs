@@ -1,22 +1,21 @@
 ﻿using ComputerSimulator.Core.Circuits;
-using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Models;
 
 namespace ComputerSimulator.Core.Parts;
 
-public interface IRam : IComponent
+public interface IRam : IComponent2
 {
     IRegister Mar { get; }
     
     IBus Io { get; }
 
-    IWire<bool> Set { get; }
+    IWire2<bool> Set { get; }
 
-    IWire<bool> Enable { get; }
+    IWire2<bool> Enable { get; }
 }
 
-public class Ram : ComponentBase, IRam
+public class Ram : PartsBase, IRam
 {
     private readonly IRegister _mar;
     private readonly IDecoder _decoderX;
@@ -30,11 +29,11 @@ public class Ram : ComponentBase, IRam
     public Ram(
         IComponentFactory componentFactory,
         ComputerSettings settings,
-        IWireCupboard wireCupboard,
+        IWire2Factory wireFactory,
         IRegister mar,
         IDecoder decoderX,
         IDecoder decoderY,
-        IBus ioBus) : base(wireCupboard)
+        IBus ioBus) : base(wireFactory)
     {
         _set = WireCupboard.Retrieve(false, this.GenerateLabel(nameof(_set)));
         _enable = WireCupboard.Retrieve(false, this.GenerateLabel(nameof(_enable)));

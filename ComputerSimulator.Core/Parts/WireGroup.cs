@@ -1,24 +1,30 @@
+using System.Collections;
 using System.Collections.Concurrent;
+using ComputerSimulator.Core.Events;
 
 namespace ComputerSimulator.Core.Parts;
 
-public interface IWireGroup<T>
+public interface IWireGroup<T> : IReadOnlyList<IWire2<T>>
 {
+    event EventHandler<WireGroupWireChangedEventArgs<T>> WireChanged;
     public Guid Id { get; }
     public void SetWire(int index, IWire2<T> wire);
-    public void ConnectOutput(Guid id, Action<IEnumerable<T>> action);
-    public void DisconnectOutput(Guid id);
+    public void ConnectOutputs(Guid id, Action<IEnumerable<T>> action);
+    public void DisconnectOutputs(Guid id);
 }
 
 public class WireGroup<T> : IWireGroup<T>
 {
-    private ConcurrentDictionary<Guid, Action<IEnumerable<T>>> _actions = new();
+    private readonly ConcurrentDictionary<Guid, Action<IEnumerable<T>>> _actions = new();
     private ConcurrentDictionary<int, IWire2<T>> _wires = new();
 
+    public event EventHandler<WireGroupWireChangedEventArgs<T>>? WireChanged;
     public Guid Id { get; } = Guid.NewGuid();
 
     public void SetWire(int index, IWire2<T> wire)
     {
+        var wireChangedEventArgs = new WireGroupWireChangedEventArgs<T>(index, wire);
+        
         void HandleInternal(T value)
         {
             HandleValueChanged();
@@ -26,11 +32,13 @@ public class WireGroup<T> : IWireGroup<T>
         
         if (_wires.TryRemove(index, out var oldWire))
         {
+            wireChangedEventArgs.OldWire = oldWire;
             oldWire.DisconnectOutput(Id);
         }
 
         wire.ConnectOutput(Id, HandleInternal);
         _wires[index] = wire;
+        WireChanged?.Invoke(this, wireChangedEventArgs);
     }
 
     private void HandleValueChanged()
@@ -41,41 +49,85 @@ public class WireGroup<T> : IWireGroup<T>
         }
     }
 
-    public void ConnectOutput(Guid id, Action<IEnumerable<T>> action)
+    public void ConnectOutputs(Guid id, Action<IEnumerable<T>> action)
     {
         _actions[id] = action;
     }
 
-    public void DisconnectOutput(Guid id)
+    public void DisconnectOutputs(Guid id)
     {
         _actions.TryRemove(id, out _);
     }
+
+    public IEnumerator<IWire2<T>> GetEnumerator()
+    {
+        return _wires.Values.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public int Count => _wires.Count;
+
+    public IWire2<T> this[int index] => _wires[index];
 }
 
 public class DisconnectedWireGroup<T> : IWireGroup<T>
 {
     public static IWireGroup<T> Instance => new DisconnectedWireGroup<T>();
+    public event EventHandler<WireGroupWireChangedEventArgs<T>>? WireChanged;
+
     public Guid Id { get; } = Guid.NewGuid();
 
     public void SetWire(int index, IWire2<T> wire)
     {
     }
 
-    public void ConnectOutput(Guid id, Action<IEnumerable<T>> action)
+    public void ConnectOutputs(Guid id, Action<IEnumerable<T>> action)
     {
     }
 
-    public void DisconnectOutput(Guid id)
+    public void DisconnectOutputs(Guid id)
     {
     }
+
+    public IEnumerator<IWire2<T>> GetEnumerator()
+    {
+        throw new NotImplementedException();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public int Count { get; }
+
+    public IWire2<T> this[int index] => throw new NotImplementedException();
 }
 
 public static class WireGroupHelper
 {
-    public static void SetWireGroup<T>(ref IWireGroup<T> wireGroup, IWireGroup<T> newValue, Guid componentId, Action<IEnumerable<T>> action)
+    public static void SetWireGroup<T>(
+        ref IWireGroup<T> wireGroup, 
+        IWireGroup<T> newValue,
+        Guid componentId, 
+        Action<IEnumerable<T>> action)
     {
-        wireGroup.DisconnectOutput(componentId);
+        wireGroup.DisconnectOutputs(componentId);
         wireGroup = newValue;
-        wireGroup.ConnectOutput(componentId, action);
+        wireGroup.ConnectOutputs(componentId, action);
+    }
+    
+    public static void SetWireGroup<T>(
+        ref IWireGroup<T> wireGroup, 
+        IWireGroup<T> newValue,
+        EventHandler<WireGroupWireChangedEventArgs<T>> action)
+    {
+        wireGroup.WireChanged -= action;
+        wireGroup = newValue;
+        wireGroup.WireChanged += action;
     }
 }

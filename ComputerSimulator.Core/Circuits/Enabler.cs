@@ -1,58 +1,66 @@
-using ComputerSimulator.Core.Extensions;
+using ComputerSimulator.Core.Events;
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Gates;
 using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface IEnabler : IWordComponent
+public interface IEnabler : IComponent2
 {
-    IWire<bool> Enable { get; set; }
+    IWire2<bool> Enable { get; set; }
+    IWireGroup<bool> Inputs { get; set; }
+    IWireGroup<bool> Outputs { get; set; }
 }
 
-public class Enabler : WordComponentBase, IEnabler
+public class Enabler : CircuitBase, IEnabler
 {
-    private IWire<bool> _enable;
-    private readonly IAnd[] _gates;
+    // Wires
+    private IWire2<bool> _enable = DisconnectedWire<bool>.Instance;
+    private IWireGroup<bool> _inputs = DisconnectedWireGroup<bool>.Instance;
+    private IWireGroup<bool> _outputs = DisconnectedWireGroup<bool>.Instance;
+
+    // Gates
+    private readonly IAnd[] _ands;
 
     public Enabler(
-        IComponentFactory componentFactory,
-        IWireCupboard wireCupboard) : base(wireCupboard)
+        IComponentFactory2 componentFactory2,
+        IWire2Factory wireFactory) : base(wireFactory)
     {
-        _enable = WireCupboard.Retrieve(false, this.GenerateLabel(nameof(_enable)));
-        _gates = componentFactory.CreateSet<IAnd>();
-
-        for (var i = 0; i < _gates.Length; i++)
-        {
-            _gates[i].Label = this.GenerateLabel($"{nameof(_gates)}[{i}]");
-            _gates[i].SetInputWire(0, Inputs[i]);
-            _gates[i].SetInputWire(1, _enable);
-            _gates[i].Output = Outputs[i];
-        }
+        _ands = componentFactory2.CreateSet<IAnd>();
     }
 
-    public IWire<bool> Enable
+    public IWire2<bool> Enable
     {
         get => _enable;
         set
         {
             _enable = value;
-            foreach (var gate in _gates)
+            foreach (var gate in _ands)
             {
-                gate.SetInputWire(1, _enable);
+                gate.Inputs.SetWire(1, _enable);
             }
         }
     }
 
-    public override void SetInputWire(int index, IWire<bool> wire)
+    public IWireGroup<bool> Inputs
     {
-        base.SetInputWire(index, wire);
-        _gates[index].SetInputWire(0, Inputs[index]);
+        get => _inputs;
+        set => WireGroupHelper.SetWireGroup(ref _inputs, value, InputsOnWireChanged);
     }
 
-    public override void SetOutputWire(int index, IWire<bool> wire)
+    public IWireGroup<bool> Outputs
     {
-        base.SetOutputWire(index, wire);
-        _gates[index].Output = Outputs[index];
+        get => _outputs;
+        set => WireGroupHelper.SetWireGroup(ref _outputs, value, OutputsOnWireChanged);
+    }
+
+    private void InputsOnWireChanged(object? sender, WireGroupWireChangedEventArgs<bool> eventArgs)
+    {
+        _ands[eventArgs.Index].Inputs.SetWire(0, eventArgs.NewWire);
+    }
+    
+    private void OutputsOnWireChanged(object? sender, WireGroupWireChangedEventArgs<bool> eventArgs)
+    {
+        _ands[eventArgs.Index].Output = eventArgs.NewWire;
     }
 }

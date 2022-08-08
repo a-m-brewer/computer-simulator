@@ -10,19 +10,15 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         ComputerSettings computerSettings)
     {
-        services.Scan(s => s.FromAssemblyOf<IComponent>()
-            .AddClasses(f => f.AssignableTo<IComponent>())
-            .AsImplementedInterfaces()
-            .WithTransientLifetime());
-        
         services.Scan(s => s.FromAssemblyOf<IComponent2>()
             .AddClasses(f => f.AssignableTo<IComponent2>())
             .AsImplementedInterfaces()
             .WithTransientLifetime());
 
         services.AddTransient<IComputer, Computer>();
-        services.AddSingleton<IWireCupboard, WireCupboard>();
-        services.AddSingleton<IComponentFactory, ComponentFactory>();
+
+        services.AddSingleton<IWire2Factory, MessageBrokerWireFactory>();
+        services.AddSingleton<IComponentFactory2, ComponentFactory2>();
 
         services.AddSingleton(computerSettings);
 

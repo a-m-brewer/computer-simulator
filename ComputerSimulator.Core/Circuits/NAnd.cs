@@ -1,6 +1,8 @@
+using ComputerSimulator.Core.Factories;
+using ComputerSimulator.Core.Gates;
 using ComputerSimulator.Core.Parts;
 
-namespace ComputerSimulator.Core.Gates;
+namespace ComputerSimulator.Core.Circuits;
 
 public interface INAnd : IComponent2
 {
@@ -8,17 +10,23 @@ public interface INAnd : IComponent2
     IWire2<bool> Output { get; set; }
 }
 
-public class NAnd : ComponentBase2, INAnd
+public class NAnd : CircuitBase, INAnd
 {
     private readonly IAnd _andGate;
     private readonly INot _notGate;
 
-    public NAnd(IAnd andGate, INot notGate)
+    public NAnd(
+        IAnd andGate,
+        INot notGate,
+        IWire2Factory wireFactory)
+    : base(wireFactory)
     {
         _andGate = andGate;
         _notGate = notGate;
-        
-        // TODO: make a way of having internal wires
+
+        var andToNot = CreateInternalWire("and-output-to-not-input", false);
+        _andGate.Output = andToNot;
+        _notGate.Input = andToNot;
     }
 
     public IWireGroup<bool> Inputs

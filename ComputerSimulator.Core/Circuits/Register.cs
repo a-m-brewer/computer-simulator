@@ -1,99 +1,58 @@
 using ComputerSimulator.Core.Factories;
-using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface IRegister : IWordComponent
+public interface IRegister : IComponent2
 {
-    IWire<bool> Set { get; set; }
-    
-    IWire<bool> Enable { get; set; }
+    IWire2<bool> Set { get; set; }
+
+    IWire2<bool> Enable { get; set; }
+
+    IWireGroup<bool> Inputs { get; set; }
+
+    IWireGroup<bool> Outputs { get; set; }
 }
 
-public class Register : ComponentBase, IRegister
+public class Register : CircuitBase, IRegister
 {
     private readonly IEnabler _enabler;
     private readonly IWord _word;
 
     public Register(
-        ComputerSettings computerSettings,
         IEnabler enabler,
         IWord word,
-        IWireCupboard wireCupboard) : base(wireCupboard)
+        IWire2Factory wireFactory) : base(wireFactory)
     {
         _enabler = enabler;
         _word = word;
 
-        for (var i = 0; i < computerSettings.WordSize; i++)
-        {
-            _word.SetOutputWire(i, _enabler.GetInputWire(i));
-        }
+        var internalGroup = CreateInternalWireGroup("word-to-enabler", false);
+        _word.Outputs = internalGroup;
+        _enabler.Inputs = internalGroup;
     }
 
-    public IWire<bool> Set
+    public IWire2<bool> Set
     {
         get => _word.Set;
         set => _word.Set = value;
     }
 
-    public IWire<bool> Enable
+    public IWire2<bool> Enable
     {
         get => _enabler.Enable;
         set => _enabler.Enable = value;
     }
 
-    public void SetInputs(IBus bus)
+    public IWireGroup<bool> Inputs
     {
-        for (var i = 0; i < bus.Length; i++)
-        {
-            SetInputWire(i, bus.GetWire(i));
-        }
+        get => _word.Inputs;
+        set => _word.Inputs = value;
     }
 
-    public void SetInputWire(int index, IWire<bool> wire)
+    public IWireGroup<bool> Outputs
     {
-        _word.SetInputWire(index, wire);
-    }
-
-    public void SetOutputs(IBus bus)
-    {
-        for (var i = 0; i < bus.Length; i++)
-        {
-            SetOutputWire(i, bus.GetWire(i));
-        }
-    }
-
-    public void SetOutputWire(int index, IWire<bool> wire)
-    {
-        _enabler.SetOutputWire(index, wire);
-    }
-
-    public IWire<bool> GetOutputWire(int index)
-    {
-        return _enabler.GetOutputWire(index);
-    }
-
-    public void SetInputWireValue(int index, bool value)
-    {
-        _word.SetInputWireValue(index, value);
-    }
-
-    public IWire<bool> GetInputWire(int index)
-    {
-        return _word.GetInputWire(index);
-    }
-
-    public bool GetOutputWireValue(int index)
-    {
-        return _enabler.GetOutputWireValue(index);
-    }
-
-    public override void Dispose()
-    {
-        _word.Dispose();
-        _enabler.Dispose();
-
-        GC.SuppressFinalize(this);
+        get => _enabler.Outputs;
+        set => _enabler.Outputs = value;
     }
 }
