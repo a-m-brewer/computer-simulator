@@ -7,10 +7,9 @@ namespace ComputerSimulator.Core.Parts;
 public interface IWireGroup<T> : IReadOnlyList<IWire2<T>>
 {
     event EventHandler<WireGroupWireChangedEventArgs<T>> WireChanged;
+    event EventHandler WireValuesChanged;
     public Guid Id { get; }
     public void SetWire(int index, IWire2<T> wire);
-    public void ConnectOutputs(Guid id, Action<IEnumerable<T>> action);
-    public void DisconnectOutputs(Guid id);
 }
 
 public class WireGroup<T> : IWireGroup<T>
@@ -19,13 +18,14 @@ public class WireGroup<T> : IWireGroup<T>
     protected readonly ConcurrentDictionary<int, IWire2<T>> Wires = new();
 
     public event EventHandler<WireGroupWireChangedEventArgs<T>>? WireChanged;
+    public event EventHandler? WireValuesChanged;
     public Guid Id { get; } = Guid.NewGuid();
 
     public void SetWire(int index, IWire2<T> wire)
     {
         var wireChangedEventArgs = new WireGroupWireChangedEventArgs<T>(index, wire);
         
-        void HandleInternal(T value)
+        void HandleInternal(object? sender, EventArgs e)
         {
             HandleValueChanged();
         }
@@ -33,10 +33,10 @@ public class WireGroup<T> : IWireGroup<T>
         if (Wires.TryRemove(index, out var oldWire))
         {
             wireChangedEventArgs.OldWire = oldWire;
-            oldWire.DisconnectOutput(Id);
+            oldWire.ValueChanged -= HandleInternal;
         }
 
-        wire.ConnectOutput(Id, HandleInternal);
+        wire.ValueChanged += HandleInternal;
         Wires[index] = wire;
         WireChanged?.Invoke(this, wireChangedEventArgs);
     }
@@ -47,16 +47,6 @@ public class WireGroup<T> : IWireGroup<T>
         {
             action.Invoke(Wires.Values.Select(s => s.Value));
         }
-    }
-
-    public void ConnectOutputs(Guid id, Action<IEnumerable<T>> action)
-    {
-        _actions[id] = action;
-    }
-
-    public void DisconnectOutputs(Guid id)
-    {
-        _actions.TryRemove(id, out _);
     }
 
     public IEnumerator<IWire2<T>> GetEnumerator()
@@ -78,6 +68,7 @@ public class DisconnectedWireGroup<T> : IWireGroup<T>
 {
     public static IWireGroup<T> Instance => new DisconnectedWireGroup<T>();
     public event EventHandler<WireGroupWireChangedEventArgs<T>>? WireChanged;
+    public event EventHandler? WireValuesChanged;
 
     public Guid Id { get; } = Guid.NewGuid();
 
@@ -110,24 +101,21 @@ public class DisconnectedWireGroup<T> : IWireGroup<T>
 
 public static class WireGroupHelper
 {
-    public static void SetWireGroup<T>(
-        ref IWireGroup<T> wireGroup, 
+    public static void ReSubscribeWireValuesChanged<T>(
+        IWireGroup<T> wireGroup, 
         IWireGroup<T> newValue,
-        Guid componentId, 
-        Action<IEnumerable<T>> action)
+        EventHandler eventHandler)
     {
-        wireGroup.DisconnectOutputs(componentId);
-        wireGroup = newValue;
-        wireGroup.ConnectOutputs(componentId, action);
+        wireGroup.WireValuesChanged -= eventHandler;
+        newValue.WireValuesChanged += eventHandler;
     }
     
-    public static void SetWireGroup<T>(
-        ref IWireGroup<T> wireGroup, 
+    public static void ReSubscribeWireChanged<T>(
+        IWireGroup<T> wireGroup, 
         IWireGroup<T> newValue,
         EventHandler<WireGroupWireChangedEventArgs<T>> action)
     {
         wireGroup.WireChanged -= action;
-        wireGroup = newValue;
-        wireGroup.WireChanged += action;
+        newValue.WireChanged += action;
     }
 }

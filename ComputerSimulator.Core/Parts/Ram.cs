@@ -32,7 +32,7 @@ public class Ram : PartsBase, IRam
         // enable always true for MAR
         _mar.Enable = CreateInternalWire("mar_enable", true);
         _mar.Outputs = CreateInternalWireGroup("mar_output", false);
-        _mar.Outputs.ConnectOutputs(Id, OnMarValuesChanged);
+        _mar.Outputs.WireValuesChanged += OnMarValuesChanged;
     }
 
     public IBus MarInputBus
@@ -52,26 +52,26 @@ public class Ram : PartsBase, IRam
     public IWire2<bool> Set
     {
         get => _set;
-        set => WireHelper.SetWire(ref _set, value, Id, OnSetChanged);
+        set => WireHelper.SetWire(ref _set, value, OnSetChanged);
     }
 
     public IWire2<bool> Enable
     {
         get => _enable;
-        set => WireHelper.SetWire(ref _enable, value, Id, OnEnableChanged);
+        set => WireHelper.SetWire(ref _enable, value, OnEnableChanged);
     }
 
-    private void OnSetChanged(bool obj)
+    private void OnSetChanged(object? sender, EventArgs eventArgs)
     {
         throw new NotImplementedException();
     }
     
-    private void OnEnableChanged(bool obj)
+    private void OnEnableChanged(object? sender, EventArgs eventArgs)
     {
         throw new NotImplementedException();
     }
     
-    private void OnMarValuesChanged(IEnumerable<bool> marValues)
+    private void OnMarValuesChanged(object? sender, EventArgs eventArgs)
     {
         throw new NotImplementedException();
     }

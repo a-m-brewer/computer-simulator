@@ -17,13 +17,17 @@ public class And : IAnd
     public IWireGroup<bool> Inputs
     {
         get => _inputs;
-        set => WireGroupHelper.SetWireGroup(ref _inputs, value, Id, HandleInputChanged);
+        set
+        {
+            WireGroupHelper.ReSubscribeWireValuesChanged(_inputs, value, HandleInputChanged);
+            _inputs = value;
+        }
     }
 
     public IWire2<bool> Output { get; set; } = DisconnectedWire<bool>.Instance;
     
-    private void HandleInputChanged(IEnumerable<bool> wireValues)
+    private void HandleInputChanged(object? sender, EventArgs eventArgs)
     {
-        Output.Value = wireValues.All(a => a);
+        Output.Value = Inputs.All(a => a.Value);
     }
 }

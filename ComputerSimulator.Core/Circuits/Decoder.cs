@@ -47,12 +47,16 @@ public class Decoder : CircuitBase, IDecoder
     public IWireGroup<bool> Inputs
     {
         get => _inputs;
-        set => WireGroupHelper.SetWireGroup(ref _inputs, value, Id, InputsChanged);
+        set
+        {
+            WireGroupHelper.ReSubscribeWireValuesChanged(_inputs, value, InputsChanged);
+            _inputs = value;
+        }
     }
 
     public IWireGroup<bool> Outputs { get; set; } = DisconnectedWireGroup<bool>.Instance;
 
-    private void InputsChanged(IEnumerable<bool> newState)
+    private void InputsChanged(object? sender, EventArgs eventArgs)
     {
         for (var row = 0; row < OutputSize; row++)
         {

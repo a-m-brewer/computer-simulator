@@ -15,13 +15,13 @@ public class Not : ComponentBase2, INot
     public IWire2<bool> Input
     {
         get => _input;
-        set => WireHelper.SetWire(ref _input, value, Id, HandleInputChanged);
+        set => WireHelper.SetWire(ref _input, value, HandleInputChanged);
     }
 
     public IWire2<bool> Output { get; set; }  = DisconnectedWire<bool>.Instance;
     
-    private void HandleInputChanged(bool newValue)
+    private void HandleInputChanged(object? sender, EventArgs eventArgs)
     {
-        Output.Value = !newValue;
+        Output.Value = !Input.Value;
     }
 }

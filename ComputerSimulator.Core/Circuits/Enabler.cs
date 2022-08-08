@@ -45,13 +45,21 @@ public class Enabler : CircuitBase, IEnabler
     public IWireGroup<bool> Inputs
     {
         get => _inputs;
-        set => WireGroupHelper.SetWireGroup(ref _inputs, value, InputsOnWireChanged);
+        set
+        {
+            WireGroupHelper.ReSubscribeWireChanged(_inputs, value, InputsOnWireChanged);
+            _inputs = value;
+        }
     }
 
     public IWireGroup<bool> Outputs
     {
         get => _outputs;
-        set => WireGroupHelper.SetWireGroup(ref _outputs, value, OutputsOnWireChanged);
+        set
+        {
+            WireGroupHelper.ReSubscribeWireChanged(_outputs, value, OutputsOnWireChanged);
+            _outputs = value;
+        }
     }
 
     private void InputsOnWireChanged(object? sender, WireGroupWireChangedEventArgs<bool> eventArgs)
