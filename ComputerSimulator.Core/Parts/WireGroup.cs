@@ -16,7 +16,7 @@ public interface IWireGroup<T> : IReadOnlyList<IWire2<T>>
 public class WireGroup<T> : IWireGroup<T>
 {
     private readonly ConcurrentDictionary<Guid, Action<IEnumerable<T>>> _actions = new();
-    private ConcurrentDictionary<int, IWire2<T>> _wires = new();
+    protected readonly ConcurrentDictionary<int, IWire2<T>> Wires = new();
 
     public event EventHandler<WireGroupWireChangedEventArgs<T>>? WireChanged;
     public Guid Id { get; } = Guid.NewGuid();
@@ -30,14 +30,14 @@ public class WireGroup<T> : IWireGroup<T>
             HandleValueChanged();
         }
         
-        if (_wires.TryRemove(index, out var oldWire))
+        if (Wires.TryRemove(index, out var oldWire))
         {
             wireChangedEventArgs.OldWire = oldWire;
             oldWire.DisconnectOutput(Id);
         }
 
         wire.ConnectOutput(Id, HandleInternal);
-        _wires[index] = wire;
+        Wires[index] = wire;
         WireChanged?.Invoke(this, wireChangedEventArgs);
     }
 
@@ -45,7 +45,7 @@ public class WireGroup<T> : IWireGroup<T>
     {
         foreach (var action in _actions.Values)
         {
-            action.Invoke(_wires.Values.Select(s => s.Value));
+            action.Invoke(Wires.Values.Select(s => s.Value));
         }
     }
 
@@ -61,7 +61,7 @@ public class WireGroup<T> : IWireGroup<T>
 
     public IEnumerator<IWire2<T>> GetEnumerator()
     {
-        return _wires.Values.GetEnumerator();
+        return Wires.Values.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -69,9 +69,9 @@ public class WireGroup<T> : IWireGroup<T>
         return GetEnumerator();
     }
 
-    public int Count => _wires.Count;
+    public int Count => Wires.Count;
 
-    public IWire2<T> this[int index] => _wires[index];
+    public IWire2<T> this[int index] => Wires[index];
 }
 
 public class DisconnectedWireGroup<T> : IWireGroup<T>

@@ -25,6 +25,7 @@ public class Decoder : CircuitBase, IDecoder
 {
     private bool[][] _truthTable = Array.Empty<bool[]>();
     private int _inputSize;
+    private IWireGroup<bool> _inputs = DisconnectedWireGroup<bool>.Instance;
 
     public Decoder(
         IWire2Factory wireFactory) : base(wireFactory)
@@ -33,31 +34,25 @@ public class Decoder : CircuitBase, IDecoder
 
     public void Initialize(int inputSize)
     {
-        _inputs.Clear();
-        _outputs.Clear();
-        
         _inputSize = inputSize;
         OutputSize = (int) Math.Pow(2, inputSize);
 
         _truthTable = GenerateCombinations();
-
-        for (var i = 0; i < _inputSize; i++)
-        {
-            _inputs[i] = WireCupboard.Retrieve(false, this.GenerateLabel($"{nameof(_inputs)}[{i}]"));
-            _inputs[i].ValueChanged += InputsChanged;
-        }
-
-        for (var i = 0; i < OutputSize; i++)
-        {
-            _outputs[i] = WireCupboard.Retrieve(false, this.GenerateLabel($"{nameof(_outputs)}[{i}]"));
-        }
     }
 
     public int EnabledIndex { get; private set; }
 
     public int OutputSize { get; private set; }
 
-    private void InputsChanged(object? sender, EventArgs e)
+    public IWireGroup<bool> Inputs
+    {
+        get => _inputs;
+        set => WireGroupHelper.SetWireGroup(ref _inputs, value, Id, InputsChanged);
+    }
+
+    public IWireGroup<bool> Outputs { get; set; } = DisconnectedWireGroup<bool>.Instance;
+
+    private void InputsChanged(IEnumerable<bool> newState)
     {
         for (var row = 0; row < OutputSize; row++)
         {
@@ -71,9 +66,9 @@ public class Decoder : CircuitBase, IDecoder
                 break;
             }
 
-            _outputs[row].Value = rowOutput;
+            Outputs[row].Value = rowOutput;
 
-            if (!_outputs[row].Value) continue;
+            if (!Outputs[row].Value) continue;
                 
             EnabledIndex = row;
             break;
@@ -94,6 +89,6 @@ public class Decoder : CircuitBase, IDecoder
 
     public override string ToString()
     {
-        return $"{string.Join(" ", _inputs.Values.Reverse())} | {string.Join(" ", _outputs.Values)}";
+        return $"{string.Join(" ", _inputs.Reverse())} | {string.Join(" ", Outputs.Select(v => v.Value))}";
     }
 }
