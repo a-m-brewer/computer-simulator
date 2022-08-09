@@ -1,18 +1,7 @@
 ﻿using ComputerSimulator;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
-var builder = Host.CreateDefaultBuilder(args);
-
-builder.ConfigureLogging(logging =>
-{
-    logging.ClearProviders();
-    logging.AddConsole();
-});
-
-builder.ConfigureServices((host, services) => new Startup(host.Configuration).ConfigureServices(services));
-
-using var host = builder.Build();
+using var host = args.BuildHost();
 
 var cts = new CancellationTokenSource();
 

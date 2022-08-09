@@ -14,7 +14,6 @@ public interface IWireGroup<T> : IReadOnlyList<IWire2<T>>
 
 public class WireGroup<T> : IWireGroup<T>
 {
-    private readonly ConcurrentDictionary<Guid, Action<IEnumerable<T>>> _actions = new();
     protected readonly ConcurrentDictionary<int, IWire2<T>> Wires = new();
 
     public event EventHandler<WireGroupWireChangedEventArgs<T>>? WireChanged;
@@ -43,10 +42,7 @@ public class WireGroup<T> : IWireGroup<T>
 
     private void HandleValueChanged()
     {
-        foreach (var action in _actions.Values)
-        {
-            action.Invoke(Wires.Values.Select(s => s.Value));
-        }
+        WireValuesChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public IEnumerator<IWire2<T>> GetEnumerator()

@@ -12,6 +12,7 @@ public interface IWire2<T>
 
 public class MessageBrokerWire<T> : IWire2<T>, IMessageHandler<T>
 {
+    private bool _valueSet = false;
     private readonly IMessageBroker _messageBroker;
     private T _value;
     private string _label = string.Empty;
@@ -45,6 +46,12 @@ public class MessageBrokerWire<T> : IWire2<T>, IMessageHandler<T>
         get => _value;
         set
         {
+            if (_valueSet && EqualityComparer<T>.Default.Equals(_value, value))
+            {
+                return;
+            }
+
+            _valueSet = true;
             _value = value;
             InternalValueChanged();
         }

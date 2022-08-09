@@ -1,0 +1,31 @@
+﻿using ComputerSimulator.Core.Circuits;
+using FluentAssertions;
+using NUnit.Framework;
+
+namespace ComputerSimulator.IntegrationTests.Circuits;
+
+public class NAndTests : IntegrationTestBase
+{
+    [Test]
+    [TestCase(false, false, true)]
+    [TestCase(false, true, true)]
+    [TestCase(true, false, true)]
+    [TestCase(true, true, false)]
+    public void NAnd_TruthTableTest(bool a, bool b, bool expected)
+    {
+        // Arrange
+        var inputs = CreateTestWireGroup("inputs", false, 2);
+        var output = CreateTestWire("output", false);
+        
+        var sut = GetRequiredService<INAnd>();
+        sut.Inputs = inputs;
+        sut.Output = output;
+        
+        // Act
+        inputs[0].Value = a;
+        inputs[1].Value = b;
+        
+        // Assert
+        sut.Output.Value.Should().Be(expected);
+    }
+}
