@@ -33,9 +33,16 @@ public class MemoryBit : CircuitBase, IMemoryBit
     : base(wireFactory)
     {
         _nAnd1 = nAnd1;
+        _nAnd1.Inputs = CreateInternalWireGroup<bool>();
+        
         _nAnd2 = nAnd2;
+        _nAnd2.Inputs = CreateInternalWireGroup<bool>();
+        
         _nAnd3 = nAnd3;
+        _nAnd3.Inputs = CreateInternalWireGroup<bool>();
+        
         _nAnd4 = nAnd4;
+        _nAnd4.Inputs = CreateInternalWireGroup<bool>();
 
         var a = CreateInternalWire("a", false);
         var b = CreateInternalWire("b", false);

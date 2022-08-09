@@ -9,7 +9,6 @@ namespace ComputerSimulator.IntegrationTests;
 public class IntegrationTestBase : HostTestBase
 {
     private IWire2Factory _wireFactory = null!;
-    private IComponentFactory2 _componentFactory = null!;
     private ComputerSettings _computerSettings = null!;
 
     [OneTimeSetUp]
@@ -17,7 +16,7 @@ public class IntegrationTestBase : HostTestBase
     {
         _computerSettings = GetRequiredService<ComputerSettings>();
         _wireFactory = GetRequiredService<IWire2Factory>();
-        _componentFactory = GetRequiredService<IComponentFactory2>();
+        GetRequiredService<IComponentFactory2>();
     }
     
     protected IWire2<T> CreateTestWire<T>(string label, T initialValue)

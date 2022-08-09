@@ -59,8 +59,8 @@ public class Ram : PartsBase, IRam
             decoderY.Inputs.SetWire(i, marOutputWireGroup[i]);
         }
 
-        var decoderXOutputWires = wireFactory.CreateGroup("decoder_x_output", false, decoderX.OutputSize);
-        var decoderYOutputWires = wireFactory.CreateGroup("decoder_y_output", false, decoderY.OutputSize);
+        var decoderXOutputWires = CreateInternalWireGroup("decoder_x_output", false, decoderX.OutputSize);
+        var decoderYOutputWires = CreateInternalWireGroup("decoder_y_output", false, decoderY.OutputSize);
 
         decoderX.Outputs = decoderXOutputWires;
         decoderY.Outputs = decoderYOutputWires;

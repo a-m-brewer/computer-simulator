@@ -25,6 +25,11 @@ public class MessageBrokerWireFactory : IWire2Factory
         };
     }
 
+    public IWireGroup<T> CreateGroup<T>()
+    {
+        return new WireGroup<T>();
+    }
+
     public IWireGroup<T> CreateGroup<T>(string label, T initialValue)
     {
         return CreateGroup(label, initialValue, _computerSettings.WordSize);

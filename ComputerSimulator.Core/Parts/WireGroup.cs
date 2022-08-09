@@ -70,14 +70,17 @@ public class DisconnectedWireGroup<T> : IWireGroup<T>
 
     public void SetWire(int index, IWire2<T> wire)
     {
+        throw new NotImplementedException();
     }
 
     public void ConnectOutputs(Guid id, Action<IEnumerable<T>> action)
     {
+        throw new NotImplementedException();
     }
 
     public void DisconnectOutputs(Guid id)
     {
+        throw new NotImplementedException();
     }
 
     public IEnumerator<IWire2<T>> GetEnumerator()
@@ -90,7 +93,7 @@ public class DisconnectedWireGroup<T> : IWireGroup<T>
         return GetEnumerator();
     }
 
-    public int Count { get; }
+    public int Count => 0;
 
     public IWire2<T> this[int index] => throw new NotImplementedException();
 }
