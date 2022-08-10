@@ -50,6 +50,10 @@ public class Word : CircuitBase, IWord
         {
             WireGroupHelper.ReSubscribeWireChanged(_inputs, value, InputsOnWireChanged);
             _inputs = value;
+            for (var i = 0; i < _inputs.Count; i++)
+            {
+                _memory[i].Input = _inputs[i];
+            }
         }
     }
 
@@ -60,6 +64,10 @@ public class Word : CircuitBase, IWord
         {
             WireGroupHelper.ReSubscribeWireChanged(_outputs, value, OutputsOnWireChanged);
             _outputs = value;
+            for (var i = 0; i < _outputs.Count; i++)
+            {
+                _memory[i].Output = _outputs[i];
+            }
         }
     }
 

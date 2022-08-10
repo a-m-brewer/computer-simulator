@@ -77,7 +77,12 @@ public class DisconnectedWire<T> : IWire2<T>
     public event EventHandler? ValueChanged;
 
     public string Label { get; set; } = string.Empty;
-    public T Value { get; set; } = default!;
+
+    public T Value
+    {
+        get => default!;
+        set => throw new NotImplementedException();
+    }
 
     public static IWire2<T> Instance => new DisconnectedWire<T>();
 }
