@@ -27,6 +27,10 @@ public class Enabler : CircuitBase, IEnabler
         IWire2Factory wireFactory) : base(wireFactory)
     {
         _ands = componentFactory2.CreateSet<IAnd>();
+        foreach (var and in _ands)
+        {
+            and.Inputs = CreateInternalWireGroup<bool>();
+        }
     }
 
     public IWire2<bool> Enable
@@ -49,6 +53,10 @@ public class Enabler : CircuitBase, IEnabler
         {
             WireGroupHelper.ReSubscribeWireChanged(_inputs, value, InputsOnWireChanged);
             _inputs = value;
+            for (var i = 0; i < _inputs.Count; i++)
+            {
+                _ands[i].Inputs.SetWire(0, _inputs[i]);
+            }
         }
     }
 
@@ -59,6 +67,10 @@ public class Enabler : CircuitBase, IEnabler
         {
             WireGroupHelper.ReSubscribeWireChanged(_outputs, value, OutputsOnWireChanged);
             _outputs = value;
+            for (var i = 0; i < _outputs.Count; i++)
+            {
+                _ands[i].Output = _outputs[i];
+            }
         }
     }
 
