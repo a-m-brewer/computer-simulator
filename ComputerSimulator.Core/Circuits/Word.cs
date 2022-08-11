@@ -1,6 +1,7 @@
 using ComputerSimulator.Core.Events;
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Parts;
+using ComputerSimulator.Core.Services;
 
 namespace ComputerSimulator.Core.Circuits;
 
@@ -25,7 +26,7 @@ public class Word : CircuitBase, IWord
 
     public Word(
         IComponentFactory2 componentFactory,
-        IWire2Factory wireFactory) : base(wireFactory)
+        IWireService wireService) : base(wireService)
     {
         _memory = componentFactory.CreateSet<IMemoryBit>();
     }

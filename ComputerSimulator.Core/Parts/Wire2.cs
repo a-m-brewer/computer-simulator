@@ -2,10 +2,14 @@ using Avoid.MessageBroker;
 
 namespace ComputerSimulator.Core.Parts;
 
-public interface IWire2<T>
+public interface IWire2
 {
     event EventHandler ValueChanged; 
     string Label { get; set; }
+}
+
+public interface IWire2<T> : IWire2
+{
     T Value { get; set; }
 }
 

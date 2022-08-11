@@ -1,6 +1,7 @@
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Gates;
 using ComputerSimulator.Core.Parts;
+using ComputerSimulator.Core.Services;
 
 namespace ComputerSimulator.Core.Circuits;
 
@@ -18,8 +19,8 @@ public class NAnd : CircuitBase, INAnd
     public NAnd(
         IAnd andGate,
         INot notGate,
-        IWire2Factory wireFactory)
-    : base(wireFactory)
+        IWireService wireService)
+    : base(wireService)
     {
         _andGate = andGate;
         _notGate = notGate;

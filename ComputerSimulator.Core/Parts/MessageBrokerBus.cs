@@ -13,7 +13,7 @@ public class MessageBrokerBus : WireGroup<bool>, IBus
 {
     private readonly ComputerSettings _computerSettings;
 
-    public MessageBrokerBus(ComputerSettings computerSettings)
+    public MessageBrokerBus(ComputerSettings computerSettings) : base()
     {
         _computerSettings = computerSettings;
         for (var i = 0; i < computerSettings.WordSize; i++)

@@ -1,6 +1,7 @@
 ﻿using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Gates;
 using ComputerSimulator.Core.Parts;
+using ComputerSimulator.Core.Services;
 
 namespace ComputerSimulator.Core.Circuits;
 
@@ -29,7 +30,7 @@ public class RamSlot : PartsBase, IRamSlot
         IAnd setAnd,
         IAnd enableAnd,
         IRegister register,
-        IWire2Factory wireFactory) : base(wireFactory)
+        IWireService wireService) : base(wireService)
     {
         var internalXAndOutput = CreateInternalWire("internalXAndOutput", false);
         var internalSetAndOutput = CreateInternalWire("internalSetAndOutput", false);

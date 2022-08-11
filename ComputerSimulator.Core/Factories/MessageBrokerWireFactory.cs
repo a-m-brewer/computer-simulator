@@ -4,7 +4,7 @@ using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Factories;
 
-public class MessageBrokerWireFactory : IWire2Factory
+public class MessageBrokerWireFactory : IWire2Factory2
 {
     private readonly ComputerSettings _computerSettings;
     private readonly IMessageBroker _messageBroker;
@@ -25,9 +25,9 @@ public class MessageBrokerWireFactory : IWire2Factory
         };
     }
 
-    public IWireGroup<T> CreateGroup<T>()
+    public IWireGroup<T> CreateGroup<T>(string label)
     {
-        return new WireGroup<T>();
+        return new WireGroup<T>(label);
     }
 
     public IWireGroup<T> CreateGroup<T>(string label, T initialValue)
@@ -37,7 +37,7 @@ public class MessageBrokerWireFactory : IWire2Factory
 
     public IWireGroup<T> CreateGroup<T>(string label, T initialValue, int size)
     {
-        var group = new WireGroup<T>();
+        var group = new WireGroup<T>(label);
 
         for (var i = 0; i < size; i++)
         {

@@ -15,5 +15,7 @@ public class RegisterTests : IntegrationTestBase
         sut.Enable = CreateTestWire("register-enable", false);
         sut.Inputs = CreateTestWireGroup("register-inputs", false);
         sut.Outputs = CreateTestWireGroup("register-outputs", false);
+        
+        var andOutput = GetWireById<bool>(GetInternalWireLabel(sut, "word-to-enabler"));
     }
 }

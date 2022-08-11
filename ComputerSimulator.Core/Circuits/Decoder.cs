@@ -1,6 +1,7 @@
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Parts;
+using ComputerSimulator.Core.Services;
 
 namespace ComputerSimulator.Core.Circuits;
 
@@ -28,7 +29,7 @@ public class Decoder : CircuitBase, IDecoder
     private IWireGroup<bool> _inputs = DisconnectedWireGroup<bool>.Instance;
 
     public Decoder(
-        IWire2Factory wireFactory) : base(wireFactory)
+        IWireService wireService) : base(wireService)
     {
     }
 

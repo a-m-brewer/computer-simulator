@@ -1,5 +1,6 @@
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Parts;
+using ComputerSimulator.Core.Services;
 
 namespace ComputerSimulator.Core.Circuits;
 
@@ -22,7 +23,7 @@ public class Register : CircuitBase, IRegister
     public Register(
         IEnabler enabler,
         IWord word,
-        IWire2Factory wireFactory) : base(wireFactory)
+        IWireService wireService) : base(wireService)
     {
         _enabler = enabler;
         _word = word;

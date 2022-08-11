@@ -2,6 +2,7 @@ using ComputerSimulator.Core.Events;
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Gates;
 using ComputerSimulator.Core.Parts;
+using ComputerSimulator.Core.Services;
 
 namespace ComputerSimulator.Core.Circuits;
 
@@ -24,7 +25,7 @@ public class Enabler : CircuitBase, IEnabler
 
     public Enabler(
         IComponentFactory2 componentFactory2,
-        IWire2Factory wireFactory) : base(wireFactory)
+        IWireService wireService) : base(wireService)
     {
         _ands = componentFactory2.CreateSet<IAnd>();
         foreach (var and in _ands)

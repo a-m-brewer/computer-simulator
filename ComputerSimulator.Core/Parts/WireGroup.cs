@@ -4,11 +4,16 @@ using ComputerSimulator.Core.Events;
 
 namespace ComputerSimulator.Core.Parts;
 
-public interface IWireGroup<T> : IReadOnlyList<IWire2<T>>
+public interface IWireGroup
+{
+    event EventHandler WireValuesChanged;
+    Guid Id { get; }
+    string Label { get; }
+}
+
+public interface IWireGroup<T> : IWireGroup, IReadOnlyList<IWire2<T>>
 {
     event EventHandler<WireGroupWireChangedEventArgs<T>> WireChanged;
-    event EventHandler WireValuesChanged;
-    public Guid Id { get; }
     public void SetWire(int index, IWire2<T> wire);
 }
 
@@ -16,9 +21,15 @@ public class WireGroup<T> : IWireGroup<T>
 {
     protected readonly ConcurrentDictionary<int, IWire2<T>> Wires = new();
 
+    public WireGroup(string label)
+    {
+        Label = label;
+    }
+
     public event EventHandler<WireGroupWireChangedEventArgs<T>>? WireChanged;
     public event EventHandler? WireValuesChanged;
     public Guid Id { get; } = Guid.NewGuid();
+    public string Label { get; }
 
     public void SetWire(int index, IWire2<T> wire)
     {
@@ -67,6 +78,7 @@ public class DisconnectedWireGroup<T> : IWireGroup<T>
     public event EventHandler? WireValuesChanged;
 
     public Guid Id { get; } = Guid.NewGuid();
+    public string Label => string.Empty;
 
     public void SetWire(int index, IWire2<T> wire)
     {

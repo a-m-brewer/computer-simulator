@@ -1,5 +1,6 @@
 ﻿using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Parts;
+using ComputerSimulator.Core.Services;
 
 namespace ComputerSimulator.Core.Circuits;
 
@@ -29,20 +30,20 @@ public class MemoryBit : CircuitBase, IMemoryBit
         INAnd nAnd2,
         INAnd nAnd3,
         INAnd nAnd4,
-        IWire2Factory wireFactory)
-    : base(wireFactory)
+        IWireService wireService)
+    : base(wireService)
     {
         _nAnd1 = nAnd1;
-        _nAnd1.Inputs = CreateInternalWireGroup<bool>();
+        _nAnd1.Inputs = CreateInternalWireGroup<bool>("nand1-inputs");
         
         _nAnd2 = nAnd2;
-        _nAnd2.Inputs = CreateInternalWireGroup<bool>();
+        _nAnd2.Inputs = CreateInternalWireGroup<bool>("nand2-inputs");
         
         _nAnd3 = nAnd3;
-        _nAnd3.Inputs = CreateInternalWireGroup<bool>();
+        _nAnd3.Inputs = CreateInternalWireGroup<bool>("nand3-inputs");
         
         _nAnd4 = nAnd4;
-        _nAnd4.Inputs = CreateInternalWireGroup<bool>();
+        _nAnd4.Inputs = CreateInternalWireGroup<bool>("nand4-inputs");
 
         var a = CreateInternalWire("a", false);
         var b = CreateInternalWire("b", false);

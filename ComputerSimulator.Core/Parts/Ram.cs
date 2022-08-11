@@ -1,6 +1,7 @@
 ﻿using ComputerSimulator.Core.Circuits;
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Models;
+using ComputerSimulator.Core.Services;
 
 namespace ComputerSimulator.Core.Parts;
 
@@ -34,7 +35,7 @@ public class Ram : PartsBase, IRam
         IDecoder decoderX,
         IDecoder decoderY,
         IRegister mar,
-        IWire2Factory wireFactory) : base(wireFactory)
+        IWireService wireService) : base(wireService)
     {
         _mar = mar;
 
