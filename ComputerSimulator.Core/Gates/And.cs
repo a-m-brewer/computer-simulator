@@ -26,7 +26,7 @@ public class And : IAnd
 
     public IWire2<bool> Output { get; set; } = DisconnectedWire<bool>.Instance;
     
-    private void HandleInputChanged(object? sender, EventArgs eventArgs)
+    private void HandleInputChanged(object? sender, int index)
     {
         Output.Value = Inputs.All(a => a.Value);
     }

@@ -10,6 +10,7 @@ public interface IWireService
     IWireGroup<T> CreateGroup<T>(string label);
     IWireGroup<T> CreateGroup<T>(string label, T initialValue);
     IWireGroup<T> CreateGroup<T>(string label, T initialValue, int size);
+    IBus CreateBus(string label, bool initialValue);
 }
 
 public class WireService : IWireService
@@ -58,5 +59,14 @@ public class WireService : IWireService
         _wireRepository.AddGroup(group);
 
         return group;
+    }
+
+    public IBus CreateBus(string label, bool initialValue)
+    {
+        var bus = _wire2Factory.CreateBus(label, initialValue);
+
+        _wireRepository.AddGroup(bus);
+
+        return bus;
     }
 }

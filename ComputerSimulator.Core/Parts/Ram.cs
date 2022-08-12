@@ -44,7 +44,7 @@ public class Ram : PartsBase, IRam
         
         _mar.Enable = CreateInternalWire("mar_enable", true);
         _mar.Outputs = marOutputWireGroup;
-        _mar.Outputs.WireValuesChanged += OnInputChanged;
+        _mar.Outputs.WireValuesChanged += MarOutputChanged;
 
         var decoderInputSize = computerSettings.WordSize / 2;
         decoderX.Initialize(decoderInputSize);
@@ -104,7 +104,7 @@ public class Ram : PartsBase, IRam
             {
                 foreach (var slot in row)
                 {
-                    slot.Register.Outputs = _io;
+                    slot.Io = _io;
                 }
             }
         }
@@ -115,7 +115,7 @@ public class Ram : PartsBase, IRam
         get => _set;
         set
         {
-            WireHelper.SetWire(ref _set, value, OnInputChanged);
+            WireHelper.SetWire(ref _set, value, WireChanged);
             foreach (var row in _slots)
             {
                 foreach (var slot in row)
@@ -131,7 +131,7 @@ public class Ram : PartsBase, IRam
         get => _enable;
         set
         {
-            WireHelper.SetWire(ref _enable, value, OnInputChanged);
+            WireHelper.SetWire(ref _enable, value, WireChanged);
             foreach (var row in _slots)
             {
                 foreach (var slot in row)
@@ -142,7 +142,12 @@ public class Ram : PartsBase, IRam
         }
     }
 
-    private void OnInputChanged(object? sender, EventArgs eventArgs)
+    private void WireChanged(object? sender, EventArgs e)
     {
+    }
+    
+    private void MarOutputChanged(object? sender, int e)
+    {
+        throw new NotImplementedException();
     }
 }

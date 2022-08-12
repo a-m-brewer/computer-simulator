@@ -14,8 +14,8 @@ public interface IRamSlot : IComponent2
     IWire2<bool> X { get; set; }
 
     IWire2<bool> Y { get; set; }
-    
-    IRegister Register { get; }
+
+    IBus Io { get; set; }
 }
 
 public class RamSlot : PartsBase, IRamSlot
@@ -24,6 +24,8 @@ public class RamSlot : PartsBase, IRamSlot
     private readonly IAnd _xAnd;
     private readonly IAnd _setAnd;
     private readonly IAnd _enableAnd;
+    private readonly IRegister _register;
+    private IBus _io = DisconnectedBus.Instance;
 
     public RamSlot(
         IAnd xAnd,
@@ -32,46 +34,57 @@ public class RamSlot : PartsBase, IRamSlot
         IRegister register,
         IWireService wireService) : base(wireService)
     {
-        var internalXAndOutput = CreateInternalWire("internalXAndOutput", false);
-        var internalSetAndOutput = CreateInternalWire("internalSetAndOutput", false);
-        var internalEnableAndOutput = CreateInternalWire("internalEnableAndOutput", false);
-
         _xAnd = xAnd;
+        _xAnd.Inputs = CreateInternalWireGroup<bool>("x-and-input");
+        _xAnd.Output = CreateInternalWire("x-and-output", false);
+
         _setAnd = setAnd;
+        _setAnd.Inputs = CreateInternalWireGroup<bool>("set-and-input");
+        _setAnd.Inputs.SetWire(0, _xAnd.Output);
+        _setAnd.Output = CreateInternalWire("set-and-output", false);
+
         _enableAnd = enableAnd;
-        Register = register;
+        _enableAnd.Inputs = CreateInternalWireGroup<bool>("enable-and-input");
+        _enableAnd.Inputs.SetWire(0, _xAnd.Output);
+        _enableAnd.Output = CreateInternalWire("enable-and-output", false);
 
-        _xAnd.Output = internalXAndOutput;
-        _setAnd.Inputs.SetWire(1, internalXAndOutput);
-        _enableAnd.Inputs.SetWire(1, internalXAndOutput);
-
-        Register.Set = internalSetAndOutput;
-        Register.Enable = internalEnableAndOutput;
+        _register = register;
+        _register.Set = _setAnd.Output;
+        _register.Enable = _enableAnd.Output;
     }
 
     public IWire2<bool> Set
     {
-        get => _setAnd.Inputs[0]; 
-        set => _setAnd.Inputs.SetWire(0, value);
+        get => _setAnd.Inputs[1];
+        set => _setAnd.Inputs.SetWire(1, value);
     }
 
     public IWire2<bool> Enable
     {
-        get => _enableAnd.Inputs[0]; 
-        set => _enableAnd.Inputs.SetWire(0, value);
+        get => _enableAnd.Inputs[1];
+        set => _enableAnd.Inputs.SetWire(1, value);
     }
 
     public IWire2<bool> X
     {
-        get => _xAnd.Inputs[0]; 
+        get => _xAnd.Inputs[0];
         set => _xAnd.Inputs.SetWire(0, value);
     }
-    
+
     public IWire2<bool> Y
     {
-        get => _xAnd.Inputs[1]; 
+        get => _xAnd.Inputs[1];
         set => _xAnd.Inputs.SetWire(1, value);
     }
 
-    public IRegister Register { get; }
+    public IBus Io
+    {
+        get => _io;
+        set
+        {
+            _io = value;
+            _register.Outputs = _io;
+            _register.Inputs = _io;
+        }
+    }
 }

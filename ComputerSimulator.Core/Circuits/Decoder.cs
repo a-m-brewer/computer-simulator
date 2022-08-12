@@ -57,7 +57,7 @@ public class Decoder : CircuitBase, IDecoder
 
     public IWireGroup<bool> Outputs { get; set; } = DisconnectedWireGroup<bool>.Instance;
 
-    private void InputsChanged(object? sender, EventArgs eventArgs)
+    private void InputsChanged(object? sender, int index)
     {
         for (var row = 0; row < OutputSize; row++)
         {

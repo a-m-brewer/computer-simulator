@@ -6,7 +6,7 @@ namespace ComputerSimulator.Core.Parts;
 
 public interface IWireGroup
 {
-    event EventHandler WireValuesChanged;
+    event EventHandler<int> WireValuesChanged;
     Guid Id { get; }
     string Label { get; }
 }
@@ -27,7 +27,7 @@ public class WireGroup<T> : IWireGroup<T>
     }
 
     public event EventHandler<WireGroupWireChangedEventArgs<T>>? WireChanged;
-    public event EventHandler? WireValuesChanged;
+    public event EventHandler<int>? WireValuesChanged;
     public Guid Id { get; } = Guid.NewGuid();
     public string Label { get; }
 
@@ -37,7 +37,7 @@ public class WireGroup<T> : IWireGroup<T>
         
         void HandleInternal(object? sender, EventArgs e)
         {
-            HandleValueChanged();
+            HandleValueChanged(index);
         }
         
         if (Wires.TryRemove(index, out var oldWire))
@@ -51,9 +51,9 @@ public class WireGroup<T> : IWireGroup<T>
         WireChanged?.Invoke(this, wireChangedEventArgs);
     }
 
-    private void HandleValueChanged()
+    private void HandleValueChanged(int index)
     {
-        WireValuesChanged?.Invoke(this, EventArgs.Empty);
+        WireValuesChanged?.Invoke(this, index);
     }
 
     public IEnumerator<IWire2<T>> GetEnumerator()
@@ -75,7 +75,7 @@ public class DisconnectedWireGroup<T> : IWireGroup<T>
 {
     public static IWireGroup<T> Instance => new DisconnectedWireGroup<T>();
     public event EventHandler<WireGroupWireChangedEventArgs<T>>? WireChanged;
-    public event EventHandler? WireValuesChanged;
+    public event EventHandler<int>? WireValuesChanged;
 
     public Guid Id { get; } = Guid.NewGuid();
     public string Label => string.Empty;
@@ -115,7 +115,7 @@ public static class WireGroupHelper
     public static void ReSubscribeWireValuesChanged<T>(
         IWireGroup<T> wireGroup, 
         IWireGroup<T> newValue,
-        EventHandler eventHandler)
+        EventHandler<int> eventHandler)
     {
         wireGroup.WireValuesChanged -= eventHandler;
         newValue.WireValuesChanged += eventHandler;

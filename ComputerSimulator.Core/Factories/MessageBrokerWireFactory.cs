@@ -47,8 +47,14 @@ public class MessageBrokerWireFactory : IWire2Factory2
         return group;
     }
 
-    public IBus CreateBus<T>(string label)
+    public IBus CreateBus(string label, bool initialValue)
     {
-        return new MessageBrokerBus(_computerSettings, label);
+        var bus = new MessageBrokerBus(_computerSettings, label);
+        for (var i = 0; i < bus.Length; i++)
+        {
+            bus.SetWire(i, Create($"{label}-{i}", initialValue));
+        }
+
+        return bus;
     }
 }

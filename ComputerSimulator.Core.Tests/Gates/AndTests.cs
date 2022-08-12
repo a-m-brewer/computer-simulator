@@ -37,7 +37,7 @@ public class AndTests : MockBase<And>
         sut.Output = output;
         
         // Act
-        wireGroup.Raise(r => r.WireValuesChanged += null, EventArgs.Empty);
+        wireGroup.Raise(r => r.WireValuesChanged += null, null, 1);
         
         // Assert
         output.Value
