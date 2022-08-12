@@ -40,10 +40,17 @@ public class IntegrationTestBase : HostTestBase
         return _wireService.CreateGroup($"{Guid.NewGuid()}-{label}", initialValue, size);
     }
 
-    protected IWire2<T> GetWireById<T>(string label)
+    protected IWire2<T> GetWireByLabel<T>(string label)
     {
         return _wireRepository.Wires
             .OfType<IWire2<T>>()
+            .First(f => f.Label == label);
+    }
+
+    protected IWireGroup<T> GetGroupByLabel<T>(string label)
+    {
+        return _wireRepository.Groups
+            .OfType<IWireGroup<T>>()
             .First(f => f.Label == label);
     }
 

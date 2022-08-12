@@ -28,9 +28,9 @@ public class Enabler : CircuitBase, IEnabler
         IWireService wireService) : base(wireService)
     {
         _ands = componentFactory2.CreateSet<IAnd>();
-        foreach (var and in _ands)
+        for (var i = 0; i < _ands.Length; i++)
         {
-            and.Inputs = CreateInternalWireGroup<bool>();
+            _ands[i].Inputs = CreateInternalWireGroup<bool>($"and-inputs-{i}");
         }
     }
 

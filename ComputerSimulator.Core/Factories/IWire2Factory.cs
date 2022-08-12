@@ -8,4 +8,5 @@ public interface IWire2Factory2
     IWireGroup<T> CreateGroup<T>(string label);
     IWireGroup<T> CreateGroup<T>(string label, T initialValue);
     IWireGroup<T> CreateGroup<T>(string label, T initialValue, int size);
+    IBus CreateBus<T>(string label);
 }

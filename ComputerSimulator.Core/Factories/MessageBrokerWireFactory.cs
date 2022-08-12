@@ -46,4 +46,9 @@ public class MessageBrokerWireFactory : IWire2Factory2
 
         return group;
     }
+
+    public IBus CreateBus<T>(string label)
+    {
+        return new MessageBrokerBus(_computerSettings, label);
+    }
 }
