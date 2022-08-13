@@ -19,10 +19,10 @@ public class Enabler : CircuitBase, IEnabler
     private IWire2<bool> _enable = DisconnectedWire<bool>.Instance;
     private IWireGroup<bool> _inputs = DisconnectedWireGroup<bool>.Instance;
     private IWireGroup<bool> _outputsExternal = DisconnectedWireGroup<bool>.Instance;
-
+    private readonly IWireGroup<bool> _internalOutput;
+    
     // Gates
     private readonly IAnd[] _ands;
-    private readonly IWireGroup<bool> _internalOutput;
 
     public Enabler(
         IComponentFactory2 componentFactory2,

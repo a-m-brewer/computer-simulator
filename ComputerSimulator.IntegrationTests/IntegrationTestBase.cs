@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ComputerSimulator.Core;
-using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
 using ComputerSimulator.Core.Repositories;
@@ -16,13 +16,20 @@ public class IntegrationTestBase : HostTestBase
     private IWireService _wireService = null!;
     private IWireRepository _wireRepository = null!;
 
-    [OneTimeSetUp]
-    public void IntegrationOneTimeSetUp()
+    [SetUp]
+    public void IntegrationSetUp()
     {
         ComputerSettings = GetRequiredService<ComputerSettings>();
         _wireService = GetRequiredService<IWireService>();
         _wireRepository = GetRequiredService<IWireRepository>();
-        GetRequiredService<IComponentFactory2>();
+    }
+
+    [TearDown]
+    public void IntergrationTearDown()
+    {
+        ComputerSettings = null!;
+        _wireService = null!;
+        _wireRepository = null!;
     }
 
     protected ComputerSettings ComputerSettings { get; private set; } = null!;
@@ -66,6 +73,14 @@ public class IntegrationTestBase : HostTestBase
         return _wireRepository.Groups
             .OfType<IWireGroup<T>>()
             .First(f => Regex.IsMatch(f.Label, regex));
+    }
+    
+    protected List<IWireGroup<T>> GetGroupsMatchingRegex<T>(string regex)
+    {
+        return _wireRepository.Groups
+            .OfType<IWireGroup<T>>()
+            .Where(f => Regex.IsMatch(f.Label, regex))
+            .ToList();
     }
 
     protected static string GetInternalWireLabel(IComponent2 component, string subLabel)

@@ -16,6 +16,8 @@ public interface IWireRepository
 
 public class WireRepository : IWireRepository
 {
+    public Guid Id { get; set; } = Guid.NewGuid();
+    
     private readonly ConcurrentDictionary<string, IWire2> _wires = new();
     private readonly ConcurrentDictionary<string, IWireGroup> _wireGroups = new();
 

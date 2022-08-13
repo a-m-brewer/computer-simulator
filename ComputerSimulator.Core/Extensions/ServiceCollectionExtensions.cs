@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IWire2Factory2, MessageBrokerWireFactory>();
         services.AddSingleton<IComponentFactory2, ComponentFactory2>();
-        services.AddSingleton<IWireRepository, WireRepository>();
+        services.AddScoped<IWireRepository, WireRepository>();
 
         services.AddSingleton(computerSettings);
 

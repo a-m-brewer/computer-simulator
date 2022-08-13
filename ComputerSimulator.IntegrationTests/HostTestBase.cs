@@ -7,22 +7,35 @@ namespace ComputerSimulator.IntegrationTests;
 
 public class HostTestBase
 {
-    protected IHost Host = null!;
-    
+    private IHost _host = null!;
+    private IServiceScope _scope = null!;
+
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        Host = Array.Empty<string>().BuildHost();
+        _host = Array.Empty<string>().BuildHost();
     }
 
     [OneTimeTearDown]
     public void OneTimeTearDown()
     {
-        Host.Dispose();
+        _host.Dispose();
+    }
+
+    [SetUp]
+    public void HostTestBaseSetup()
+    {
+        _scope = _host.Services.CreateScope();
+    }
+
+    [TearDown]
+    public void HostTestBaseTearDown()
+    {
+        _scope.Dispose();
     }
 
     protected T GetRequiredService<T>() where T : notnull
     {
-        return Host.Services.GetRequiredService<T>();
+        return _scope.ServiceProvider.GetRequiredService<T>();
     }
 }
