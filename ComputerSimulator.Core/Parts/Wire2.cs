@@ -54,11 +54,6 @@ public class MessageBrokerWire<T> : IWire2<T>, IMessageHandler<T>
                 return;
             }
 
-            // if (Regex.IsMatch(Label, "Register-.+-word-to-enabler.*"))
-            // {
-            //     Console.WriteLine($"Setting {Label} from: {_value} to {value}");
-            // }
-
             _valueSet = true;
             _value = value;
             InternalValueChanged();
