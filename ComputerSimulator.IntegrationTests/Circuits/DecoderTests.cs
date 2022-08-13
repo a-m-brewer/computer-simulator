@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using ComputerSimulator.Core.Circuits;
+﻿using ComputerSimulator.Core.Circuits;
 using ComputerSimulator.Core.Extensions;
 using FluentAssertions;
 using NUnit.Framework;

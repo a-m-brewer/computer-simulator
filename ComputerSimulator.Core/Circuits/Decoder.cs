@@ -1,5 +1,4 @@
 using ComputerSimulator.Core.Extensions;
-using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Parts;
 using ComputerSimulator.Core.Services;
 

@@ -1,5 +1,4 @@
-﻿using ComputerSimulator.Core.Factories;
-using ComputerSimulator.Core.Gates;
+﻿using ComputerSimulator.Core.Gates;
 using ComputerSimulator.Core.Parts;
 using ComputerSimulator.Core.Services;
 

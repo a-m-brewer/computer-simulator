@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ComputerSimulator.Core.Gates;
 using ComputerSimulator.Core.Parts;
 using ComputerSimulator.TestUtilities;
