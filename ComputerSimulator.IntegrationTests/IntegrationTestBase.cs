@@ -72,7 +72,7 @@ public class IntegrationTestBase : HostTestBase
     {
         return _wireRepository.Groups
             .OfType<IWireGroup<T>>()
-            .First(f => Regex.IsMatch(f.Label, regex));
+            .Single(f => Regex.IsMatch(f.Label, regex));
     }
     
     protected List<IWireGroup<T>> GetGroupsMatchingRegex<T>(string regex)
