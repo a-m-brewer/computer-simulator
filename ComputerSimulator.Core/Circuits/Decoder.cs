@@ -1,60 +1,49 @@
 using ComputerSimulator.Core.Extensions;
+using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Parts;
-using ComputerSimulator.Core.Services;
 
 namespace ComputerSimulator.Core.Circuits;
 
 public interface IDecoder : IComponent2
 {
-    /// <summary>
-    /// Initialize the decode e.g passing 3 will make a 3x8 decoder and so on.
-    /// </summary>
-    /// <param name="inputSize">Size of inputs</param>
-    public void Initialize(int inputSize);
-    
     int EnabledIndex { get; }
     
     int OutputSize { get; }
 
-    public IWireGroup<bool> Inputs { get; set; }
+    public IWireGroup<bool> Inputs { get; }
 
-    public IWireGroup<bool> Outputs { get; set; }
+    public IWireGroup<bool> Outputs { get; }
 }
 
 public class Decoder : CircuitBase, IDecoder
 {
-    private bool[][] _truthTable = Array.Empty<bool[]>();
-    private int _inputSize;
-    private IWireGroup<bool> _inputs = DisconnectedWireGroup<bool>.Instance;
+    private readonly bool[][] _truthTable;
 
     public Decoder(
-        IWireService wireService) : base(wireService)
+        IWireGroup<bool> inputs,
+        IWireGroup<bool> outputs,
+        IComponentFactory2 componentFactory,
+        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
     {
-    }
-
-    public void Initialize(int inputSize)
-    {
-        _inputSize = inputSize;
-        OutputSize = (int) Math.Pow(2, inputSize);
+        Inputs = inputs.SubscribeToWireValuesChanged(InputsChanged);
+        OutputSize = CalculateOutputSize(inputs.Count);
+        Outputs = outputs;
 
         _truthTable = GenerateCombinations();
     }
 
-    public int EnabledIndex { get; private set; }
-
-    public int OutputSize { get; private set; }
-
-    public IWireGroup<bool> Inputs
+    public static int CalculateOutputSize(int inputSize)
     {
-        get => _inputs;
-        set
-        {
-            WireGroupHelper.ReSubscribeWireValuesChanged(_inputs, value, InputsChanged);
-            _inputs = value;
-        }
+        return (int) Math.Pow(2, inputSize);
     }
 
-    public IWireGroup<bool> Outputs { get; set; } = DisconnectedWireGroup<bool>.Instance;
+    public int EnabledIndex { get; private set; }
+
+    public int OutputSize { get; }
+
+    public IWireGroup<bool> Inputs { get; }
+
+    public IWireGroup<bool> Outputs { get; }
 
     private void InputsChanged(object? sender, int index)
     {
@@ -62,17 +51,17 @@ public class Decoder : CircuitBase, IDecoder
         {
             var rowOutput = true;
                 
-            for (var col = 0; col < _inputSize; col++)
+            for (var col = 0; col < Inputs.Count; col++)
             {
-                if (_truthTable[row][col] ? _inputs[col].Value : !_inputs[col].Value) continue;
+                if (_truthTable[row][col] ? Inputs.GetValue(col) : !Inputs.GetValue(col)) continue;
                     
                 rowOutput = false;
                 break;
             }
 
-            Outputs[row].Value = rowOutput;
+            Outputs.SetValue(row, rowOutput);
 
-            if (!Outputs[row].Value) continue;
+            if (!Outputs.GetValue(row)) continue;
                 
             EnabledIndex = row;
             break;
@@ -85,14 +74,9 @@ public class Decoder : CircuitBase, IDecoder
 
         for (var i = 0; i < OutputSize; i++)
         {
-            output[i] = i.ToBinaryBools(_inputSize);
+            output[i] = i.ToBinaryBools(Inputs.Count);
         }
 
         return output;
-    }
-
-    public override string ToString()
-    {
-        return $"{string.Join(" ", _inputs.Reverse())} | {string.Join(" ", Outputs.Select(v => v.Value))}";
     }
 }

@@ -18,9 +18,7 @@ public class NotTests : MockBase<Not>
         // Arrange
         var inputWire = Mock.Of<IWire2<bool>>(m => m.Value == input);
         
-        var sut = CreateSut();
-        sut.Input = inputWire;
-        sut.Output = Mock.Of<IWire2<bool>>();
+        var sut = new Not(inputWire, Mock.Of<IWire2<bool>>());
 
         // Act
         Mock.Get(inputWire)

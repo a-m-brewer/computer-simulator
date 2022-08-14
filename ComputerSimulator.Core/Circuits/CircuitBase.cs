@@ -1,36 +1,17 @@
-using ComputerSimulator.Core.Parts;
-using ComputerSimulator.Core.Services;
+using ComputerSimulator.Core.Factories;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public abstract class CircuitBase : ComponentBase2
+public abstract class CircuitBase : ComponentBase2, ICircuit
 {
-    private readonly IWireService _wireService;
+    protected readonly IComponentFactory2 ComponentFactory;
+    protected readonly IWire2Factory2 WireFactory;
 
-    protected CircuitBase(IWireService wireService)
+    protected CircuitBase(
+        IComponentFactory2 componentFactory,
+        IWire2Factory2 wireFactory)
     {
-        _wireService = wireService;
+        ComponentFactory = componentFactory;
+        WireFactory = wireFactory;
     }
-
-    protected IWire2<T> CreateInternalWire<T>(string label, T initialValue)
-    {
-        return _wireService.Create(GenerateLabel(label), initialValue);
-    }
-
-    protected IWireGroup<T> CreateInternalWireGroup<T>(string label)
-    {
-        return _wireService.CreateGroup<T>(GenerateLabel(label));
-    }
-    
-    protected IWireGroup<T> CreateInternalWireGroup<T>(string label, T initialValue)
-    {
-        return _wireService.CreateGroup(GenerateLabel(label), initialValue);
-    }
-    
-    protected IWireGroup<T> CreateInternalWireGroup<T>(string label, T initialValue, int size)
-    {
-        return _wireService.CreateGroup(GenerateLabel(label), initialValue, size);
-    }
-
-    private string GenerateLabel(string label) => $"{GetType().Name}-{Id}-{label}";
 }

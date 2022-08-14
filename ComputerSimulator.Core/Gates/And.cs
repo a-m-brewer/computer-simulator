@@ -4,30 +4,37 @@ namespace ComputerSimulator.Core.Gates;
 
 public interface IAnd : IComponent2
 {
-    IWireGroup<bool> Inputs { get; set; }
-    IWire2<bool> Output { get; set; }
+    IWireGroup<bool> Inputs { get; }
+    IWire2<bool> Output { get; }
 }
 
 public class And : IAnd
 {
-    private IWireGroup<bool> _inputs = DisconnectedWireGroup<bool>.Instance;
-
-    public Guid Id { get; } = Guid.NewGuid();
-
-    public IWireGroup<bool> Inputs
+    public And(
+        IWireGroup<bool> inputs,
+        IWire2<bool> output)
     {
-        get => _inputs;
-        set
-        {
-            WireGroupHelper.ReSubscribeWireValuesChanged(_inputs, value, HandleInputChanged);
-            _inputs = value;
-        }
+        Inputs = inputs.SubscribeToWireValuesChanged(HandleInputChanged);
+        Output = output;
     }
+    
+    public IWireGroup<bool> Inputs { get; }
 
-    public IWire2<bool> Output { get; set; } = DisconnectedWire<bool>.Instance;
+    public IWire2<bool> Output { get; }
     
     private void HandleInputChanged(object? sender, int index)
     {
-        Output.Value = Inputs.All(a => a.Value);
+        for (var i = 0; i < Inputs.Count; i++)
+        {
+            if (Inputs.GetValue(i))
+            {
+                continue;
+            }
+
+            Output.Value = false;
+            return;
+        }
+
+        Output.Value = true;
     }
 }

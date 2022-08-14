@@ -14,11 +14,6 @@ public class MockBase<T> where T : class
         Mocker = new AutoMocker();
     }
 
-    protected T CreateSut()
-    {
-        return Mocker.CreateInstance<T>();
-    }
-    
     protected Mock<TMock> GetMock<TMock>() where TMock : class
     {
         return Mocker.GetMock<TMock>();

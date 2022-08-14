@@ -7,7 +7,8 @@ public static class HostExtensions
 {
     public static IHost BuildHost(this string[] args)
     {
-        var builder = Host.CreateDefaultBuilder(args);
+        var builder = Host.CreateDefaultBuilder(args)
+            .UseDefaultServiceProvider(options => options.ValidateScopes = true);
 
         builder.ConfigureLogging(logging =>
         {

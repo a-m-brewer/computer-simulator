@@ -1,5 +1,4 @@
-﻿using ComputerSimulator.Core.Circuits;
-using FluentAssertions;
+﻿using FluentAssertions;
 using FluentAssertions.Execution;
 using NUnit.Framework;
 
@@ -13,29 +12,26 @@ public class WordTests : IntegrationTestBase
     public void Word_OutputOnlyUpdatesIfSetIsTrue(bool set)
     {
         // Arrange
-        var inputs = CreateTestWireGroup("word-inputs", false);
-        var outputs = CreateTestWireGroup("word-outputs", false);
-        var setWire = CreateTestWire("word-set", false);
-        
-        var sut = GetRequiredService<IWord>();
-        sut.Inputs = inputs;
-        sut.Outputs = outputs;
-        sut.Set = setWire;
+        var inputs = CreateTestWireGroup(false);
+        var outputs = CreateTestWireGroup(false);
+        var setWire = CreateTestWire(false);
+
+        var sut = ComponentFactory.CreateWord(inputs, outputs, setWire);
 
         // Act
         sut.Set.Value = set;
 
-        foreach (var input in sut.Inputs)
+        for (var i = 0; i < sut.Inputs.Count; i++)
         {
-            input.Value = true;
+            sut.Inputs.SetValue(i, true);
         }
         
         // Assert
         using (new AssertionScope())
         {
-            foreach (var output in sut.Outputs)
+            for (var i = 0; i < sut.Outputs.Count; i++)
             {
-                output.Value.Should().Be(set);
+                sut.Outputs.GetValue(i).Should().Be(set);
             }
         }
     }

@@ -1,20 +1,20 @@
-﻿using ComputerSimulator.Core.Gates;
+﻿using ComputerSimulator.Core.Factories;
+using ComputerSimulator.Core.Gates;
 using ComputerSimulator.Core.Parts;
-using ComputerSimulator.Core.Services;
 
 namespace ComputerSimulator.Core.Circuits;
 
 public interface IRamSlot : IComponent2
 {
-    IWire2<bool> Set { get; set; }
+    IWire2<bool> Set { get; }
 
-    IWire2<bool> Enable { get; set; }
+    IWire2<bool> Enable { get; }
 
-    IWire2<bool> X { get; set; }
+    IWire2<bool> X { get; }
 
-    IWire2<bool> Y { get; set; }
+    IWire2<bool> Y { get; }
 
-    IBus Io { get; set; }
+    IBus Io { get; }
 }
 
 public class RamSlot : PartsBase, IRamSlot
@@ -23,67 +23,33 @@ public class RamSlot : PartsBase, IRamSlot
     private readonly IAnd _xAnd;
     private readonly IAnd _setAnd;
     private readonly IAnd _enableAnd;
+    // ReSharper disable once NotAccessedField.Local
     private readonly IRegister _register;
-    private IBus _io = DisconnectedBus.Instance;
 
     public RamSlot(
-        IAnd xAnd,
-        IAnd setAnd,
-        IAnd enableAnd,
-        IRegister register,
-        IWireService wireService) : base(wireService)
+        IWire2<bool> x,
+        IWire2<bool> y,
+        IWire2<bool> set,
+        IWire2<bool> enable,
+        IBus io,
+        IComponentFactory2 componentFactory,
+        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
     {
-        _xAnd = xAnd;
-        _xAnd.Inputs = CreateInternalWireGroup<bool>("x-and-input");
-        _xAnd.Output = CreateInternalWire("x-and-output", false);
-
-        _setAnd = setAnd;
-        _setAnd.Inputs = CreateInternalWireGroup<bool>("set-and-input");
-        _setAnd.Inputs.SetWire(0, _xAnd.Output);
-        _setAnd.Output = CreateInternalWire("set-and-output", false);
-
-        _enableAnd = enableAnd;
-        _enableAnd.Inputs = CreateInternalWireGroup<bool>("enable-and-input");
-        _enableAnd.Inputs.SetWire(0, _xAnd.Output);
-        _enableAnd.Output = CreateInternalWire("enable-and-output", false);
-
-        _register = register;
-        _register.Set = _setAnd.Output;
-        _register.Enable = _enableAnd.Output;
+        Io = io;
+        _xAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(x, y), WireFactory.CreateWire(false));
+        _setAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_xAnd.Output, set), WireFactory.CreateWire(false));
+        _enableAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_xAnd.Output, enable), WireFactory.CreateWire(false));
+        
+        _register = ComponentFactory.CreateRegister(_setAnd.Output, _enableAnd.Output, Io, Io);
     }
 
-    public IWire2<bool> Set
-    {
-        get => _setAnd.Inputs[1];
-        set => _setAnd.Inputs.SetWire(1, value);
-    }
+    public IWire2<bool> Set => _setAnd.Inputs.GetWire(1);
 
-    public IWire2<bool> Enable
-    {
-        get => _enableAnd.Inputs[1];
-        set => _enableAnd.Inputs.SetWire(1, value);
-    }
+    public IWire2<bool> Enable => _enableAnd.Inputs.GetWire(1);
 
-    public IWire2<bool> X
-    {
-        get => _xAnd.Inputs[0];
-        set => _xAnd.Inputs.SetWire(0, value);
-    }
+    public IWire2<bool> X => _xAnd.Inputs.GetWire(0);
 
-    public IWire2<bool> Y
-    {
-        get => _xAnd.Inputs[1];
-        set => _xAnd.Inputs.SetWire(1, value);
-    }
+    public IWire2<bool> Y => _xAnd.Inputs.GetWire(1);
 
-    public IBus Io
-    {
-        get => _io;
-        set
-        {
-            _io = value;
-            _register.Outputs = _io;
-            _register.Inputs = _io;
-        }
-    }
+    public IBus Io { get; }
 }

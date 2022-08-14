@@ -1,5 +1,4 @@
-﻿using ComputerSimulator.Core.Circuits;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace ComputerSimulator.IntegrationTests.Circuits;
@@ -14,16 +13,14 @@ public class NAndTests : IntegrationTestBase
     public void NAnd_TruthTableTest(bool a, bool b, bool expected)
     {
         // Arrange
-        var inputs = CreateTestWireGroup("inputs", false, 2);
-        var output = CreateTestWire("output", false);
-        
-        var sut = GetRequiredService<INAnd>();
-        sut.Inputs = inputs;
-        sut.Output = output;
-        
+        var inputs = CreateTestWireGroup(false, 2);
+        var output = CreateTestWire(false);
+
+        var sut = ComponentFactory.CreateNAnd(inputs, output);
+
         // Act
-        inputs[0].Value = a;
-        inputs[1].Value = b;
+        inputs.SetValue(0, a);
+        inputs.SetValue(1, b);
         
         // Assert
         sut.Output.Value.Should().Be(expected);

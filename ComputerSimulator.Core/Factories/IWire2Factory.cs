@@ -4,9 +4,9 @@ namespace ComputerSimulator.Core.Factories;
 
 public interface IWire2Factory2
 {
-    IWire2<T> Create<T>(string label, T initialValue);
-    IWireGroup<T> CreateGroup<T>(string label);
-    IWireGroup<T> CreateGroup<T>(string label, T initialValue);
-    IWireGroup<T> CreateGroup<T>(string label, T initialValue, int size);
-    IBus CreateBus(string label, bool initialValue);
+    IWire2<T> CreateWire<T>(T initialValue);
+    IWireGroup<T> CreateGroup<T>(params IWire2<T>[] wires);
+    IWireGroup<T> CreateGroup<T>(T initialValue);
+    IWireGroup<T> CreateGroup<T>(T initialValue, int size);
+    IBus CreateBus();
 }

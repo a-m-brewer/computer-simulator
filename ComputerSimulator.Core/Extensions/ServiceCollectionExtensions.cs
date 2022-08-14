@@ -1,7 +1,5 @@
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Models;
-using ComputerSimulator.Core.Repositories;
-using ComputerSimulator.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ComputerSimulator.Core.Extensions;
@@ -18,12 +16,10 @@ public static class ServiceCollectionExtensions
             .WithTransientLifetime());
 
         services.AddTransient<IComputer, Computer>();
-        services.AddTransient<IWireService, WireService>();
 
-        services.AddSingleton<IWire2Factory2, MessageBrokerWireFactory>();
-        services.AddSingleton<IComponentFactory2, ComponentFactory2>();
-        services.AddScoped<IWireRepository, WireRepository>();
-
+        services.AddSingleton<IWire2Factory2, WireFactory>();
+        services.AddTransient<IComponentFactory2, ComponentFactory2>();
+        
         services.AddSingleton(computerSettings);
 
         return services;

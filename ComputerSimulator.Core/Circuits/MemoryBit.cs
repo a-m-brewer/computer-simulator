@@ -1,94 +1,54 @@
-﻿using ComputerSimulator.Core.Parts;
-using ComputerSimulator.Core.Services;
+﻿using ComputerSimulator.Core.Factories;
+using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
 public interface IMemoryBit : IComponent2
 {
-    public IWire2<bool> Input { get; set; }
+    public IWire2<bool> Input { get; }
 
-    public IWire2<bool> Set { get; set; }
+    public IWire2<bool> Set { get; }
 
-    public IWire2<bool> Output { get; set; }
+    public IWire2<bool> Output { get; }
 }
 
 public class MemoryBit : CircuitBase, IMemoryBit
 {
+    // ReSharper disable once NotAccessedField.Local
     private readonly INAnd _nAnd1;
+    // ReSharper disable once NotAccessedField.Local
     private readonly INAnd _nAnd2;
+    // ReSharper disable once NotAccessedField.Local
     private readonly INAnd _nAnd3;
+    // ReSharper disable once NotAccessedField.Local
     private readonly INAnd _nAnd4;
-    
-    // External Wires
-    private IWire2<bool> _input = DisconnectedWire<bool>.Instance;
-    private IWire2<bool> _set = DisconnectedWire<bool>.Instance;
-    private IWire2<bool> _output = DisconnectedWire<bool>.Instance;
 
     public MemoryBit(
-        INAnd nAnd1,
-        INAnd nAnd2,
-        INAnd nAnd3,
-        INAnd nAnd4,
-        IWireService wireService)
-    : base(wireService)
+        IWire2<bool> input,
+        IWire2<bool> set,
+        IWire2<bool> output,
+        IComponentFactory2 componentFactory,
+        IWire2Factory2 wireFactory)
+    : base(componentFactory, wireFactory)
     {
-        _nAnd1 = nAnd1;
-        _nAnd1.Inputs = CreateInternalWireGroup<bool>("nand1-inputs");
+        Input = input;
+        Output = output;
+        Set = set;
         
-        _nAnd2 = nAnd2;
-        _nAnd2.Inputs = CreateInternalWireGroup<bool>("nand2-inputs");
+        var a = WireFactory.CreateWire(false);
+        var b = WireFactory.CreateWire(false);
+        var c = WireFactory.CreateWire(false);
         
-        _nAnd3 = nAnd3;
-        _nAnd3.Inputs = CreateInternalWireGroup<bool>("nand3-inputs");
         
-        _nAnd4 = nAnd4;
-        _nAnd4.Inputs = CreateInternalWireGroup<bool>("nand4-inputs");
-
-        var a = CreateInternalWire("a", false);
-        var b = CreateInternalWire("b", false);
-        var c = CreateInternalWire("c", false);
-
-        _nAnd1.Output = a;
-
-        _nAnd2.Inputs.SetWire(0, a);
-        _nAnd2.Output = b;
-        
-        _nAnd3.Inputs.SetWire(0, a);
-        _nAnd3.Inputs.SetWire(1, c);
-
-        _nAnd4.Inputs.SetWire(1, b);
-        _nAnd4.Output = c;
+        _nAnd1 = ComponentFactory.CreateNAnd(WireFactory.CreateGroup(Input, Set), a);
+        _nAnd2 = ComponentFactory.CreateNAnd(WireFactory.CreateGroup(a, Set), b);
+        _nAnd3 = ComponentFactory.CreateNAnd(WireFactory.CreateGroup(a, c), Output);
+        _nAnd4 = ComponentFactory.CreateNAnd(WireFactory.CreateGroup(Output, b), c);
     }
     
-    public IWire2<bool> Input
-    {
-        get => _input;
-        set
-        {
-            _input = value;
-            _nAnd1.Inputs.SetWire(0, _input);
-        }
-    }
+    public IWire2<bool> Input { get; }
 
-    public IWire2<bool> Set
-    {
-        get => _set;
-        set
-        {
-            _set = value;
-            _nAnd1.Inputs.SetWire(1, _set);
-            _nAnd2.Inputs.SetWire(1, _set);
-        }
-    }
+    public IWire2<bool> Set { get; }
 
-    public IWire2<bool> Output
-    {
-        get => _output;
-        set
-        {
-            _output = value;
-            _nAnd3.Output = _output;
-            _nAnd4.Inputs.SetWire(0, _output);
-        }
-    }
+    public IWire2<bool> Output { get; }
 }

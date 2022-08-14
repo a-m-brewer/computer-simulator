@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ComputerSimulator.Core.Circuits;
 using ComputerSimulator.Core.Parts;
 using ComputerSimulator.TestUtilities;
 using FluentAssertions;
@@ -17,29 +16,26 @@ public class EnablerTests : IntegrationTestBase
     public void Enabler_OutputOnlyUpdatesIfEnableIsTrue(bool enable)
     {
         // Arrange
-        var inputs = CreateTestWireGroup("enabler-inputs", false);
-        var outputs = CreateTestWireGroup("enabler-outputs", false);
-        var enableWire = CreateTestWire("enabler-wire", false);
-        
-        var sut = GetRequiredService<IEnabler>();
-        sut.Inputs = inputs;
-        sut.Outputs = outputs;
-        sut.Enable = enableWire;
+        var inputs = CreateTestWireGroup(false);
+        var outputs = CreateTestWireGroup(false);
+        var enableWire = CreateTestWire(false);
+
+        var sut = ComponentFactory.CreateEnabler(enableWire, inputs, outputs);
 
         // Act
         sut.Enable.Value = enable;
 
-        foreach (var input in sut.Inputs)
+        for (var i = 0; i < sut.Inputs.Count; i++)
         {
-            input.Value = true;
+            sut.Inputs.SetValue(i, true);
         }
         
         // Assert
         using (new AssertionScope())
         {
-            foreach (var output in sut.Outputs)
+            for (var i = 0; i < sut.Outputs.Count; i++)
             {
-                output.Value.Should().Be(enable);
+                sut.Outputs.GetValue(i).Should().Be(enable);
             }
         }
     }
@@ -50,7 +46,7 @@ public class EnablerTests : IntegrationTestBase
     public void Enabler_EnableNotSet_DoesNotRaiseEventsForInputs(bool enable)
     {
         // Arrange
-        var inputs = CreateTestWireGroup("enabler-inputs", false);
+        var inputs = CreateTestWireGroup(false);
 
         var outputWire0 = new Mock<IWire2<bool>>(); 
         
@@ -65,19 +61,16 @@ public class EnablerTests : IntegrationTestBase
         }
 
         var outputs = new Mock<IWireGroup<bool>>();
-        outputs.SetupListMock(outputWires);
+        outputs.SetupWireGroupMock(outputWires);
         
-        var enableWire = CreateTestWire("enabler-wire", false);
+        var enableWire = CreateTestWire( false);
         
-        var sut = GetRequiredService<IEnabler>();
-        sut.Inputs = inputs;
-        sut.Outputs = outputs.Object;
-        sut.Enable = enableWire;
+        var sut = ComponentFactory.CreateEnabler(enableWire, inputs, outputs.Object);
 
         // Act
         sut.Enable.Value = enable;
 
-        inputs[0].Value = true;
+        inputs.SetValue(0, true);
         
         // Assert
         outputWire0.VerifySet(wire2 => wire2.Value = It.IsAny<bool>(), enable ? Times.AtLeastOnce : Times.Never);

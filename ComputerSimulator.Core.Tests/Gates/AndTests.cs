@@ -26,15 +26,12 @@ public class AndTests : MockBase<And>
         
         var wireGroup = GetMock<IWireGroup<bool>>();
         
-        wireGroup.SetupListMock(wires);
+        wireGroup.SetupWireGroupMock(wires);
 
         var output = Mock.Of<IWire2<bool>>();
 
-        var sut = CreateSut();
+        var _ = new And(wireGroup.Object, output);
 
-        sut.Inputs = wireGroup.Object;
-        sut.Output = output;
-        
         // Act
         wireGroup.Raise(r => r.WireValuesChanged += null, null, 1);
         

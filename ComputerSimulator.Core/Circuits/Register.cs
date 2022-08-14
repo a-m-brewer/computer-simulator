@@ -1,17 +1,17 @@
+using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Parts;
-using ComputerSimulator.Core.Services;
 
 namespace ComputerSimulator.Core.Circuits;
 
 public interface IRegister : IComponent2
 {
-    IWire2<bool> Set { get; set; }
+    IWire2<bool> Set { get; }
 
-    IWire2<bool> Enable { get; set; }
+    IWire2<bool> Enable { get; }
 
-    IWireGroup<bool> Inputs { get; set; }
+    IWireGroup<bool> Inputs { get; }
 
-    IWireGroup<bool> Outputs { get; set; }
+    IWireGroup<bool> Outputs { get; }
 }
 
 public class Register : CircuitBase, IRegister
@@ -20,39 +20,24 @@ public class Register : CircuitBase, IRegister
     private readonly IWord _word;
 
     public Register(
-        IEnabler enabler,
-        IWord word,
-        IWireService wireService) : base(wireService)
+        IWire2<bool> set,
+        IWire2<bool> enable,
+        IWireGroup<bool> inputs,
+        IWireGroup<bool> outputs,
+        IComponentFactory2 componentFactory,
+        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
     {
-        _enabler = enabler;
-        _word = word;
+        var internalGroup = WireFactory.CreateGroup(false);
 
-        var internalGroup = CreateInternalWireGroup("word-to-enabler", false);
-        _word.Outputs = internalGroup;
-        _enabler.Inputs = internalGroup;
+        _word = ComponentFactory.CreateWord(inputs, internalGroup, set);
+        _enabler = ComponentFactory.CreateEnabler(enable, internalGroup, outputs);
     }
 
-    public IWire2<bool> Set
-    {
-        get => _word.Set;
-        set => _word.Set = value;
-    }
+    public IWire2<bool> Set => _word.Set;
 
-    public IWire2<bool> Enable
-    {
-        get => _enabler.Enable;
-        set => _enabler.Enable = value;
-    }
+    public IWire2<bool> Enable => _enabler.Enable;
 
-    public IWireGroup<bool> Inputs
-    {
-        get => _word.Inputs;
-        set => _word.Inputs = value;
-    }
+    public IWireGroup<bool> Inputs => _word.Inputs;
 
-    public IWireGroup<bool> Outputs
-    {
-        get => _enabler.Outputs;
-        set => _enabler.Outputs = value;
-    }
+    public IWireGroup<bool> Outputs => _enabler.Outputs;
 }

@@ -8,4 +8,9 @@ public static class WordLengthExtensions
     {
         return new T[settings.WordSize];
     }
+    
+    public static T[] InitArray<T>(this int size)
+    {
+        return new T[size];
+    }
 }

@@ -1,4 +1,3 @@
-using ComputerSimulator.Core.Circuits;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -14,11 +13,8 @@ public class MemoryBitTests : IntegrationTestBase
     public void MemoryGate(bool i, bool s, bool o)
     {
         // Arrange
-        var sut = GetRequiredService<IMemoryBit>();
-        sut.Input = CreateTestWire("memory-bit-input", false);
-        sut.Output = CreateTestWire("memory-bit-output", false);
-        sut.Set = CreateTestWire("memory-bit-set", false);
-        
+        var sut = ComponentFactory.CreateMemoryBit(CreateTestWire(false), CreateTestWire(false), CreateTestWire(false));
+
         // Act
         sut.Input.Value = i;
         sut.Set.Value = s;
@@ -31,10 +27,7 @@ public class MemoryBitTests : IntegrationTestBase
     public void ShouldKeepStateIfSetIfFalse()
     {
         // Arrange
-        var sut = GetRequiredService<IMemoryBit>();
-        sut.Input = CreateTestWire("memory-bit-input", false);
-        sut.Output = CreateTestWire("memory-bit-output", false);
-        sut.Set = CreateTestWire("memory-bit-set", false);
+        var sut = ComponentFactory.CreateMemoryBit(CreateTestWire(false), CreateTestWire(false), CreateTestWire(false));
         
         // Act / Assert
         sut.Set.Value = true;

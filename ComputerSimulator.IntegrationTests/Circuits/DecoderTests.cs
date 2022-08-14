@@ -1,5 +1,4 @@
-﻿using ComputerSimulator.Core.Circuits;
-using ComputerSimulator.Core.Extensions;
+﻿using ComputerSimulator.Core.Extensions;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -15,18 +14,15 @@ public class DecoderTests : IntegrationTestBase
     public void TruthTable2X4(bool i1, bool i0, bool o0, bool o1, bool o2, bool o3)
     {
         const int decoderInputSize = 2;
-        var sut = GetRequiredService<IDecoder>();
-        sut.Initialize(decoderInputSize);
-        sut.Inputs = CreateTestWireGroup("decoder-input", false, decoderInputSize);
-        sut.Outputs = CreateTestWireGroup("decoder-output", false, sut.OutputSize);
+        var sut = ComponentFactory.CreateDecoder(CreateTestWireGroup(false, decoderInputSize));
 
-        sut.Inputs[0].Value = i0;
-        sut.Inputs[1].Value = i1;
+        sut.Inputs.SetValue(0, i0);
+        sut.Inputs.SetValue(1, i1);
 
-        sut.Outputs[0].Value.Should().Be(o0);
-        sut.Outputs[1].Value.Should().Be(o1);
-        sut.Outputs[2].Value.Should().Be(o2);
-        sut.Outputs[3].Value.Should().Be(o3);
+        sut.Outputs.GetValue(0).Should().Be(o0);
+        sut.Outputs.GetValue(1).Should().Be(o1);
+        sut.Outputs.GetValue(2).Should().Be(o2);
+        sut.Outputs.GetValue(3).Should().Be(o3);
     }
     
     [Test]
@@ -39,15 +35,12 @@ public class DecoderTests : IntegrationTestBase
 
             var input = expected.ToBinaryBools(decoderInputSize);
             
-            var sut = GetRequiredService<IDecoder>();
-            sut.Initialize(decoderInputSize);
-            sut.Inputs = CreateTestWireGroup("decoder-input", false, decoderInputSize);
-            sut.Outputs = CreateTestWireGroup("decoder-output", false, sut.OutputSize);
+            var sut = ComponentFactory.CreateDecoder(CreateTestWireGroup(false, decoderInputSize));
 
             // Act
             for (var i = 0; i < input.Length; i++)
             {
-                sut.Inputs[i].Value = input[i];
+                sut.Inputs.SetValue(i, input[i]);
             }
             
             // Assert

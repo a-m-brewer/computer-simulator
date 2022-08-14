@@ -1,43 +1,66 @@
+using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Gates;
+using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
-using ComputerSimulator.Core.Services;
 
 namespace ComputerSimulator.Core.Circuits;
 
 public interface INAnd : IComponent2
 {
-    IWireGroup<bool> Inputs { get; set; }
-    IWire2<bool> Output { get; set; }
+    IWireGroup<bool> Inputs { get; }
+    IWire2<bool> Output { get; }
 }
 
 public class NAnd : CircuitBase, INAnd
 {
+    // ReSharper disable once NotAccessedField.Local
     private readonly IAnd _andGate;
+    // ReSharper disable once NotAccessedField.Local
     private readonly INot _notGate;
 
     public NAnd(
-        IAnd andGate,
-        INot notGate,
-        IWireService wireService)
-    : base(wireService)
+        IWireGroup<bool> inputs,
+        IWire2<bool> output,
+        ComputerSettings computerSettings,
+        IComponentFactory2 componentFactory2,
+        IWire2Factory2 wireFactory)
+    : base(componentFactory2, wireFactory)
     {
-        _andGate = andGate;
-        _notGate = notGate;
+        Inputs = inputs;
+        Output = output;
 
-        var andToNot = CreateInternalWire("and-output-to-not-input", false);
-        _andGate.Output = andToNot;
-        _notGate.Input = andToNot;
+        if (computerSettings.SimulateNAnd)
+        {
+            var andToNot = WireFactory.CreateWire(false);
+            
+            _andGate = ComponentFactory.CreateAnd(Inputs, andToNot);
+            _notGate = ComponentFactory.CreateNot(andToNot, Output);
+        }
+        else
+        {
+            inputs.SubscribeToWireValuesChanged(ValueChanged);
+            _andGate = null!;
+            _notGate = null!;
+        }
     }
 
-    public IWireGroup<bool> Inputs
-    {
-        get => _andGate.Inputs;
-        set => _andGate.Inputs = value;
-    }
+    public IWireGroup<bool> Inputs { get; }
 
-    public IWire2<bool> Output
+    public IWire2<bool> Output { get; }
+    
+    private void ValueChanged(object? sender, int e)
     {
-        get => _notGate.Output;
-        set => _notGate.Output = value;
+        for (var i = 0; i < Inputs.Count; i++)
+        {
+            if (Inputs.GetValue(i))
+            {
+                continue;
+            }
+
+            Output.Value = true;
+            return;
+        }
+
+        Output.Value = false;
     }
 }

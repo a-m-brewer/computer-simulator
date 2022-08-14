@@ -1,6 +1,7 @@
-﻿using ComputerSimulator.Core.Circuits;
+﻿using ComputerSimulator.Core.Parts;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Moq;
 using NUnit.Framework;
 
 namespace ComputerSimulator.IntegrationTests.Circuits;
@@ -11,37 +12,37 @@ public class RegisterTests : IntegrationTestBase
     public void Set_AllowsValueToBeStored()
     {
         // Arrange
-        var sut = GetRequiredService<IRegister>();
-        sut.Set = CreateTestWire("register-set", false);
-        sut.Enable = CreateTestWire("register-enable", false);
-        sut.Inputs = CreateTestWireGroup("register-inputs", false);
-        sut.Outputs = CreateTestWireGroup("register-outputs", false);
+        var sut = ComponentFactory.CreateRegister(
+            CreateTestWire(false),
+            CreateTestWire(false),
+            CreateTestWireGroup(false),
+            CreateTestWireGroup(false));
         
         // Act
         sut.Enable.Value = false;
         sut.Set.Value = true;
 
-        foreach (var input in sut.Inputs)
+        for (var i = 0; i < sut.Inputs.Count; i++)
         {
-            input.Value = true;
+            sut.Inputs.SetValue(i, true);
         }
         
         // Assert
-        var andOutputGroup = GetGroupByLabel<bool>(GetInternalWireLabel(sut, "word-to-enabler"));
+        var andOutputGroup = new Mock<IWireGroup<bool>>().Object;
 
         using (new AssertionScope())
         {
-            foreach (var andOutput in andOutputGroup)
+            for (var i = 0; i < andOutputGroup.Count; i++)
             {
-                andOutput.Value.Should().BeTrue();
+                andOutputGroup.GetValue(i).Should().BeTrue();
             }
         }
 
         using (new AssertionScope())
         {
-            foreach (var registerOutput in sut.Outputs)
+            for (var i = 0; i < sut.Outputs.Count; i++)
             {
-                registerOutput.Value.Should().BeFalse();
+                sut.Outputs.GetValue(i).Should().BeFalse();
             }
         }
     }
@@ -50,26 +51,26 @@ public class RegisterTests : IntegrationTestBase
     public void Enable_AllowsValueToBePassedOn()
     {
         // Arrange
-        var sut = GetRequiredService<IRegister>();
-        sut.Set = CreateTestWire("register-set", false);
-        sut.Enable = CreateTestWire("register-enable", false);
-        sut.Inputs = CreateTestWireGroup("register-inputs", false);
-        sut.Outputs = CreateTestWireGroup("register-outputs", false);
+        var sut = ComponentFactory.CreateRegister(
+            CreateTestWire(false),
+            CreateTestWire(false),
+            CreateTestWireGroup(false),
+            CreateTestWireGroup(false));
         
         // Act
         sut.Enable.Value = false;
         sut.Set.Value = true;
 
-        foreach (var input in sut.Inputs)
+        for (var i = 0; i < sut.Inputs.Count; i++)
         {
-            input.Value = true;
+            sut.Inputs.SetValue(i, true);
         }
 
         using (new AssertionScope())
         {
-            foreach (var registerOutput in sut.Outputs)
+            for (var i = 0; i < sut.Outputs.Count; i++)
             {
-                registerOutput.Value.Should().BeFalse();
+                sut.Outputs.GetValue(i).Should().BeFalse();
             }
         }
 
@@ -78,9 +79,9 @@ public class RegisterTests : IntegrationTestBase
         // Assert
         using (new AssertionScope())
         {
-            foreach (var registerOutput in sut.Outputs)
+            for (var i = 0; i < sut.Outputs.Count; i++)
             {
-                registerOutput.Value.Should().BeTrue();
+                sut.Outputs.GetValue(i).Should().BeTrue();
             }
         }
     }

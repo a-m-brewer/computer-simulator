@@ -1,7 +1,8 @@
-﻿using ComputerSimulator.Core.Circuits;
-using ComputerSimulator.Core.Extensions;
+﻿using ComputerSimulator.Core.Extensions;
+using ComputerSimulator.Core.Parts;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Moq;
 using NUnit.Framework;
 
 namespace ComputerSimulator.IntegrationTests.Circuits;
@@ -25,29 +26,29 @@ public class RamSlotTests : IntegrationTestBase
         var y = truthTable[1];
         var set = truthTable[2];
 
-        var sut = GetRequiredService<IRamSlot>();
-        sut.X = CreateTestWire("ram-slot-x", false);
-        sut.Y = CreateTestWire("ram-slot-y", false);
-        sut.Enable = CreateTestWire("ram-slot-enable", false);
-        sut.Set = CreateTestWire("ram-slot-set", false);
-        sut.Io = CreateTestBus("ram-io-bus", false);
+        var sut = ComponentFactory.CreateRamSlot(
+            CreateTestWire(false),
+            CreateTestWire(false),
+            CreateTestWire(false),
+            CreateTestWire(false),
+            CreateTestBus());
 
         // Act
         sut.X.Value = x;
         sut.Y.Value = y;
         sut.Set.Value = set;
 
-        foreach (var ioWire in sut.Io)
+        for (var i = 0; i < sut.Io.Count; i++)
         {
-            ioWire.Value = true;
+            sut.Io.SetValue(i, true);
         }
 
-        var andOutputGroup = GetFirstGroupMatchingRegex<bool>(@"Register-.+-word-to-enabler");
+        var andOutputGroup = new Mock<IWireGroup<bool>>().Object;
         using (new AssertionScope())
         {
-            foreach (var wire in andOutputGroup)
+            for (var i = 0; i < andOutputGroup.Count; i++)
             {
-                wire.Value.Should().Be(expected);
+                andOutputGroup.GetValue(i).Should().Be(expected);
             }
         }
     }
@@ -57,45 +58,45 @@ public class RamSlotTests : IntegrationTestBase
     {
         // Arrange
 
-        var sut = GetRequiredService<IRamSlot>();
-        sut.X = CreateTestWire("ram-slot-x", false);
-        sut.Y = CreateTestWire("ram-slot-y", false);
-        sut.Enable = CreateTestWire("ram-slot-enable", false);
-        sut.Set = CreateTestWire("ram-slot-set", false);
-        sut.Io = CreateTestBus("ram-io-bus", false);
+        var sut = ComponentFactory.CreateRamSlot(
+            CreateTestWire(false),
+            CreateTestWire(false),
+            CreateTestWire(false),
+            CreateTestWire(false),
+            CreateTestBus());
 
         // Act
         sut.X.Value = true;
         sut.Y.Value = true;
         sut.Set.Value = true;
 
-        foreach (var ioWire in sut.Io)
+        for (var i = 0; i < sut.Io.Count; i++)
         {
-            ioWire.Value = true;
+            sut.Io.SetValue(i, true);
         }
 
         sut.Set.Value = false;
 
-        foreach (var ioWire in sut.Io)
+        for (var i = 0; i < sut.Io.Count; i++)
         {
-            ioWire.Value = false;
+            sut.Io.SetValue(i, false);
         }
 
-        var andOutputGroup = GetFirstGroupMatchingRegex<bool>(@"Register-.+-word-to-enabler");
+        var andOutputGroup = new Mock<IWireGroup<bool>>().Object;
 
         using (new AssertionScope())
         {
-            foreach (var wire in andOutputGroup)
+            for (var i = 0; i < andOutputGroup.Count; i++)
             {
-                wire.Value.Should().Be(true);
+                andOutputGroup.GetValue(i).Should().Be(true);
             }
         }
 
         using (new AssertionScope())
         {
-            foreach (var ioWire in sut.Io)
+            for (var i = 0; i < sut.Io.Count; i++)
             {
-                ioWire.Value.Should().BeFalse();
+                sut.Io.GetValue(i).Should().BeFalse();
             }
         }
 
@@ -103,9 +104,9 @@ public class RamSlotTests : IntegrationTestBase
 
         using (new AssertionScope())
         {
-            foreach (var ioWire in sut.Io)
+            for (var i = 0; i < sut.Io.Count; i++)
             {
-                ioWire.Value.Should().BeTrue();
+                sut.Io.GetValue(i).Should().BeTrue();
             }
         }
     }

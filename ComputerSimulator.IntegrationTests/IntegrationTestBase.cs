@@ -1,95 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using ComputerSimulator.Core;
+﻿using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
-using ComputerSimulator.Core.Repositories;
-using ComputerSimulator.Core.Services;
 using NUnit.Framework;
 
 namespace ComputerSimulator.IntegrationTests;
 
 public class IntegrationTestBase : HostTestBase
 {
-    private IWireService _wireService = null!;
-    private IWireRepository _wireRepository = null!;
+    private IWire2Factory2 _wireFactory = null!;
 
     [SetUp]
     public void IntegrationSetUp()
     {
         ComputerSettings = GetRequiredService<ComputerSettings>();
-        _wireService = GetRequiredService<IWireService>();
-        _wireRepository = GetRequiredService<IWireRepository>();
+        _wireFactory = GetRequiredService<IWire2Factory2>();
+        ComponentFactory = GetRequiredService<IComponentFactory2>();
     }
 
     [TearDown]
     public void IntergrationTearDown()
     {
         ComputerSettings = null!;
-        _wireService = null!;
-        _wireRepository = null!;
+        _wireFactory = null!;
+        ComponentFactory = null!;
     }
 
     protected ComputerSettings ComputerSettings { get; private set; } = null!;
+    protected IComponentFactory2 ComponentFactory { get; private set; } = null!;
     
-    protected IWire2<T> CreateTestWire<T>(string label, T initialValue)
+    protected IWire2<T> CreateTestWire<T>(T initialValue)
     {
-        return _wireService.Create($"{Guid.NewGuid()}-{label}", initialValue);
+        return _wireFactory.CreateWire(initialValue);
     }
 
-    protected IWireGroup<T> CreateTestWireGroup<T>(string label, T initialValue)
+    protected IWireGroup<T> CreateTestWireGroup<T>(T initialValue)
     {
-        return CreateTestWireGroup(label, initialValue, ComputerSettings.WordSize);
+        return CreateTestWireGroup(initialValue, ComputerSettings.WordSize);
     }
 
-    protected IWireGroup<T> CreateTestWireGroup<T>(string label, T initialValue, int size)
+    protected IWireGroup<T> CreateTestWireGroup<T>(T initialValue, int size)
     {
-        return _wireService.CreateGroup($"{Guid.NewGuid()}-{label}", initialValue, size);
+        return _wireFactory.CreateGroup(initialValue, size);
     }
 
-    protected IBus CreateTestBus(string label, bool initialValue)
+    protected IBus CreateTestBus()
     {
-        return _wireService.CreateBus($"{Guid.NewGuid()}-{label}", initialValue);
-    }
-
-    protected IWire2<T> GetWireByLabel<T>(string label)
-    {
-        return _wireRepository.Wires
-            .OfType<IWire2<T>>()
-            .First(f => f.Label == label);
-    }
-
-    protected IWireGroup<T> GetGroupByLabel<T>(string label)
-    {
-        return _wireRepository.Groups
-            .OfType<IWireGroup<T>>()
-            .First(f => f.Label == label);
-    }
-
-    protected IWireGroup<T> GetFirstGroupMatchingRegex<T>(string regex)
-    {
-        return _wireRepository.Groups
-            .OfType<IWireGroup<T>>()
-            .Single(f => Regex.IsMatch(f.Label, regex));
-    }
-    
-    protected List<IWireGroup<T>> GetGroupsMatchingRegex<T>(string regex)
-    {
-        return _wireRepository.Groups
-            .OfType<IWireGroup<T>>()
-            .Where(f => Regex.IsMatch(f.Label, regex))
-            .ToList();
-    }
-
-    protected static string GetInternalWireLabel(IComponent2 component, string subLabel)
-    {
-        return $"{component.GetType().Name}-{component.Id}-{subLabel}";
-    }
-    
-    protected static string GetInternalWireLabel(IBus component, string subLabel)
-    {
-        return $"{component.GetType().Name}-{component.Id}-{subLabel}";
+        return _wireFactory.CreateBus();
     }
 }
