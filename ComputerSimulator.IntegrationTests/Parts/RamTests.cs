@@ -26,8 +26,9 @@ public class RamTests : IntegrationTestBase
             CreateTestWire(false),
             CreateTestWire(false),
             CreateTestBus());
-        Console.WriteLine($"Ram took {sw.ElapsedMilliseconds}");
+        Console.WriteLine($"Ram took {sw.ElapsedMilliseconds}ms to construct");
 
+        var startUpdate = sw.ElapsedMilliseconds;
         // Put address into MAR bus
         for (var i = 0; i < ramAddressInBools.Length; i++)
         {
@@ -53,6 +54,8 @@ public class RamTests : IntegrationTestBase
         sut.Set.Value = true;
         // Stop any new values being stored.
         sut.Set.Value = false;
+        
+        Console.WriteLine($"Ram took {sw.ElapsedMilliseconds - startUpdate}ms to run");
         
         // Clear the bus
         for (var i = 0; i < ComputerSettings.WordSize; i++)
