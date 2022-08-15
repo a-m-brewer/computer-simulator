@@ -1,7 +1,8 @@
-﻿using ComputerSimulator.Core.Factories;
+﻿using ComputerSimulator.Core.Circuits;
+using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Parts;
 
-namespace ComputerSimulator.Core.Circuits;
+namespace ComputerSimulator.Core.Gates;
 
 public interface INAnd2 : ICircuit
 {

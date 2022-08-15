@@ -16,6 +16,8 @@ public interface IComponentFactory2
     INAnd CreateNAnd(IWireGroup<bool> inputs, IWire2<bool> output);
     INAnd2 CreateNAnd2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output);
 
+    IOr2 CreateOr2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output);
+
     IEnabler CreateEnabler(IWire2<bool> enable, IWireGroup<bool> inputs, IWireGroup<bool> outputs);
 
     IWord CreateWord(IWireGroup<bool> inputs, IWireGroup<bool> outputs, IWire2<bool> set);
@@ -70,6 +72,11 @@ public class ComponentFactory2 : IComponentFactory2
     public INAnd2 CreateNAnd2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output)
     {
         return new NAnd2(inputA, inputB, output, this, _wireFactory);
+    }
+
+    public IOr2 CreateOr2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output)
+    {
+        return new Or2(inputA, inputB, output);
     }
 
     public IEnabler CreateEnabler(IWire2<bool> enable, IWireGroup<bool> inputs, IWireGroup<bool> outputs)
