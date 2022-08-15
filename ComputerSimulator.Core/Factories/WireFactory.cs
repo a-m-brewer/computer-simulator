@@ -16,7 +16,7 @@ public class WireFactory : IWire2Factory2
     
     public IWire2<T> CreateWire<T>(T initialValue)
     {
-        return new EventWire<T>(initialValue);
+        return new Wire<T>(initialValue);
     }
 
     public IWireGroup<T> CreateGroup<T>(params IWire2<T>[] wires)

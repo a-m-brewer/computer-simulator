@@ -9,17 +9,15 @@ public interface IWire2<T> : IWire2
     T Value { get; set; }
 }
 
-public class EventWire<T> : IWire2<T>
+public class Wire<T> : IWire2<T>
 {
     private T _value;
     private bool _valueSet;
 
-    public EventWire(T value)
+    public Wire(T value)
     {
         _value = value;
     }
-
-    public event EventHandler? ValueChanged;
 
     public T Value
     {
@@ -33,7 +31,6 @@ public class EventWire<T> : IWire2<T>
 
             _valueSet = true;
             _value = value;
-            ValueChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }
