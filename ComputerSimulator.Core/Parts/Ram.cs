@@ -49,11 +49,11 @@ public class Ram : PartsBase, IRam
 
         var decoderX = ComponentFactory.CreateDecoder(WireFactory.CreateGroup(decoderInputSize
             .InitArray<IWire2<bool>>()
-            .Fill(i => _mar.Outputs.GetWire(i))));
+            .Fill(i => _mar.Outputs[i])));
         
         var decoderY = ComponentFactory.CreateDecoder(WireFactory.CreateGroup(decoderInputSize
             .InitArray<IWire2<bool>>()
-            .Fill(i => _mar.Outputs.GetWire(i + decoderInputSize))));
+            .Fill(i => _mar.Outputs[i + decoderInputSize])));
 
         _slots = new IRamSlot[decoderY.OutputSize][];
         for (var y = 0; y < decoderY.OutputSize; y++)
@@ -61,7 +61,7 @@ public class Ram : PartsBase, IRam
             _slots[y] = new IRamSlot[decoderX.OutputSize];
             for (var x = 0; x < decoderX.OutputSize; x++)
             {
-                _slots[y][x] = ComponentFactory.CreateRamSlot(decoderX.Outputs.GetWire(x), decoderY.Outputs.GetWire(y), Set, Enable, Io);
+                _slots[y][x] = ComponentFactory.CreateRamSlot(decoderX.Outputs[x], decoderY.Outputs[y], Set, Enable, Io);
             }
         }
     }

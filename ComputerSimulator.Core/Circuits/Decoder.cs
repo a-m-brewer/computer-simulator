@@ -53,15 +53,15 @@ public class Decoder : CircuitBase, IDecoder
                 
             for (var col = 0; col < Inputs.Count; col++)
             {
-                if (_truthTable[row][col] ? Inputs.GetValue(col) : !Inputs.GetValue(col)) continue;
+                if (_truthTable[row][col] ? Inputs[col].Value : !Inputs[col].Value) continue;
                     
                 rowOutput = false;
                 break;
             }
 
-            Outputs.SetValue(row, rowOutput);
+            Outputs[row].Value = rowOutput;
 
-            if (!Outputs.GetValue(row)) continue;
+            if (!Outputs[row].Value) continue;
                 
             EnabledIndex = row;
             break;

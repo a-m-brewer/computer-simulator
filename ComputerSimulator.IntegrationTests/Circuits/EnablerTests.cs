@@ -27,7 +27,7 @@ public class EnablerTests : IntegrationTestBase
 
         for (var i = 0; i < sut.Inputs.Count; i++)
         {
-            sut.Inputs.SetValue(i, true);
+            sut.Inputs[i].Value = true;
         }
         
         // Assert
@@ -35,7 +35,7 @@ public class EnablerTests : IntegrationTestBase
         {
             for (var i = 0; i < sut.Outputs.Count; i++)
             {
-                sut.Outputs.GetValue(i).Should().Be(enable);
+                sut.Outputs[i].Value.Should().Be(enable);
             }
         }
     }
@@ -61,7 +61,7 @@ public class EnablerTests : IntegrationTestBase
         }
 
         var outputs = new Mock<IWireGroup<bool>>();
-        outputs.SetupWireGroupMock(outputWires);
+        outputs.SetupListMock(outputWires);
         
         var enableWire = CreateTestWire( false);
         
@@ -70,7 +70,7 @@ public class EnablerTests : IntegrationTestBase
         // Act
         sut.Enable.Value = enable;
 
-        inputs.SetValue(0, true);
+        inputs[0].Value = true;
         
         // Assert
         outputWire0.VerifySet(wire2 => wire2.Value = It.IsAny<bool>(), enable ? Times.AtLeastOnce : Times.Never);

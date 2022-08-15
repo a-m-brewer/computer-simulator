@@ -16,13 +16,13 @@ public class DecoderTests : IntegrationTestBase
         const int decoderInputSize = 2;
         var sut = ComponentFactory.CreateDecoder(CreateTestWireGroup(false, decoderInputSize));
 
-        sut.Inputs.SetValue(0, i0);
-        sut.Inputs.SetValue(1, i1);
+        sut.Inputs[0].Value = i0;
+        sut.Inputs[1].Value = i1;
 
-        sut.Outputs.GetValue(0).Should().Be(o0);
-        sut.Outputs.GetValue(1).Should().Be(o1);
-        sut.Outputs.GetValue(2).Should().Be(o2);
-        sut.Outputs.GetValue(3).Should().Be(o3);
+        sut.Outputs[0].Value.Should().Be(o0);
+        sut.Outputs[1].Value.Should().Be(o1);
+        sut.Outputs[2].Value.Should().Be(o2);
+        sut.Outputs[3].Value.Should().Be(o3);
     }
     
     [Test]
@@ -40,7 +40,7 @@ public class DecoderTests : IntegrationTestBase
             // Act
             for (var i = 0; i < input.Length; i++)
             {
-                sut.Inputs.SetValue(i, input[i]);
+                sut.Inputs[i].Value = input[i];
             }
             
             // Assert

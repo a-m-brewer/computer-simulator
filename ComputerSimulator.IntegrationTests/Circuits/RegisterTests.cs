@@ -24,7 +24,7 @@ public class RegisterTests : IntegrationTestBase
 
         for (var i = 0; i < sut.Inputs.Count; i++)
         {
-            sut.Inputs.SetValue(i, true);
+            sut.Inputs[i].Value = true;
         }
         
         // Assert
@@ -34,7 +34,7 @@ public class RegisterTests : IntegrationTestBase
         {
             for (var i = 0; i < andOutputGroup.Count; i++)
             {
-                andOutputGroup.GetValue(i).Should().BeTrue();
+                andOutputGroup[i].Value.Should().BeTrue();
             }
         }
 
@@ -42,7 +42,7 @@ public class RegisterTests : IntegrationTestBase
         {
             for (var i = 0; i < sut.Outputs.Count; i++)
             {
-                sut.Outputs.GetValue(i).Should().BeFalse();
+                sut.Outputs[i].Value.Should().BeFalse();
             }
         }
     }
@@ -63,14 +63,14 @@ public class RegisterTests : IntegrationTestBase
 
         for (var i = 0; i < sut.Inputs.Count; i++)
         {
-            sut.Inputs.SetValue(i, true);
+            sut.Inputs[i].Value = true;
         }
 
         using (new AssertionScope())
         {
             for (var i = 0; i < sut.Outputs.Count; i++)
             {
-                sut.Outputs.GetValue(i).Should().BeFalse();
+                sut.Outputs[i].Value.Should().BeFalse();
             }
         }
 
@@ -81,7 +81,7 @@ public class RegisterTests : IntegrationTestBase
         {
             for (var i = 0; i < sut.Outputs.Count; i++)
             {
-                sut.Outputs.GetValue(i).Should().BeTrue();
+                sut.Outputs[i].Value.Should().BeTrue();
             }
         }
     }

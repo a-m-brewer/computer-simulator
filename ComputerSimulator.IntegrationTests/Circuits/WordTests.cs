@@ -23,7 +23,7 @@ public class WordTests : IntegrationTestBase
 
         for (var i = 0; i < sut.Inputs.Count; i++)
         {
-            sut.Inputs.SetValue(i, true);
+            sut.Inputs[i].Value = true;
         }
         
         // Assert
@@ -31,7 +31,7 @@ public class WordTests : IntegrationTestBase
         {
             for (var i = 0; i < sut.Outputs.Count; i++)
             {
-                sut.Outputs.GetValue(i).Should().Be(set);
+                sut.Outputs[i].Value.Should().Be(set);
             }
         }
     }

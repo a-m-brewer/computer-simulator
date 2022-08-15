@@ -52,7 +52,7 @@ public class NAnd : CircuitBase, INAnd
     {
         for (var i = 0; i < Inputs.Count; i++)
         {
-            if (Inputs.GetValue(i))
+            if (Inputs[i].Value)
             {
                 continue;
             }

@@ -43,13 +43,13 @@ public class RamSlot : PartsBase, IRamSlot
         _register = ComponentFactory.CreateRegister(_setAnd.Output, _enableAnd.Output, Io, Io);
     }
 
-    public IWire2<bool> Set => _setAnd.Inputs.GetWire(1);
+    public IWire2<bool> Set => _setAnd.Inputs[1];
 
-    public IWire2<bool> Enable => _enableAnd.Inputs.GetWire(1);
+    public IWire2<bool> Enable => _enableAnd.Inputs[1];
 
-    public IWire2<bool> X => _xAnd.Inputs.GetWire(0);
+    public IWire2<bool> X => _xAnd.Inputs[0];
 
-    public IWire2<bool> Y => _xAnd.Inputs.GetWire(1);
+    public IWire2<bool> Y => _xAnd.Inputs[1];
 
     public IBus Io { get; }
 }

@@ -31,7 +31,7 @@ public class RamTests : IntegrationTestBase
         // Put address into MAR bus
         for (var i = 0; i < ramAddressInBools.Length; i++)
         {
-            sut.MarInputBus.SetValue(i, ramAddressInBools[i]);
+            sut.MarInputBus[i].Value = ramAddressInBools[i];
         }
         
         // Set that address in the MAR
@@ -46,7 +46,7 @@ public class RamTests : IntegrationTestBase
         // Put the value we want to store onto the bus
         for (var i = 0; i < valueToStoreInRamInBools.Length; i++)
         {
-            sut.Io.SetValue(i, valueToStoreInRamInBools[i]);
+            sut.Io[i].Value = valueToStoreInRamInBools[i];
         }
         
         // Store the value in RAM
@@ -57,7 +57,7 @@ public class RamTests : IntegrationTestBase
         // Clear the bus
         for (var i = 0; i < ComputerSettings.WordSize; i++)
         {
-            sut.Io.SetValue(i, false);
+            sut.Io[i].Value = false;
         }
         
         // Double check the bus is empty so the test is valid
@@ -65,7 +65,7 @@ public class RamTests : IntegrationTestBase
         {
             for (var i = 0; i < sut.Io.Count; i++)
             {
-                sut.Io.GetValue(i).Should().BeFalse();
+                sut.Io[i].Value.Should().BeFalse();
             }
         }
         
@@ -79,7 +79,7 @@ public class RamTests : IntegrationTestBase
         {
             for (var i = 0; i < sut.Io.Count; i++)
             {
-                sut.Io.GetValue(i).Should().BeTrue();
+                sut.Io[i].Value.Should().BeTrue();
             }
         }
     }

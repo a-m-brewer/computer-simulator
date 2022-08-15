@@ -1,17 +1,14 @@
+using System.Collections;
+
 namespace ComputerSimulator.Core.Parts;
 
 public interface IWireGroup
 {
     event EventHandler<int> WireValuesChanged;
-
-    int Count { get; }
 }
 
-public interface IWireGroup<T> : IWireGroup
+public interface IWireGroup<T> : IWireGroup, IReadOnlyList<IWire2<T>>
 {
-    IWire2<T> GetWire(int index);
-    T GetValue(int index);
-    void SetValue(int index, T value);
 }
 
 public class WireGroup<T> : IWireGroup<T>
@@ -46,7 +43,20 @@ public class WireGroup<T> : IWireGroup<T>
     }
 
     public event EventHandler<int>? WireValuesChanged;
+
     public int Count => _wires.Count;
+    
+    public IEnumerator<IWire2<T>> GetEnumerator()
+    {
+        return _wires.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public IWire2<T> this[int index] => _wires[index];
 }
 
 public static class WireGroupHelper

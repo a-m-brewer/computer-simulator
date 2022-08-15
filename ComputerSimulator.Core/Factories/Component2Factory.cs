@@ -96,7 +96,7 @@ public class ComponentFactory2 : IComponentFactory2
 
         for (var i = 0; i < _computerSettings.WordSize; i++)
         {
-            memory[i] = CreateMemoryBit(inputs.GetWire(i), outputs.GetWire(i), set);
+            memory[i] = CreateMemoryBit(inputs[i], outputs[i], set);
         }
 
         return memory;

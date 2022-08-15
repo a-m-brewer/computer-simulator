@@ -26,7 +26,7 @@ public class AndTests : MockBase<And>
         
         var wireGroup = GetMock<IWireGroup<bool>>();
         
-        wireGroup.SetupWireGroupMock(wires);
+        wireGroup.SetupListMock(wires);
 
         var output = Mock.Of<IWire2<bool>>();
 

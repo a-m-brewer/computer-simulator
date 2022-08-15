@@ -37,7 +37,7 @@ public class Enabler : CircuitBase, IEnabler
 
         _ands = inputs.Count
             .InitArray<IAnd>()
-            .Fill(i => new And(WireFactory.CreateGroup(Inputs.GetWire(i), Enable), _internalOutput.GetWire(i)));
+            .Fill(i => new And(WireFactory.CreateGroup(Inputs[i], Enable), _internalOutput[i]));
     }
 
     public IWire2<bool> Enable { get; }
@@ -50,7 +50,7 @@ public class Enabler : CircuitBase, IEnabler
     {
         if (Enable.Value)
         {
-            Outputs.SetValue(e, _internalOutput.GetValue(e));
+            Outputs[e].Value = _internalOutput[e].Value;
         }
     }
 }

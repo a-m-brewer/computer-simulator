@@ -19,8 +19,8 @@ public class NAndTests : IntegrationTestBase
         var sut = ComponentFactory.CreateNAnd(inputs, output);
 
         // Act
-        inputs.SetValue(0, a);
-        inputs.SetValue(1, b);
+        inputs[0].Value = a;
+        inputs[1].Value = b;
         
         // Assert
         sut.Output.Value.Should().Be(expected);

@@ -40,7 +40,7 @@ public class RamSlotTests : IntegrationTestBase
 
         for (var i = 0; i < sut.Io.Count; i++)
         {
-            sut.Io.SetValue(i, true);
+            sut.Io[i].Value = true;
         }
 
         var andOutputGroup = new Mock<IWireGroup<bool>>().Object;
@@ -48,7 +48,7 @@ public class RamSlotTests : IntegrationTestBase
         {
             for (var i = 0; i < andOutputGroup.Count; i++)
             {
-                andOutputGroup.GetValue(i).Should().Be(expected);
+                andOutputGroup[i].Value.Should().Be(expected);
             }
         }
     }
@@ -72,14 +72,14 @@ public class RamSlotTests : IntegrationTestBase
 
         for (var i = 0; i < sut.Io.Count; i++)
         {
-            sut.Io.SetValue(i, true);
+            sut.Io[i].Value = true;
         }
 
         sut.Set.Value = false;
 
         for (var i = 0; i < sut.Io.Count; i++)
         {
-            sut.Io.SetValue(i, false);
+            sut.Io[i].Value = false;
         }
 
         var andOutputGroup = new Mock<IWireGroup<bool>>().Object;
@@ -88,7 +88,7 @@ public class RamSlotTests : IntegrationTestBase
         {
             for (var i = 0; i < andOutputGroup.Count; i++)
             {
-                andOutputGroup.GetValue(i).Should().Be(true);
+                andOutputGroup[i].Value.Should().Be(true);
             }
         }
 
@@ -96,7 +96,7 @@ public class RamSlotTests : IntegrationTestBase
         {
             for (var i = 0; i < sut.Io.Count; i++)
             {
-                sut.Io.GetValue(i).Should().BeFalse();
+                sut.Io[i].Value.Should().BeFalse();
             }
         }
 
@@ -106,7 +106,7 @@ public class RamSlotTests : IntegrationTestBase
         {
             for (var i = 0; i < sut.Io.Count; i++)
             {
-                sut.Io.GetValue(i).Should().BeTrue();
+                sut.Io[i].Value.Should().BeTrue();
             }
         }
     }

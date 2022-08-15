@@ -26,7 +26,7 @@ public class And : IAnd
     {
         for (var i = 0; i < Inputs.Count; i++)
         {
-            if (Inputs.GetValue(i))
+            if (Inputs[i].Value)
             {
                 continue;
             }
