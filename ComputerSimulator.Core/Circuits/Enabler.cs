@@ -5,7 +5,7 @@ using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface IEnabler : IComponent2
+public interface IEnabler : ICircuit
 {
     IWire2<bool> Enable { get; }
     IWireGroup<bool> Inputs { get; }
@@ -33,7 +33,6 @@ public class Enabler : CircuitBase, IEnabler
         Outputs = outputs;
         
         _internalOutput = WireFactory.CreateGroup(false);
-        _internalOutput.WireValuesChanged += InternalOutputOnWireValuesChanged;
 
         _ands = inputs.Count
             .InitArray<IAnd>()
@@ -46,11 +45,21 @@ public class Enabler : CircuitBase, IEnabler
 
     public IWireGroup<bool> Outputs { get; }
 
-    private void InternalOutputOnWireValuesChanged(object? sender, int e)
+    public void Update()
     {
-        if (Enable.Value)
+        for (var i = 0; i < _ands.Length; i++)
         {
-            Outputs[e].Value = _internalOutput[e].Value;
+            _ands[i].Update();
+        }
+
+        if (!Enable.Value)
+        {
+            return;
+        }
+        
+        for (var i = 0; i < _internalOutput.Count; i++)
+        {
+            Outputs[i].Value = _internalOutput[i].Value;
         }
     }
 }

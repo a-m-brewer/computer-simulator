@@ -5,7 +5,7 @@ using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface INAnd : IComponent2
+public interface INAnd : ICircuit
 {
     IWireGroup<bool> Inputs { get; }
     IWire2<bool> Output { get; }
@@ -29,38 +29,19 @@ public class NAnd : CircuitBase, INAnd
         Inputs = inputs;
         Output = output;
 
-        if (computerSettings.SimulateNAnd)
-        {
-            var andToNot = WireFactory.CreateWire(false);
+        var andToNot = WireFactory.CreateWire(false);
             
-            _andGate = ComponentFactory.CreateAnd(Inputs, andToNot);
-            _notGate = ComponentFactory.CreateNot(andToNot, Output);
-        }
-        else
-        {
-            inputs.SubscribeToWireValuesChanged(ValueChanged);
-            _andGate = null!;
-            _notGate = null!;
-        }
+        _andGate = ComponentFactory.CreateAnd(Inputs, andToNot);
+        _notGate = ComponentFactory.CreateNot(andToNot, Output);
     }
 
     public IWireGroup<bool> Inputs { get; }
 
     public IWire2<bool> Output { get; }
-    
-    private void ValueChanged(object? sender, int e)
+
+    public void Update()
     {
-        for (var i = 0; i < Inputs.Count; i++)
-        {
-            if (Inputs[i].Value)
-            {
-                continue;
-            }
-
-            Output.Value = true;
-            return;
-        }
-
-        Output.Value = false;
+        _andGate.Update();
+        _notGate.Update();
     }
 }

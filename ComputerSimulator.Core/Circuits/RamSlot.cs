@@ -4,7 +4,7 @@ using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface IRamSlot : IComponent2
+public interface IRamSlot : ICircuit
 {
     IWire2<bool> Set { get; }
 
@@ -15,6 +15,11 @@ public interface IRamSlot : IComponent2
     IWire2<bool> Y { get; }
 
     IBus Io { get; }
+    
+    /// <summary>
+    /// Purely for debug/testing purposes only. Do not use for any actual code
+    /// </summary>
+    bool[] StoredValues { get; }
 }
 
 public class RamSlot : PartsBase, IRamSlot
@@ -52,4 +57,15 @@ public class RamSlot : PartsBase, IRamSlot
     public IWire2<bool> Y => _xAnd.Inputs[1];
 
     public IBus Io { get; }
+
+    public bool[] StoredValues => _register.StoredValues;
+
+    public void Update()
+    {
+        _xAnd.Update();
+        _setAnd.Update();
+        _enableAnd.Update();
+        
+        _register.Update();
+    }
 }

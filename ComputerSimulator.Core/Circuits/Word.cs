@@ -3,7 +3,7 @@ using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface IWord : IComponent2
+public interface IWord : ICircuit
 {
     IWire2<bool> Set { get; }
     
@@ -37,4 +37,12 @@ public class Word : CircuitBase, IWord
     public IWireGroup<bool> Inputs { get; }
 
     public IWireGroup<bool> Outputs { get; }
+
+    public void Update()
+    {
+        for (var i = 0; i < _memory.Length; i++)
+        {
+            _memory[i].Update();
+        }
+    }
 }

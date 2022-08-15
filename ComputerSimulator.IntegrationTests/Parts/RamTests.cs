@@ -10,7 +10,6 @@ namespace ComputerSimulator.IntegrationTests.Parts;
 public class RamTests : IntegrationTestBase
 {
     [Test]
-    // [Ignore("ctor time WIP")]
     public void Ram_CanUpdateBus()
     {
         // Arrange
@@ -37,6 +36,9 @@ public class RamTests : IntegrationTestBase
         
         // Set that address in the MAR
         sut.MarSet.Value = true;
+        
+        sut.Update();
+        
         // Stop any new values coming in
         sut.MarSet.Value = false;
         
@@ -52,6 +54,8 @@ public class RamTests : IntegrationTestBase
         
         // Store the value in RAM
         sut.Set.Value = true;
+        sut.Update();
+        
         // Stop any new values being stored.
         sut.Set.Value = false;
         
@@ -62,6 +66,8 @@ public class RamTests : IntegrationTestBase
         {
             sut.Io[i].Value = false;
         }
+        
+        sut.Update();
         
         // Double check the bus is empty so the test is valid
         using (new AssertionScope())
@@ -74,8 +80,7 @@ public class RamTests : IntegrationTestBase
         
         // Enable the ram so it puts the value we stored onto the bus
         sut.Enable.Value = true;
-        // Turn it off again
-        sut.Enable.Value = false;
+        sut.Update();
         
         // Assert the value has been retrieved
         using (new AssertionScope())

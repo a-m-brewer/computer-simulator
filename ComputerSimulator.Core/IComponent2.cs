@@ -2,4 +2,5 @@
 
 public interface IComponent2
 {
+    void Update();
 }

@@ -22,6 +22,8 @@ public class NAndTests : IntegrationTestBase
         inputs[0].Value = a;
         inputs[1].Value = b;
         
+        sut.Update();
+        
         // Assert
         sut.Output.Value.Should().Be(expected);
     }

@@ -21,8 +21,7 @@ public class NotTests : MockBase<Not>
         var sut = new Not(inputWire, Mock.Of<IWire2<bool>>());
 
         // Act
-        Mock.Get(inputWire)
-            .Raise(m => m.ValueChanged += null, EventArgs.Empty);
+        sut.Update();
         
         // Assert
         sut.Output

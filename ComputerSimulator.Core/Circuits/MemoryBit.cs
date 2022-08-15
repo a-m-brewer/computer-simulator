@@ -3,7 +3,7 @@ using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface IMemoryBit : IComponent2
+public interface IMemoryBit : ICircuit
 {
     public IWire2<bool> Input { get; }
 
@@ -51,4 +51,15 @@ public class MemoryBit : CircuitBase, IMemoryBit
     public IWire2<bool> Set { get; }
 
     public IWire2<bool> Output { get; }
+
+    public void Update()
+    {
+        _nAnd1.Update();
+        _nAnd2.Update();
+        
+        // This is on purpose need to update 4 to compute value of 3
+        _nAnd4.Update();
+        
+        _nAnd3.Update();
+    }
 }

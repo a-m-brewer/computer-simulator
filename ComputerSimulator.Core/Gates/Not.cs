@@ -8,21 +8,21 @@ public interface INot : IComponent2
     IWire2<bool> Output { get; }
 }
 
-public class Not : ComponentBase2, INot
+public class Not : INot
 {
     public Not(
         IWire2<bool> input,
         IWire2<bool> output)
     {
-        Input = input.SubscribeToValueChanged(HandleInputChanged);
+        Input = input;
         Output = output;
     }
     
     public IWire2<bool> Input { get; }
 
     public IWire2<bool> Output { get; }
-    
-    private void HandleInputChanged(object? sender, EventArgs eventArgs)
+
+    public void Update()
     {
         Output.Value = !Input.Value;
     }

@@ -27,14 +27,14 @@ public class RegisterTests : IntegrationTestBase
             sut.Inputs[i].Value = true;
         }
         
+        sut.Update();
+        
         // Assert
-        var andOutputGroup = new Mock<IWireGroup<bool>>().Object;
-
         using (new AssertionScope())
         {
-            for (var i = 0; i < andOutputGroup.Count; i++)
+            for (var i = 0; i < sut.StoredValues.Length; i++)
             {
-                andOutputGroup[i].Value.Should().BeTrue();
+                sut.StoredValues[i].Should().BeTrue();
             }
         }
 
@@ -65,6 +65,8 @@ public class RegisterTests : IntegrationTestBase
         {
             sut.Inputs[i].Value = true;
         }
+        
+        sut.Update();
 
         using (new AssertionScope())
         {
@@ -75,6 +77,8 @@ public class RegisterTests : IntegrationTestBase
         }
 
         sut.Enable.Value = true;
+        
+        sut.Update();
         
         // Assert
         using (new AssertionScope())

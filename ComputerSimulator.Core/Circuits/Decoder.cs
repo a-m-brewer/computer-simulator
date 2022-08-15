@@ -4,7 +4,7 @@ using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface IDecoder : IComponent2
+public interface IDecoder : ICircuit
 {
     int EnabledIndex { get; }
     
@@ -25,7 +25,7 @@ public class Decoder : CircuitBase, IDecoder
         IComponentFactory2 componentFactory,
         IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
     {
-        Inputs = inputs.SubscribeToWireValuesChanged(InputsChanged);
+        Inputs = inputs;
         OutputSize = CalculateOutputSize(inputs.Count);
         Outputs = outputs;
 
@@ -45,7 +45,7 @@ public class Decoder : CircuitBase, IDecoder
 
     public IWireGroup<bool> Outputs { get; }
 
-    private void InputsChanged(object? sender, int index)
+    public void Update()
     {
         for (var row = 0; row < OutputSize; row++)
         {

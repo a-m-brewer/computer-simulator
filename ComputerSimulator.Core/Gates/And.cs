@@ -14,15 +14,15 @@ public class And : IAnd
         IWireGroup<bool> inputs,
         IWire2<bool> output)
     {
-        Inputs = inputs.SubscribeToWireValuesChanged(HandleInputChanged);
+        Inputs = inputs;
         Output = output;
     }
     
     public IWireGroup<bool> Inputs { get; }
 
     public IWire2<bool> Output { get; }
-    
-    private void HandleInputChanged(object? sender, int index)
+
+    public void Update()
     {
         for (var i = 0; i < Inputs.Count; i++)
         {

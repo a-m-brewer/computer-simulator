@@ -5,7 +5,7 @@ using ComputerSimulator.Core.Models;
 
 namespace ComputerSimulator.Core.Parts;
 
-public interface IRam : IComponent2
+public interface IRam : ICircuit
 {
     IBus MarInputBus { get; }
 
@@ -26,6 +26,8 @@ public class Ram : PartsBase, IRam
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private readonly IRamSlot[][] _slots;
     private readonly IRegister _mar;
+    private readonly IDecoder _decoderX;
+    private readonly IDecoder _decoderY;
 
     public Ram(
         IWire2<bool> marSet,
@@ -47,21 +49,21 @@ public class Ram : PartsBase, IRam
 
         var decoderInputSize = computerSettings.WordSize / 2;
 
-        var decoderX = ComponentFactory.CreateDecoder(WireFactory.CreateGroup(decoderInputSize
+        _decoderX = ComponentFactory.CreateDecoder(WireFactory.CreateGroup(decoderInputSize
             .InitArray<IWire2<bool>>()
             .Fill(i => _mar.Outputs[i])));
         
-        var decoderY = ComponentFactory.CreateDecoder(WireFactory.CreateGroup(decoderInputSize
+        _decoderY = ComponentFactory.CreateDecoder(WireFactory.CreateGroup(decoderInputSize
             .InitArray<IWire2<bool>>()
             .Fill(i => _mar.Outputs[i + decoderInputSize])));
 
-        _slots = new IRamSlot[decoderY.OutputSize][];
-        for (var y = 0; y < decoderY.OutputSize; y++)
+        _slots = new IRamSlot[_decoderY.OutputSize][];
+        for (var y = 0; y < _decoderY.OutputSize; y++)
         {
-            _slots[y] = new IRamSlot[decoderX.OutputSize];
-            for (var x = 0; x < decoderX.OutputSize; x++)
+            _slots[y] = new IRamSlot[_decoderX.OutputSize];
+            for (var x = 0; x < _decoderX.OutputSize; x++)
             {
-                _slots[y][x] = ComponentFactory.CreateRamSlot(decoderX.Outputs[x], decoderY.Outputs[y], Set, Enable, Io);
+                _slots[y][x] = ComponentFactory.CreateRamSlot(_decoderX.Outputs[x], _decoderY.Outputs[y], Set, Enable, Io);
             }
         }
     }
@@ -75,4 +77,16 @@ public class Ram : PartsBase, IRam
     public IWire2<bool> Set { get; }
 
     public IWire2<bool> Enable { get; }
+
+    public void Update()
+    {
+        _mar.Update();
+
+        _decoderX.Update();
+        _decoderY.Update();
+        
+        var currSlot = _slots[_decoderY.EnabledIndex][_decoderX.EnabledIndex];
+        
+        currSlot.Update();
+    }
 }

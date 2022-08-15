@@ -18,6 +18,8 @@ public class DecoderTests : IntegrationTestBase
 
         sut.Inputs[0].Value = i0;
         sut.Inputs[1].Value = i1;
+        
+        sut.Update();
 
         sut.Outputs[0].Value.Should().Be(o0);
         sut.Outputs[1].Value.Should().Be(o1);
@@ -42,6 +44,8 @@ public class DecoderTests : IntegrationTestBase
             {
                 sut.Inputs[i].Value = input[i];
             }
+            
+            sut.Update();
             
             // Assert
             sut.EnabledIndex.Should().Be(expected);

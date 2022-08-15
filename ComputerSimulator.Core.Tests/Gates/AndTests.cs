@@ -30,10 +30,10 @@ public class AndTests : MockBase<And>
 
         var output = Mock.Of<IWire2<bool>>();
 
-        var _ = new And(wireGroup.Object, output);
+        var and = new And(wireGroup.Object, output);
 
         // Act
-        wireGroup.Raise(r => r.WireValuesChanged += null, null, 1);
+        and.Update();
         
         // Assert
         output.Value

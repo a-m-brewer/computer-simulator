@@ -26,6 +26,8 @@ public class WordTests : IntegrationTestBase
             sut.Inputs[i].Value = true;
         }
         
+        sut.Update();
+        
         // Assert
         using (new AssertionScope())
         {

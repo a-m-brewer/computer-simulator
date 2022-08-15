@@ -2,7 +2,6 @@ namespace ComputerSimulator.Core.Parts;
 
 public interface IWire2
 {
-    event EventHandler ValueChanged;
 }
 
 public interface IWire2<T> : IWire2
@@ -36,14 +35,5 @@ public class EventWire<T> : IWire2<T>
             _value = value;
             ValueChanged?.Invoke(this, EventArgs.Empty);
         }
-    }
-}
-
-public static class WireHelper
-{
-    public static IWire2<T> SubscribeToValueChanged<T>(this IWire2<T> wire, EventHandler handler)
-    {
-        wire.ValueChanged += handler;
-        return wire;
     }
 }

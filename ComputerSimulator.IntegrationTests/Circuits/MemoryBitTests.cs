@@ -19,6 +19,8 @@ public class MemoryBitTests : IntegrationTestBase
         sut.Input.Value = i;
         sut.Set.Value = s;
 
+        sut.Update();
+        
         // Assert
         sut.Output.Value.Should().Be(o);
     }
@@ -32,11 +34,15 @@ public class MemoryBitTests : IntegrationTestBase
         // Act / Assert
         sut.Set.Value = true;
         sut.Input.Value = true;
+        
+        sut.Update();
 
         sut.Output.Value.Should().BeTrue();
         
         sut.Set.Value = false;
         sut.Input.Value = false;
+        
+        sut.Update();
 
         sut.Output.Value.Should().BeTrue();
     }

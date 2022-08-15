@@ -30,6 +30,8 @@ public class EnablerTests : IntegrationTestBase
             sut.Inputs[i].Value = true;
         }
         
+        sut.Update();
+        
         // Assert
         using (new AssertionScope())
         {
@@ -71,6 +73,8 @@ public class EnablerTests : IntegrationTestBase
         sut.Enable.Value = enable;
 
         inputs[0].Value = true;
+        
+        sut.Update();
         
         // Assert
         outputWire0.VerifySet(wire2 => wire2.Value = It.IsAny<bool>(), enable ? Times.AtLeastOnce : Times.Never);
