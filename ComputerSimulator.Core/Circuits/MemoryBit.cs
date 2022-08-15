@@ -15,13 +15,13 @@ public interface IMemoryBit : ICircuit
 public class MemoryBit : CircuitBase, IMemoryBit
 {
     // ReSharper disable once NotAccessedField.Local
-    private readonly INAnd _nAnd1;
+    private readonly INAnd2 _nAnd1;
     // ReSharper disable once NotAccessedField.Local
-    private readonly INAnd _nAnd2;
+    private readonly INAnd2 _nAnd2;
     // ReSharper disable once NotAccessedField.Local
-    private readonly INAnd _nAnd3;
+    private readonly INAnd2 _nAnd3;
     // ReSharper disable once NotAccessedField.Local
-    private readonly INAnd _nAnd4;
+    private readonly INAnd2 _nAnd4;
 
     public MemoryBit(
         IWire2<bool> input,
@@ -40,10 +40,10 @@ public class MemoryBit : CircuitBase, IMemoryBit
         var c = WireFactory.CreateWire(false);
         
         
-        _nAnd1 = ComponentFactory.CreateNAnd(WireFactory.CreateGroup(Input, Set), a);
-        _nAnd2 = ComponentFactory.CreateNAnd(WireFactory.CreateGroup(a, Set), b);
-        _nAnd3 = ComponentFactory.CreateNAnd(WireFactory.CreateGroup(a, c), Output);
-        _nAnd4 = ComponentFactory.CreateNAnd(WireFactory.CreateGroup(Output, b), c);
+        _nAnd1 = ComponentFactory.CreateNAnd2(Input, Set, a);
+        _nAnd2 = ComponentFactory.CreateNAnd2(a, Set, b);
+        _nAnd3 = ComponentFactory.CreateNAnd2(a, c, Output);
+        _nAnd4 = ComponentFactory.CreateNAnd2(Output, b, c);
     }
     
     public IWire2<bool> Input { get; }

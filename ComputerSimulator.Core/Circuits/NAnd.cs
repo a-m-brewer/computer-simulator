@@ -1,6 +1,5 @@
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Gates;
-using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
@@ -21,7 +20,6 @@ public class NAnd : CircuitBase, INAnd
     public NAnd(
         IWireGroup<bool> inputs,
         IWire2<bool> output,
-        ComputerSettings computerSettings,
         IComponentFactory2 componentFactory2,
         IWire2Factory2 wireFactory)
     : base(componentFactory2, wireFactory)

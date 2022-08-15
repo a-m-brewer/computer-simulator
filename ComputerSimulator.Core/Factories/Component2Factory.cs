@@ -9,10 +9,12 @@ namespace ComputerSimulator.Core.Factories;
 public interface IComponentFactory2
 {
     IAnd CreateAnd(IWireGroup<bool> inputs, IWire2<bool> output);
+    IAnd2 CreateAnd2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output);
 
     INot CreateNot(IWire2<bool> input, IWire2<bool> output);
 
     INAnd CreateNAnd(IWireGroup<bool> inputs, IWire2<bool> output);
+    INAnd2 CreateNAnd2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output);
 
     IEnabler CreateEnabler(IWire2<bool> enable, IWireGroup<bool> inputs, IWireGroup<bool> outputs);
 
@@ -50,6 +52,11 @@ public class ComponentFactory2 : IComponentFactory2
         return new And(inputs, output);
     }
 
+    public IAnd2 CreateAnd2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output)
+    {
+        return new And2(inputA, inputB, output);
+    }
+
     public INot CreateNot(IWire2<bool> input, IWire2<bool> output)
     {
         return new Not(input, output);
@@ -57,7 +64,12 @@ public class ComponentFactory2 : IComponentFactory2
 
     public INAnd CreateNAnd(IWireGroup<bool> inputs, IWire2<bool> output)
     {
-        return new NAnd(inputs, output, _computerSettings, this, _wireFactory);
+        return new NAnd(inputs, output, this, _wireFactory);
+    }
+
+    public INAnd2 CreateNAnd2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output)
+    {
+        return new NAnd2(inputA, inputB, output, this, _wireFactory);
     }
 
     public IEnabler CreateEnabler(IWire2<bool> enable, IWireGroup<bool> inputs, IWireGroup<bool> outputs)
