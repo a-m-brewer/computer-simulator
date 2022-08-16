@@ -9,4 +9,6 @@ public interface IWire2Factory2
     IWireGroup<T> CreateGroup<T>(T initialValue);
     IWireGroup<T> CreateGroup<T>(T initialValue, int size);
     IBus CreateBus();
+    // A wire that is always true
+    IWire2<bool> PowerWire { get; }
 }

@@ -2,7 +2,7 @@
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface IShifter
+public interface IShifter : ICircuit
 {
     IWire2<bool> ShiftIn { get; }
 

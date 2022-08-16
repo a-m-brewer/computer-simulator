@@ -7,6 +7,7 @@ namespace ComputerSimulator.Core.Factories;
 public class WireFactory : IWire2Factory2
 {
     private readonly ComputerSettings _computerSettings;
+    private static readonly IWire2<bool> _powerWire = new Wire<bool>(true);
 
     public WireFactory(
         ComputerSettings computerSettings)
@@ -33,6 +34,8 @@ public class WireFactory : IWire2Factory2
     {
         return new EventBus(CreateWireSet(false, _computerSettings.WordSize));
     }
+
+    public IWire2<bool> PowerWire => _powerWire;
 
     public IWireGroup<T> CreateGroup<T>(T initialValue, int size)
     {
