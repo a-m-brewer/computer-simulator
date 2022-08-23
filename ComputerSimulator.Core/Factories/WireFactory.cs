@@ -42,6 +42,8 @@ public class WireFactory : IWire2Factory2
 
     public IWire2<bool> PowerWire => _powerWire;
 
+    public int WordSize => _computerSettings.WordSize;
+
     public IWireGroup<T> CreateGroup<T>(T initialValue, int size)
     {
         return new WireGroup<T>(CreateWireSet(initialValue, size));

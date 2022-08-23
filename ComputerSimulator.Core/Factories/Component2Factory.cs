@@ -27,6 +27,8 @@ public interface IComponentFactory2
 
     IDecoder CreateDecoder(IWireGroup<bool> inputs);
 
+    IRightShifter CreateRightShifter(IWire2<bool> shiftIn, IWire2<bool> shiftOut, IWireGroup<bool> input, IWireGroup<bool> output);
+
     IRamSlot CreateRamSlot(IWire2<bool> x, IWire2<bool> y, IWire2<bool> set, IWire2<bool> enable, IBus io);
 
     IMemoryBit CreateMemoryBit(
@@ -107,6 +109,11 @@ public class ComponentFactory2 : IComponentFactory2
         var outputs = _wireFactory.CreateGroup(false, outputSize);
 
         return new Decoder(inputs, outputs, this, _wireFactory);
+    }
+
+    public IRightShifter CreateRightShifter(IWire2<bool> shiftIn, IWire2<bool> shiftOut, IWireGroup<bool> input, IWireGroup<bool> output)
+    {
+        return new RightShifter(shiftIn, shiftOut, input, output, this, _wireFactory);
     }
 
     public IRamSlot CreateRamSlot(IWire2<bool> x, IWire2<bool> y, IWire2<bool> set, IWire2<bool> enable, IBus io)

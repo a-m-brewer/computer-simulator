@@ -1,4 +1,6 @@
-﻿namespace ComputerSimulator.Core.Extensions;
+﻿using ComputerSimulator.Core.Parts;
+
+namespace ComputerSimulator.Core.Extensions;
 
 public static class BinaryHelpers
 {
@@ -17,5 +19,21 @@ public static class BinaryHelpers
         }
 
         return result;
+    }
+
+    public static int ToInt(this IWireGroup<bool> wireGroup)
+    {
+        var total = 0;
+        for (var i = 0; i < wireGroup.Count; i++)
+        {
+            if (!wireGroup[i].Value)
+            {
+                continue;
+            }
+
+            total += (int) Math.Pow(2, i);
+        }
+
+        return total;
     }
 }

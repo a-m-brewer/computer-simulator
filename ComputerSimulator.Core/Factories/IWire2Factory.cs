@@ -19,4 +19,6 @@ public interface IWire2Factory2
 
     // A wire that is always true
     IWire2<bool> PowerWire { get; }
+    
+    int WordSize { get; }
 }

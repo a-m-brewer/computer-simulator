@@ -23,10 +23,10 @@ public class RightShifter : CircuitBase, IRightShifter
         Input = input;
         Output = output;
 
-        var internalWires = WireFactory.CreateWireSet(false, 7);
+        var internalWires = WireFactory.CreateWireSet(false, wireFactory.WordSize - 1);
 
-        var r1OutputGroup = WireFactory.CreateGroup(internalWires.Concat(new[] { ShiftOut }).ToArray());
-        var r2InputGroup = WireFactory.CreateGroup(new[] { ShiftIn }.Concat(internalWires).ToArray());
+        var r1OutputGroup = WireFactory.CreateGroup(new[] { ShiftOut }.Concat(internalWires).ToArray());
+        var r2InputGroup = WireFactory.CreateGroup(internalWires.Concat(new[] { ShiftIn }).ToArray());
 
         _r1 = ComponentFactory.CreateRegister(WireFactory.PowerWire, WireFactory.PowerWire, input, r1OutputGroup);
         _r2 = ComponentFactory.CreateRegister(WireFactory.PowerWire, WireFactory.PowerWire, r2InputGroup, Output);
