@@ -1,5 +1,4 @@
-﻿using System;
-using ComputerSimulator.Core.Gates;
+﻿using ComputerSimulator.Core.Gates;
 using ComputerSimulator.Core.Parts;
 using ComputerSimulator.TestUtilities;
 using FluentAssertions;

@@ -35,6 +35,11 @@ public class WireFactory : IWire2Factory2
         return new EventBus(CreateWireSet(false, _computerSettings.WordSize));
     }
 
+    public IWire2<T>[] CreateWireSet<T>(T initialValue)
+    {
+        return CreateWireSet(initialValue, _computerSettings.WordSize);
+    }
+
     public IWire2<bool> PowerWire => _powerWire;
 
     public IWireGroup<T> CreateGroup<T>(T initialValue, int size)
@@ -42,7 +47,7 @@ public class WireFactory : IWire2Factory2
         return new WireGroup<T>(CreateWireSet(initialValue, size));
     }
 
-    private IWire2<T>[] CreateWireSet<T>(T initialValue, int size)
+    public IWire2<T>[] CreateWireSet<T>(T initialValue, int size)
     {
         return size
             .InitArray<IWire2<T>>()

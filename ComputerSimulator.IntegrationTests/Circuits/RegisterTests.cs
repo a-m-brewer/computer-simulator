@@ -1,7 +1,5 @@
-﻿using ComputerSimulator.Core.Parts;
-using FluentAssertions;
+﻿using FluentAssertions;
 using FluentAssertions.Execution;
-using Moq;
 using NUnit.Framework;
 
 namespace ComputerSimulator.IntegrationTests.Circuits;

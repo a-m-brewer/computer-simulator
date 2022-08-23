@@ -23,8 +23,13 @@ public class RightShifter : CircuitBase, IRightShifter
         Input = input;
         Output = output;
 
-        _r1 = ComponentFactory.CreateRegister(WireFactory.PowerWire, WireFactory.PowerWire, input, WireFactory.CreateGroup(false));
-        _r2 = ComponentFactory.CreateRegister(WireFactory.PowerWire, WireFactory.PowerWire, , Output);
+        var internalWires = WireFactory.CreateWireSet(false, 7);
+
+        var r1OutputGroup = WireFactory.CreateGroup(internalWires.Concat(new[] { ShiftOut }).ToArray());
+        var r2InputGroup = WireFactory.CreateGroup(new[] { ShiftIn }.Concat(internalWires).ToArray());
+
+        _r1 = ComponentFactory.CreateRegister(WireFactory.PowerWire, WireFactory.PowerWire, input, r1OutputGroup);
+        _r2 = ComponentFactory.CreateRegister(WireFactory.PowerWire, WireFactory.PowerWire, r2InputGroup, Output);
     }
 
     public IWire2<bool> ShiftIn { get; }
@@ -34,6 +39,7 @@ public class RightShifter : CircuitBase, IRightShifter
 
     public void Update()
     {
-        
+        _r1.Update();
+        _r2.Update();
     }
 }
