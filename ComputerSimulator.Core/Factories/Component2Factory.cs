@@ -10,6 +10,7 @@ public interface IComponentFactory2
 {
     IAnd CreateAnd(IWireGroup<bool> inputs, IWire2<bool> output);
     IAnd2 CreateAnd2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output);
+    IAnder CreateAnder(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB, IWireGroup<bool> outputs);
 
     INot CreateNot(IWire2<bool> input, IWire2<bool> output);
     
@@ -71,6 +72,11 @@ public class ComponentFactory2 : IComponentFactory2
     public IAnd2 CreateAnd2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output)
     {
         return new And2(inputA, inputB, output);
+    }
+
+    public IAnder CreateAnder(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB, IWireGroup<bool> outputs)
+    {
+        return new Ander(inputsA, inputsB, outputs);
     }
 
     public INot CreateNot(IWire2<bool> input, IWire2<bool> output)
