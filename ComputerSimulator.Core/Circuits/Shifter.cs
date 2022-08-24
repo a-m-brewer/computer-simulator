@@ -3,18 +3,17 @@ using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface IRightShifter : IShifter {}
-
-public class RightShifter : CircuitBase, IRightShifter
+public class Shifter : CircuitBase, IShifter
 {
     private readonly IRegister _r1;
     private readonly IRegister _r2;
 
-    public RightShifter(
+    public Shifter(
         IWire2<bool> shiftIn,
         IWire2<bool> shiftOut,
         IWireGroup<bool> input,
         IWireGroup<bool> output,
+        IShifterWireFactory shifterWireFactory,
         IComponentFactory2 componentFactory,
         IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
     {
@@ -23,10 +22,7 @@ public class RightShifter : CircuitBase, IRightShifter
         Input = input;
         Output = output;
 
-        var internalWires = WireFactory.CreateWireSet(false, wireFactory.WordSize - 1);
-
-        var r1OutputGroup = WireFactory.CreateGroup(new[] { ShiftOut }.Concat(internalWires).ToArray());
-        var r2InputGroup = WireFactory.CreateGroup(internalWires.Concat(new[] { ShiftIn }).ToArray());
+        var (r1OutputGroup, r2InputGroup) = shifterWireFactory.CreateInternalWires(ShiftIn, ShiftOut);
 
         _r1 = ComponentFactory.CreateRegister(WireFactory.PowerWire, WireFactory.PowerWire, input, r1OutputGroup);
         _r2 = ComponentFactory.CreateRegister(WireFactory.PowerWire, WireFactory.PowerWire, r2InputGroup, Output);

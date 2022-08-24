@@ -27,7 +27,8 @@ public interface IComponentFactory2
 
     IDecoder CreateDecoder(IWireGroup<bool> inputs);
 
-    IRightShifter CreateRightShifter(IWire2<bool> shiftIn, IWire2<bool> shiftOut, IWireGroup<bool> input, IWireGroup<bool> output);
+    IShifter CreateRightShifter(IWire2<bool> shiftIn, IWire2<bool> shiftOut, IWireGroup<bool> input, IWireGroup<bool> output);
+    IShifter CreateLeftShifter(IWire2<bool> shiftIn, IWire2<bool> shiftOut, IWireGroup<bool> input, IWireGroup<bool> output);
 
     IRamSlot CreateRamSlot(IWire2<bool> x, IWire2<bool> y, IWire2<bool> set, IWire2<bool> enable, IBus io);
 
@@ -44,11 +45,19 @@ public interface IComponentFactory2
 public class ComponentFactory2 : IComponentFactory2
 {
     private readonly IWire2Factory2 _wireFactory;
+    private readonly LeftShifterWireFactory _leftShifterWireFactory;
+    private readonly RightShifterWireFactory _rightShifterWireFactory;
     private readonly ComputerSettings _computerSettings;
 
-    public ComponentFactory2(IWire2Factory2 wireFactory, ComputerSettings computerSettings)
+    public ComponentFactory2(
+        IWire2Factory2 wireFactory,
+        LeftShifterWireFactory leftShifterWireFactory,
+        RightShifterWireFactory rightShifterWireFactory,
+        ComputerSettings computerSettings)
     {
         _wireFactory = wireFactory;
+        _leftShifterWireFactory = leftShifterWireFactory;
+        _rightShifterWireFactory = rightShifterWireFactory;
         _computerSettings = computerSettings;
     }
     
@@ -111,9 +120,14 @@ public class ComponentFactory2 : IComponentFactory2
         return new Decoder(inputs, outputs, this, _wireFactory);
     }
 
-    public IRightShifter CreateRightShifter(IWire2<bool> shiftIn, IWire2<bool> shiftOut, IWireGroup<bool> input, IWireGroup<bool> output)
+    public IShifter CreateRightShifter(IWire2<bool> shiftIn, IWire2<bool> shiftOut, IWireGroup<bool> input, IWireGroup<bool> output)
     {
-        return new RightShifter(shiftIn, shiftOut, input, output, this, _wireFactory);
+        return new Shifter(shiftIn, shiftOut, input, output, _rightShifterWireFactory,this, _wireFactory);
+    }
+
+    public IShifter CreateLeftShifter(IWire2<bool> shiftIn, IWire2<bool> shiftOut, IWireGroup<bool> input, IWireGroup<bool> output)
+    {
+        return new Shifter(shiftIn, shiftOut, input, output, _leftShifterWireFactory,this, _wireFactory);
     }
 
     public IRamSlot CreateRamSlot(IWire2<bool> x, IWire2<bool> y, IWire2<bool> set, IWire2<bool> enable, IBus io)
