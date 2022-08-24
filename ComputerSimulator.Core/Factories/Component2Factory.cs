@@ -12,6 +12,8 @@ public interface IComponentFactory2
     IAnd2 CreateAnd2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output);
 
     INot CreateNot(IWire2<bool> input, IWire2<bool> output);
+    
+    INoter CreateNoter(IWireGroup<bool> inputs, IWireGroup<bool> outputs);
 
     INAnd CreateNAnd(IWireGroup<bool> inputs, IWire2<bool> output);
     INAnd2 CreateNAnd2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output);
@@ -74,6 +76,11 @@ public class ComponentFactory2 : IComponentFactory2
     public INot CreateNot(IWire2<bool> input, IWire2<bool> output)
     {
         return new Not(input, output);
+    }
+
+    public INoter CreateNoter(IWireGroup<bool> inputs, IWireGroup<bool> outputs)
+    {
+        return new Noter(inputs, outputs);
     }
 
     public INAnd CreateNAnd(IWireGroup<bool> inputs, IWire2<bool> output)
