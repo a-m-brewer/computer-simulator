@@ -47,6 +47,8 @@ public interface IComponentFactory2
     IRam CreateRam(IWire2<bool> marSet, IBus marInputBus, IWire2<bool> set, IWire2<bool> enable, IBus io);
 
     IBitAdder CreateBitAdder(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> carryIn, IWire2<bool> carryOut, IWire2<bool> sum);
+
+    IWordAdder CreateWordAdder(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB, IWire2<bool> carryIn, IWire2<bool> carryOut, IWireGroup<bool> sum);
 }
 
 public class ComponentFactory2 : IComponentFactory2
@@ -183,6 +185,11 @@ public class ComponentFactory2 : IComponentFactory2
     public IBitAdder CreateBitAdder(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> carryIn, IWire2<bool> carryOut, IWire2<bool> sum)
     {
         return new BitAdder(inputA, inputB, carryIn, carryOut, sum, this, _wireFactory);
+    }
+
+    public IWordAdder CreateWordAdder(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB, IWire2<bool> carryIn, IWire2<bool> carryOut, IWireGroup<bool> sum)
+    {
+        return new WordAdder(inputsA, inputsB, carryIn, carryOut, sum, this, _wireFactory);
     }
 
     public IMemoryBit CreateMemoryBit(
