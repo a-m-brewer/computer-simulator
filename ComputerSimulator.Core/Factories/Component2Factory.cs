@@ -45,6 +45,8 @@ public interface IComponentFactory2
     IMemoryBit[] CreateMemoryBitSet(IWireGroup<bool> inputs, IWireGroup<bool> outputs, IWire2<bool> set);
 
     IRam CreateRam(IWire2<bool> marSet, IBus marInputBus, IWire2<bool> set, IWire2<bool> enable, IBus io);
+
+    IBitAdder CreateBitAdder(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> carryIn, IWire2<bool> carryOut, IWire2<bool> sum);
 }
 
 public class ComponentFactory2 : IComponentFactory2
@@ -176,6 +178,11 @@ public class ComponentFactory2 : IComponentFactory2
     public IRam CreateRam(IWire2<bool> marSet, IBus marInputBus, IWire2<bool> set, IWire2<bool> enable, IBus io)
     {
         return new Ram(marSet, marInputBus, set, enable, io, _computerSettings, this, _wireFactory);
+    }
+
+    public IBitAdder CreateBitAdder(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> carryIn, IWire2<bool> carryOut, IWire2<bool> sum)
+    {
+        return new BitAdder(inputA, inputB, carryIn, carryOut, sum, this, _wireFactory);
     }
 
     public IMemoryBit CreateMemoryBit(
