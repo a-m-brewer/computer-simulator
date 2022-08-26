@@ -49,6 +49,16 @@ public interface IComponentFactory2
     IBitAdder CreateBitAdder(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> carryIn, IWire2<bool> carryOut, IWire2<bool> sum);
 
     IWordAdder CreateWordAdder(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB, IWire2<bool> carryIn, IWire2<bool> carryOut, IWireGroup<bool> sum);
+
+    IBitComparator CreateBitComparator(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> allBitsAboveEqual, IWire2<bool> aAboveLarger, IWire2<bool> unEqual, IWire2<bool> equal, IWire2<bool> aLarger);
+
+    IWordComparator CreateWordComparator(IWireGroup<bool> inputsA,
+        IWireGroup<bool> inputsB,
+        IWire2<bool> allBitsAboveEqual,
+        IWire2<bool> aAboveLarger,
+        IWireGroup<bool> unEqual,
+        IWire2<bool> equal,
+        IWire2<bool> aLarger);
 }
 
 public class ComponentFactory2 : IComponentFactory2
@@ -190,6 +200,18 @@ public class ComponentFactory2 : IComponentFactory2
     public IWordAdder CreateWordAdder(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB, IWire2<bool> carryIn, IWire2<bool> carryOut, IWireGroup<bool> sum)
     {
         return new WordAdder(inputsA, inputsB, carryIn, carryOut, sum, this, _wireFactory);
+    }
+
+    public IBitComparator CreateBitComparator(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> allBitsAboveEqual, IWire2<bool> aAboveLarger,
+        IWire2<bool> unEqual, IWire2<bool> equal, IWire2<bool> aLarger)
+    {
+        return new BitComparator(inputA, inputB, allBitsAboveEqual, aAboveLarger, unEqual, equal, aLarger, this, _wireFactory);
+    }
+
+    public IWordComparator CreateWordComparator(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB, IWire2<bool> allBitsAboveEqual,
+        IWire2<bool> aAboveLarger, IWireGroup<bool> unEqual, IWire2<bool> equal, IWire2<bool> aLarger)
+    {
+        return new WordComparator(inputsA, inputsB, allBitsAboveEqual, aAboveLarger, unEqual, equal, aLarger, this, _wireFactory);
     }
 
     public IMemoryBit CreateMemoryBit(
