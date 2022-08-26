@@ -19,6 +19,7 @@ public interface IComponentFactory2
     INAnd CreateNAnd(IWireGroup<bool> inputs, IWire2<bool> output);
     INAnd2 CreateNAnd2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output);
 
+    IOr CreateOr(IWireGroup<bool> inputs, IWire2<bool> output);
     IOr2 CreateOr2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output);
     IOrer CreateOrer(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB, IWireGroup<bool> outputs);
     IXOrer CreateXOrer(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB, IWireGroup<bool> outputs);
@@ -59,6 +60,8 @@ public interface IComponentFactory2
         IWireGroup<bool> unEqual,
         IWire2<bool> equal,
         IWire2<bool> aLarger);
+
+    IIsZeroChecker CreateIsZeroChecker(IWireGroup<bool> inputs, IWire2<bool> output);
 }
 
 public class ComponentFactory2 : IComponentFactory2
@@ -113,6 +116,11 @@ public class ComponentFactory2 : IComponentFactory2
     public INAnd2 CreateNAnd2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output)
     {
         return new NAnd2(inputA, inputB, output, this, _wireFactory);
+    }
+
+    public IOr CreateOr(IWireGroup<bool> inputs, IWire2<bool> output)
+    {
+        return new Or(inputs, output);
     }
 
     public IOr2 CreateOr2(IWire2<bool> inputA, IWire2<bool> inputB, IWire2<bool> output)
@@ -212,6 +220,11 @@ public class ComponentFactory2 : IComponentFactory2
         IWire2<bool> aAboveLarger, IWireGroup<bool> unEqual, IWire2<bool> equal, IWire2<bool> aLarger)
     {
         return new WordComparator(inputsA, inputsB, allBitsAboveEqual, aAboveLarger, unEqual, equal, aLarger, this, _wireFactory);
+    }
+
+    public IIsZeroChecker CreateIsZeroChecker(IWireGroup<bool> inputs, IWire2<bool> output)
+    {
+        return new IsZeroChecker(inputs, output, this, _wireFactory);
     }
 
     public IMemoryBit CreateMemoryBit(
