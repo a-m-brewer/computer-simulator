@@ -62,6 +62,10 @@ public interface IComponentFactory2
         IWire2<bool> aLarger);
 
     IIsZeroChecker CreateIsZeroChecker(IWireGroup<bool> inputs, IWire2<bool> output);
+
+    IArithmeticLogicUnit CreateArithmeticLogicUnit(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB,
+        IWire2<bool> carryIn, IOp op, IWireGroup<bool> outputs, IWire2<bool> carryOut,
+        IWire2<bool> aLarger, IWire2<bool> equal, IWire2<bool> isZero);
 }
 
 public class ComponentFactory2 : IComponentFactory2
@@ -225,6 +229,12 @@ public class ComponentFactory2 : IComponentFactory2
     public IIsZeroChecker CreateIsZeroChecker(IWireGroup<bool> inputs, IWire2<bool> output)
     {
         return new IsZeroChecker(inputs, output, this, _wireFactory);
+    }
+
+    public IArithmeticLogicUnit CreateArithmeticLogicUnit(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB, IWire2<bool> carryIn, IOp op,
+        IWireGroup<bool> outputs, IWire2<bool> carryOut, IWire2<bool> aLarger, IWire2<bool> equal, IWire2<bool> isZero)
+    {
+        return new ArithmeticLogicUnit(inputsA, inputsB, carryIn, op, outputs, carryOut, aLarger, equal, isZero, this, _wireFactory);
     }
 
     public IMemoryBit CreateMemoryBit(

@@ -1,4 +1,5 @@
 using System.Collections;
+using ComputerSimulator.Core.Enums;
 
 namespace ComputerSimulator.Core.Parts;
 
@@ -8,6 +9,7 @@ public interface IWireGroup
 
 public interface IWireGroup<T> : IWireGroup, IReadOnlyList<IWire2<T>>
 {
+    IWire2<T> this[OpCode index] { get; }
 }
 
 public class WireGroup<T> : IWireGroup<T>
@@ -32,4 +34,6 @@ public class WireGroup<T> : IWireGroup<T>
     }
 
     public IWire2<T> this[int index] => _wires[index];
+
+    public IWire2<T> this[OpCode index] => _wires[(int)index];
 }
