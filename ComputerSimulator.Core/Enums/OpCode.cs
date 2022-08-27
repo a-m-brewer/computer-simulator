@@ -8,6 +8,6 @@ public enum OpCode
     Not,
     And,
     Or,
-    WordComparator,
+    XOr,
     Cmp
 }

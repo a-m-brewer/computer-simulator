@@ -1,5 +1,4 @@
 ﻿using ComputerSimulator.Core.Circuits;
-using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Gates;

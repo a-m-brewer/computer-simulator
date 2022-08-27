@@ -75,8 +75,13 @@ public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
     private readonly IOrer _orer;
     private readonly IEnabler _orerEnabler;
     
+    // Xorer
+    private readonly IXOrer _xorer;
+    private readonly IEnabler _xorerEnabler;
+    
     // Word Comparator
     private readonly IWordComparator _wordComparator;
+    private readonly IEnabler _wordComparatorEnabler;
 
     public ArithmeticLogicUnit(
         IWireGroup<bool> inputsA,
@@ -136,11 +141,15 @@ public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
         _orer = ComponentFactory.CreateOrer(InputsA, InputsB, WireFactory.CreateGroup(false));
         _orerEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.Or], _orer.Outputs, Outputs);
         
+        // Xorer
+        _xorer = ComponentFactory.CreateXOrer(InputsA, InputsB, WireFactory.CreateGroup(false));
+        _xorerEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.XOr], _xorer.Outputs, Outputs);
+        
         // Word Comparator
         _wordComparator = ComponentFactory.CreateWordComparator(
             InputsA, InputsB, WireFactory.PowerWire, WireFactory.CreateWire(false), WireFactory.CreateGroup(false), 
             Equal, ALarger);
-        _wordComparatorEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.WordComparator], )
+        _wordComparatorEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.Cmp], _wordComparator.UnEqual, Outputs);
 
         // Is Zero
         _isZeroChecker = ComponentFactory.CreateIsZeroChecker(Outputs, IsZero);
@@ -189,9 +198,13 @@ public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
                 _orer.Update();
                 _orerEnabler.Update();
                 break;
-            case OpCode.WordComparator:
+            case OpCode.XOr:
+                _xorer.Update();
+                _xorerEnabler.Update();
                 break;
             case OpCode.Cmp:
+                _wordComparator.Update();
+                _wordComparatorEnabler.Update();
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
