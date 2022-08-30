@@ -35,6 +35,11 @@ public class WireFactory : IWire2Factory2
         return new EventBus(CreateWireSet(false, _computerSettings.WordSize));
     }
 
+    public IOp CreateOp()
+    {
+        return new Op(CreateWireSet(false, 3));
+    }
+
     public IWire2<T>[] CreateWireSet<T>(T initialValue)
     {
         return CreateWireSet(initialValue, _computerSettings.WordSize);

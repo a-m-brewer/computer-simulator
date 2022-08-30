@@ -14,6 +14,8 @@ public interface IWire2Factory2
 
     IBus CreateBus();
 
+    IOp CreateOp();
+
     IWire2<T>[] CreateWireSet<T>(T initialValue);
     IWire2<T>[] CreateWireSet<T>(T initialValue, int size);
 

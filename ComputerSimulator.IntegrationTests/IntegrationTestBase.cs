@@ -47,4 +47,9 @@ public class IntegrationTestBase : HostTestBase
     {
         return _wireFactory.CreateBus();
     }
+
+    protected IOp CreateTestOp()
+    {
+        return _wireFactory.CreateOp();
+    }
 }
