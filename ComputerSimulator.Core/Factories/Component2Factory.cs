@@ -66,6 +66,8 @@ public interface IComponentFactory2
     IArithmeticLogicUnit CreateArithmeticLogicUnit(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB,
         IWire2<bool> carryIn, IOp op, IWireGroup<bool> outputs, IWire2<bool> carryOut,
         IWire2<bool> aLarger, IWire2<bool> equal, IWire2<bool> isZero);
+
+    IBus1 CreateBus1(IWire2<bool> bit, IWireGroup<bool> inputs, IWireGroup<bool> outputs);
 }
 
 public class ComponentFactory2 : IComponentFactory2
@@ -235,6 +237,11 @@ public class ComponentFactory2 : IComponentFactory2
         IWireGroup<bool> outputs, IWire2<bool> carryOut, IWire2<bool> aLarger, IWire2<bool> equal, IWire2<bool> isZero)
     {
         return new ArithmeticLogicUnit(inputsA, inputsB, carryIn, op, outputs, carryOut, aLarger, equal, isZero, this, _wireFactory);
+    }
+
+    public IBus1 CreateBus1(IWire2<bool> bit, IWireGroup<bool> inputs, IWireGroup<bool> outputs)
+    {
+        return new Bus1(bit, inputs, outputs, this, _wireFactory);
     }
 
     public IMemoryBit CreateMemoryBit(
