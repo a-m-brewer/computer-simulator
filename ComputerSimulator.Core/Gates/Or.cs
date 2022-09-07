@@ -6,19 +6,19 @@ public interface IOr : IComponent2
 {
     IWireGroup<bool> Inputs { get; }
     
-    IWire2<bool> Output { get; }
+    IWire<bool> Output { get; }
 }
 
 public class Or : IOr
 {
-    public Or(IWireGroup<bool> inputs, IWire2<bool> output)
+    public Or(IWireGroup<bool> inputs, IWire<bool> output)
     {
         Inputs = inputs;
         Output = output;
     }
 
     public IWireGroup<bool> Inputs { get; }
-    public IWire2<bool> Output { get; }
+    public IWire<bool> Output { get; }
     
     public void Update()
     {

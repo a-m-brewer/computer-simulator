@@ -6,7 +6,7 @@ public interface IBus : IWireGroup<bool>
 
 public class EventBus : WireGroup<bool>, IBus
 {
-    public EventBus(IWire2<bool>[] wires) : base(wires)
+    public EventBus(IWire<bool>[] wires) : base(wires)
     {
     }
 }

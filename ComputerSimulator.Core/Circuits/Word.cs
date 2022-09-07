@@ -5,7 +5,7 @@ namespace ComputerSimulator.Core.Circuits;
 
 public interface IWord : ICircuit
 {
-    IWire2<bool> Set { get; }
+    IWire<bool> Set { get; }
     
     IWireGroup<bool> Inputs { get; }
     
@@ -21,9 +21,9 @@ public class Word : CircuitBase, IWord
     public Word(
         IWireGroup<bool> inputs,
         IWireGroup<bool> outputs,
-        IWire2<bool> set,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IWire<bool> set,
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         Inputs = inputs;
         Outputs = outputs;
@@ -32,7 +32,7 @@ public class Word : CircuitBase, IWord
         _memory = componentFactory.CreateMemoryBitSet(Inputs, Outputs, Set);
     }
 
-    public IWire2<bool> Set { get; }
+    public IWire<bool> Set { get; }
 
     public IWireGroup<bool> Inputs { get; }
 

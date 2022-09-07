@@ -17,8 +17,8 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<IComputer, Computer>();
 
-        services.AddSingleton<IWire2Factory2, WireFactory>();
-        services.AddTransient<IComponentFactory2, ComponentFactory2>();
+        services.AddSingleton<IWireFactory, WireFactory>();
+        services.AddTransient<IComponentFactory, ComponentFactory>();
         services.AddSingleton<RightShifterWireFactory>();
         services.AddSingleton<LeftShifterWireFactory>();
         

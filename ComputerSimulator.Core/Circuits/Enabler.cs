@@ -7,7 +7,7 @@ namespace ComputerSimulator.Core.Circuits;
 
 public interface IEnabler : ICircuit
 {
-    IWire2<bool> Enable { get; }
+    IWire<bool> Enable { get; }
     IWireGroup<bool> Inputs { get; }
     IWireGroup<bool> Outputs { get; }
 }
@@ -22,11 +22,11 @@ public class Enabler : CircuitBase, IEnabler
     private readonly IAnd[] _ands;
 
     public Enabler(
-        IWire2<bool> enable,
+        IWire<bool> enable,
         IWireGroup<bool> inputs,
         IWireGroup<bool> outputs,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         Enable = enable;
         Inputs = inputs;
@@ -39,7 +39,7 @@ public class Enabler : CircuitBase, IEnabler
             .Fill(i => new And(WireFactory.CreateGroup(Inputs[i], Enable), _internalOutput[i]));
     }
 
-    public IWire2<bool> Enable { get; }
+    public IWire<bool> Enable { get; }
 
     public IWireGroup<bool> Inputs { get; }
 

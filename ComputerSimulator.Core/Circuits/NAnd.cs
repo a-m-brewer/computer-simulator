@@ -7,7 +7,7 @@ namespace ComputerSimulator.Core.Circuits;
 public interface INAnd : ICircuit
 {
     IWireGroup<bool> Inputs { get; }
-    IWire2<bool> Output { get; }
+    IWire<bool> Output { get; }
 }
 
 public class NAnd : CircuitBase, INAnd
@@ -19,10 +19,10 @@ public class NAnd : CircuitBase, INAnd
 
     public NAnd(
         IWireGroup<bool> inputs,
-        IWire2<bool> output,
-        IComponentFactory2 componentFactory2,
-        IWire2Factory2 wireFactory)
-    : base(componentFactory2, wireFactory)
+        IWire<bool> output,
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory)
+    : base(componentFactory, wireFactory)
     {
         Inputs = inputs;
         Output = output;
@@ -35,7 +35,7 @@ public class NAnd : CircuitBase, INAnd
 
     public IWireGroup<bool> Inputs { get; }
 
-    public IWire2<bool> Output { get; }
+    public IWire<bool> Output { get; }
 
     public void Update()
     {

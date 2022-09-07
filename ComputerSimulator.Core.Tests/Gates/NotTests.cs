@@ -15,9 +15,9 @@ public class NotTests : MockBase<Not>
     public void InputChanged_OutputIsReverseOfInput(bool input)
     {
         // Arrange
-        var inputWire = Mock.Of<IWire2<bool>>(m => m.Value == input);
+        var inputWire = Mock.Of<IWire<bool>>(m => m.Value == input);
         
-        var sut = new Not(inputWire, Mock.Of<IWire2<bool>>());
+        var sut = new Not(inputWire, Mock.Of<IWire<bool>>());
 
         // Act
         sut.Update();

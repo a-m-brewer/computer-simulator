@@ -13,7 +13,7 @@ public interface IArithmeticLogicUnit : IPart
 
     IWireGroup<bool> InputsB { get; }
     
-    IWire2<bool> CarryIn { get; }
+    IWire<bool> CarryIn { get; }
     
     /// <summary>
     /// 000 | ADD  | Add
@@ -32,13 +32,13 @@ public interface IArithmeticLogicUnit : IPart
     // C in diagram
     IWireGroup<bool> Outputs { get; }
     
-    IWire2<bool> CarryOut { get; }
+    IWire<bool> CarryOut { get; }
     
-    IWire2<bool> ALarger { get; }
+    IWire<bool> ALarger { get; }
     
-    IWire2<bool> Equal { get; }
+    IWire<bool> Equal { get; }
     
-    IWire2<bool> IsZero { get; }
+    IWire<bool> IsZero { get; }
 }
 
 public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
@@ -86,15 +86,15 @@ public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
     public ArithmeticLogicUnit(
         IWireGroup<bool> inputsA,
         IWireGroup<bool> inputsB,
-        IWire2<bool> carryIn,
+        IWire<bool> carryIn,
         IOp op,
         IWireGroup<bool> outputs,
-        IWire2<bool> carryOut,
-        IWire2<bool> aLarger,
-        IWire2<bool> equal,
-        IWire2<bool> isZero,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IWire<bool> carryOut,
+        IWire<bool> aLarger,
+        IWire<bool> equal,
+        IWire<bool> isZero,
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         InputsA = inputsA;
         InputsB = inputsB;
@@ -157,13 +157,13 @@ public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
 
     public IWireGroup<bool> InputsA { get; }
     public IWireGroup<bool> InputsB { get; }
-    public IWire2<bool> CarryIn { get; }
+    public IWire<bool> CarryIn { get; }
     public IOp Op { get; }
     public IWireGroup<bool> Outputs { get; }
-    public IWire2<bool> CarryOut { get; }
-    public IWire2<bool> ALarger { get; }
-    public IWire2<bool> Equal { get; }
-    public IWire2<bool> IsZero { get; }
+    public IWire<bool> CarryOut { get; }
+    public IWire<bool> ALarger { get; }
+    public IWire<bool> Equal { get; }
+    public IWire<bool> IsZero { get; }
     
     public void Update()
     {

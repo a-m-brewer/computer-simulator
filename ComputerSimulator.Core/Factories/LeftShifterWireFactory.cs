@@ -4,14 +4,14 @@ namespace ComputerSimulator.Core.Factories;
 
 public class LeftShifterWireFactory : IShifterWireFactory
 {
-    private readonly IWire2Factory2 _wireFactory;
+    private readonly IWireFactory _wireFactory;
 
-    public LeftShifterWireFactory(IWire2Factory2 wireFactory)
+    public LeftShifterWireFactory(IWireFactory wireFactory)
     {
         _wireFactory = wireFactory;
     }
     
-    public (IWireGroup<bool> R1OutputGroup, IWireGroup<bool>  R2InputGroup) CreateInternalWires(IWire2<bool> shiftIn, IWire2<bool> shiftOut)
+    public (IWireGroup<bool> R1OutputGroup, IWireGroup<bool>  R2InputGroup) CreateInternalWires(IWire<bool> shiftIn, IWire<bool> shiftOut)
     {
         var internalWires = _wireFactory.CreateWireSet(false, _wireFactory.WordSize - 1);
 

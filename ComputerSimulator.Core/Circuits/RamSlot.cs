@@ -6,13 +6,13 @@ namespace ComputerSimulator.Core.Circuits;
 
 public interface IRamSlot : ICircuit
 {
-    IWire2<bool> Set { get; }
+    IWire<bool> Set { get; }
 
-    IWire2<bool> Enable { get; }
+    IWire<bool> Enable { get; }
 
-    IWire2<bool> X { get; }
+    IWire<bool> X { get; }
 
-    IWire2<bool> Y { get; }
+    IWire<bool> Y { get; }
 
     IBus Io { get; }
     
@@ -32,13 +32,13 @@ public class RamSlot : PartsBase, IRamSlot
     private readonly IRegister _register;
 
     public RamSlot(
-        IWire2<bool> x,
-        IWire2<bool> y,
-        IWire2<bool> set,
-        IWire2<bool> enable,
+        IWire<bool> x,
+        IWire<bool> y,
+        IWire<bool> set,
+        IWire<bool> enable,
         IBus io,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         Io = io;
         _xAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(x, y), WireFactory.CreateWire(false));
@@ -48,13 +48,13 @@ public class RamSlot : PartsBase, IRamSlot
         _register = ComponentFactory.CreateRegister(_setAnd.Output, _enableAnd.Output, Io, Io);
     }
 
-    public IWire2<bool> Set => _setAnd.Inputs[1];
+    public IWire<bool> Set => _setAnd.Inputs[1];
 
-    public IWire2<bool> Enable => _enableAnd.Inputs[1];
+    public IWire<bool> Enable => _enableAnd.Inputs[1];
 
-    public IWire2<bool> X => _xAnd.Inputs[0];
+    public IWire<bool> X => _xAnd.Inputs[0];
 
-    public IWire2<bool> Y => _xAnd.Inputs[1];
+    public IWire<bool> Y => _xAnd.Inputs[1];
 
     public IBus Io { get; }
 

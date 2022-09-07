@@ -6,19 +6,19 @@ namespace ComputerSimulator.Core.Circuits;
 
 public interface IBitComparator : ICircuit
 {
-    IWire2<bool> InputA { get; }
+    IWire<bool> InputA { get; }
     
-    IWire2<bool> InputB { get; }
+    IWire<bool> InputB { get; }
     
-    IWire2<bool> AllBitsAboveEqual { get; }
+    IWire<bool> AllBitsAboveEqual { get; }
     
-    IWire2<bool> AAboveLarger { get; }
+    IWire<bool> AAboveLarger { get; }
 
-    IWire2<bool> UnEqual { get; }
+    IWire<bool> UnEqual { get; }
     
-    IWire2<bool> Equal { get; }
+    IWire<bool> Equal { get; }
 
-    IWire2<bool> ALarger { get; }
+    IWire<bool> ALarger { get; }
 }
 
 public class BitComparator : CircuitBase, IBitComparator
@@ -30,15 +30,15 @@ public class BitComparator : CircuitBase, IBitComparator
     private readonly IOr2 _or5;
 
     public BitComparator(
-        IWire2<bool> inputA, 
-        IWire2<bool> inputB,
-        IWire2<bool> allBitsAboveEqual,
-        IWire2<bool> aAboveLarger,
-        IWire2<bool> unEqual,
-        IWire2<bool> equal,
-        IWire2<bool> aLarger,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IWire<bool> inputA, 
+        IWire<bool> inputB,
+        IWire<bool> allBitsAboveEqual,
+        IWire<bool> aAboveLarger,
+        IWire<bool> unEqual,
+        IWire<bool> equal,
+        IWire<bool> aLarger,
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         InputA = inputA;
         InputB = inputB;
@@ -55,19 +55,19 @@ public class BitComparator : CircuitBase, IBitComparator
         _or5 = ComponentFactory.CreateOr2(_and4.Output, AAboveLarger, ALarger);
     }
 
-    public IWire2<bool> InputA { get; }
+    public IWire<bool> InputA { get; }
 
-    public IWire2<bool> InputB { get; }
+    public IWire<bool> InputB { get; }
 
-    public IWire2<bool> AllBitsAboveEqual { get; }
+    public IWire<bool> AllBitsAboveEqual { get; }
     
-    public IWire2<bool> AAboveLarger { get; }
+    public IWire<bool> AAboveLarger { get; }
 
-    public IWire2<bool> UnEqual { get; }
+    public IWire<bool> UnEqual { get; }
 
-    public IWire2<bool> Equal { get; }
+    public IWire<bool> Equal { get; }
 
-    public IWire2<bool> ALarger { get; }
+    public IWire<bool> ALarger { get; }
 
     public void Update()
     {

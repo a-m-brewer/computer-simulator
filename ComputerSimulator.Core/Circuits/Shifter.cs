@@ -9,13 +9,13 @@ public class Shifter : CircuitBase, IShifter
     private readonly IRegister _r2;
 
     public Shifter(
-        IWire2<bool> shiftIn,
-        IWire2<bool> shiftOut,
+        IWire<bool> shiftIn,
+        IWire<bool> shiftOut,
         IWireGroup<bool> input,
         IWireGroup<bool> output,
         IShifterWireFactory shifterWireFactory,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         ShiftIn = shiftIn;
         ShiftOut = shiftOut;
@@ -28,8 +28,8 @@ public class Shifter : CircuitBase, IShifter
         _r2 = ComponentFactory.CreateRegister(WireFactory.PowerWire, WireFactory.PowerWire, r2InputGroup, Output);
     }
 
-    public IWire2<bool> ShiftIn { get; }
-    public IWire2<bool> ShiftOut { get; }
+    public IWire<bool> ShiftIn { get; }
+    public IWire<bool> ShiftOut { get; }
     public IWireGroup<bool> Input { get; }
     public IWireGroup<bool> Output { get; }
 

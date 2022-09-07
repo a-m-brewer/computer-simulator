@@ -50,16 +50,16 @@ public class EnablerTests : IntegrationTestBase
         // Arrange
         var inputs = CreateTestWireGroup(false);
 
-        var outputWire0 = new Mock<IWire2<bool>>(); 
+        var outputWire0 = new Mock<IWire<bool>>(); 
         
-        var outputWires = new List<IWire2<bool>>
+        var outputWires = new List<IWire<bool>>
         {
             outputWire0.Object
         };
         
         for (var i = 0; i < ComputerSettings.WordSize - 1; i++)
         {
-            outputWires.Add(Mock.Of<IWire2<bool>>());
+            outputWires.Add(Mock.Of<IWire<bool>>());
         }
 
         var outputs = new Mock<IWireGroup<bool>>();

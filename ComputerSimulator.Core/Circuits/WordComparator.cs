@@ -9,15 +9,15 @@ public interface IWordComparator : ICircuit
     
     IWireGroup<bool> InputsB { get; }
     
-    IWire2<bool> AllBitsAboveEqual { get; }
+    IWire<bool> AllBitsAboveEqual { get; }
     
-    IWire2<bool> AAboveLarger { get; }
+    IWire<bool> AAboveLarger { get; }
 
     IWireGroup<bool> UnEqual { get; }
     
-    IWire2<bool> Equal { get; }
+    IWire<bool> Equal { get; }
 
-    IWire2<bool> ALarger { get; }
+    IWire<bool> ALarger { get; }
 }
 
 public class WordComparator : CircuitBase, IWordComparator
@@ -27,13 +27,13 @@ public class WordComparator : CircuitBase, IWordComparator
     public WordComparator(
         IWireGroup<bool> inputsA,
         IWireGroup<bool> inputsB,
-        IWire2<bool> allBitsAboveEqual,
-        IWire2<bool> aAboveLarger,
+        IWire<bool> allBitsAboveEqual,
+        IWire<bool> aAboveLarger,
         IWireGroup<bool> unEqual,
-        IWire2<bool> equal, 
-        IWire2<bool> aLarger,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IWire<bool> equal, 
+        IWire<bool> aLarger,
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         InputsA = inputsA;
         InputsB = inputsB;
@@ -59,11 +59,11 @@ public class WordComparator : CircuitBase, IWordComparator
 
     public IWireGroup<bool> InputsA { get; }
     public IWireGroup<bool> InputsB { get; }
-    public IWire2<bool> AllBitsAboveEqual { get; }
-    public IWire2<bool> AAboveLarger { get; }
+    public IWire<bool> AllBitsAboveEqual { get; }
+    public IWire<bool> AAboveLarger { get; }
     public IWireGroup<bool> UnEqual { get; }
-    public IWire2<bool> Equal { get; }
-    public IWire2<bool> ALarger { get; }
+    public IWire<bool> Equal { get; }
+    public IWire<bool> ALarger { get; }
     
     public void Update()
     {

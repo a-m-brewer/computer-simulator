@@ -9,13 +9,13 @@ public interface IRam : ICircuit
 {
     IBus MarInputBus { get; }
 
-    IWire2<bool> MarSet { get; }
+    IWire<bool> MarSet { get; }
 
     IBus Io { get; }
 
-    IWire2<bool> Set { get; }
+    IWire<bool> Set { get; }
 
-    IWire2<bool> Enable { get; }
+    IWire<bool> Enable { get; }
 }
 
 public class Ram : PartsBase, IRam
@@ -30,14 +30,14 @@ public class Ram : PartsBase, IRam
     private readonly IDecoder _decoderY;
 
     public Ram(
-        IWire2<bool> marSet,
+        IWire<bool> marSet,
         IBus marInputBus,
-        IWire2<bool> set,
-        IWire2<bool> enable,
+        IWire<bool> set,
+        IWire<bool> enable,
         IBus io,
         ComputerSettings computerSettings,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         Set = set;
         Enable = enable;
@@ -50,11 +50,11 @@ public class Ram : PartsBase, IRam
         var decoderInputSize = computerSettings.WordSize / 2;
 
         _decoderX = ComponentFactory.CreateDecoder(WireFactory.CreateGroup(decoderInputSize
-            .InitArray<IWire2<bool>>()
+            .InitArray<IWire<bool>>()
             .Fill(i => _mar.Outputs[i])));
         
         _decoderY = ComponentFactory.CreateDecoder(WireFactory.CreateGroup(decoderInputSize
-            .InitArray<IWire2<bool>>()
+            .InitArray<IWire<bool>>()
             .Fill(i => _mar.Outputs[i + decoderInputSize])));
 
         _slots = new IRamSlot[_decoderY.OutputSize][];
@@ -70,13 +70,13 @@ public class Ram : PartsBase, IRam
 
     public IBus MarInputBus => _mar.Inputs as IBus ?? throw new Exception("expected that MAR is using a IBus WireGroup<bool>");
 
-    public IWire2<bool> MarSet => _mar.Set;
+    public IWire<bool> MarSet => _mar.Set;
 
     public IBus Io { get; }
 
-    public IWire2<bool> Set { get; }
+    public IWire<bool> Set { get; }
 
-    public IWire2<bool> Enable { get; }
+    public IWire<bool> Enable { get; }
 
     public void Update()
     {

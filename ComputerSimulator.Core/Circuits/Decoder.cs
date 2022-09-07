@@ -22,8 +22,8 @@ public class Decoder : CircuitBase, IDecoder
     public Decoder(
         IWireGroup<bool> inputs,
         IWireGroup<bool> outputs,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         Inputs = inputs;
         OutputSize = CalculateOutputSize(inputs.Count);

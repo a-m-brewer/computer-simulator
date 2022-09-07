@@ -4,9 +4,9 @@ namespace ComputerSimulator.Core.Circuits;
 
 public interface IShifter : ICircuit
 {
-    IWire2<bool> ShiftIn { get; }
+    IWire<bool> ShiftIn { get; }
 
-    IWire2<bool> ShiftOut { get; }
+    IWire<bool> ShiftOut { get; }
     
     IWireGroup<bool> Input { get; }
 

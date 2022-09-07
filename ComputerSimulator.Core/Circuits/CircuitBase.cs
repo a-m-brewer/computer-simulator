@@ -4,12 +4,12 @@ namespace ComputerSimulator.Core.Circuits;
 
 public abstract class CircuitBase
 {
-    protected readonly IComponentFactory2 ComponentFactory;
-    protected readonly IWire2Factory2 WireFactory;
+    protected readonly IComponentFactory ComponentFactory;
+    protected readonly IWireFactory WireFactory;
 
     protected CircuitBase(
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory)
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory)
     {
         ComponentFactory = componentFactory;
         WireFactory = wireFactory;

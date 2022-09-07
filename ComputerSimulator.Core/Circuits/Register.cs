@@ -5,9 +5,9 @@ namespace ComputerSimulator.Core.Circuits;
 
 public interface IRegister : ICircuit
 {
-    IWire2<bool> Set { get; }
+    IWire<bool> Set { get; }
 
-    IWire2<bool> Enable { get; }
+    IWire<bool> Enable { get; }
 
     IWireGroup<bool> Inputs { get; }
 
@@ -26,12 +26,12 @@ public class Register : CircuitBase, IRegister
     private readonly IWireGroup<bool> _internalGroup;
 
     public Register(
-        IWire2<bool> set,
-        IWire2<bool> enable,
+        IWire<bool> set,
+        IWire<bool> enable,
         IWireGroup<bool> inputs,
         IWireGroup<bool> outputs,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         _internalGroup = WireFactory.CreateGroup(false);
 
@@ -39,9 +39,9 @@ public class Register : CircuitBase, IRegister
         _enabler = ComponentFactory.CreateEnabler(enable, _internalGroup, outputs);
     }
 
-    public IWire2<bool> Set => _word.Set;
+    public IWire<bool> Set => _word.Set;
 
-    public IWire2<bool> Enable => _enabler.Enable;
+    public IWire<bool> Enable => _enabler.Enable;
 
     public IWireGroup<bool> Inputs => _word.Inputs;
 

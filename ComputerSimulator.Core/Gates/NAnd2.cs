@@ -6,31 +6,31 @@ namespace ComputerSimulator.Core.Gates;
 
 public interface INAnd2 : ICircuit
 {
-    IWire2<bool> InputA { get; }
-    IWire2<bool> InputB { get; }
-    IWire2<bool> Output { get; }
+    IWire<bool> InputA { get; }
+    IWire<bool> InputB { get; }
+    IWire<bool> Output { get; }
 }
 
 public class NAnd2 : CircuitBase, INAnd2
 {
     public NAnd2(
-        IWire2<bool> inputA,
-        IWire2<bool> inputB,
-        IWire2<bool> output,
-        IComponentFactory2 componentFactory2,
-        IWire2Factory2 wireFactory)
-        : base(componentFactory2, wireFactory)
+        IWire<bool> inputA,
+        IWire<bool> inputB,
+        IWire<bool> output,
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory)
+        : base(componentFactory, wireFactory)
     {
         InputA = inputA;
         InputB = inputB;
         Output = output;
     }
 
-    public IWire2<bool> InputA { get; }
+    public IWire<bool> InputA { get; }
 
-    public IWire2<bool> InputB { get; }
+    public IWire<bool> InputB { get; }
 
-    public IWire2<bool> Output { get; }
+    public IWire<bool> Output { get; }
 
     public void Update()
     {

@@ -18,17 +18,17 @@ public class AndTests : MockBase<And>
     public void InputsChanged_SetsOutput(bool a, bool b, bool expected)
     {
         // Arrange
-        var wires = new List<IWire2<bool>>
+        var wires = new List<IWire<bool>>
         {
-            Mock.Of<IWire2<bool>>(m => m.Value == a),
-            Mock.Of<IWire2<bool>>(m => m.Value == b)
+            Mock.Of<IWire<bool>>(m => m.Value == a),
+            Mock.Of<IWire<bool>>(m => m.Value == b)
         };
         
         var wireGroup = GetMock<IWireGroup<bool>>();
         
         wireGroup.SetupListMock(wires);
 
-        var output = Mock.Of<IWire2<bool>>();
+        var output = Mock.Of<IWire<bool>>();
 
         var and = new And(wireGroup.Object, output);
 

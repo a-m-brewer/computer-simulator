@@ -6,15 +6,15 @@ namespace ComputerSimulator.Core.Circuits;
 
 public interface IBitAdder : ICircuit
 {
-    IWire2<bool> InputA { get; }
+    IWire<bool> InputA { get; }
 
-    IWire2<bool> InputB { get; }
+    IWire<bool> InputB { get; }
     
-    IWire2<bool> CarryIn { get; }
+    IWire<bool> CarryIn { get; }
     
-    IWire2<bool> CarryOut { get; }
+    IWire<bool> CarryOut { get; }
     
-    IWire2<bool> Sum { get; }
+    IWire<bool> Sum { get; }
 }
 
 public class BitAdder : CircuitBase, IBitAdder
@@ -26,13 +26,13 @@ public class BitAdder : CircuitBase, IBitAdder
     private readonly IOr2 _carryOutOr;
 
     public BitAdder(
-        IWire2<bool> inputA,
-        IWire2<bool> inputB,
-        IWire2<bool> carryIn,
-        IWire2<bool> carryOut,
-        IWire2<bool> sum,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IWire<bool> inputA,
+        IWire<bool> inputB,
+        IWire<bool> carryIn,
+        IWire<bool> carryOut,
+        IWire<bool> sum,
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         InputA = inputA;
         InputB = inputB;
@@ -47,15 +47,15 @@ public class BitAdder : CircuitBase, IBitAdder
         _carryOutOr = ComponentFactory.CreateOr2(_carryOutAnd1.Output, _carryOutAnd2.Output, CarryOut);
     }
 
-    public IWire2<bool> InputA { get; }
+    public IWire<bool> InputA { get; }
 
-    public IWire2<bool> InputB { get; }
+    public IWire<bool> InputB { get; }
 
-    public IWire2<bool> CarryIn { get; }
+    public IWire<bool> CarryIn { get; }
 
-    public IWire2<bool> CarryOut { get; }
+    public IWire<bool> CarryOut { get; }
 
-    public IWire2<bool> Sum { get; }
+    public IWire<bool> Sum { get; }
     
     public void Update()
     {

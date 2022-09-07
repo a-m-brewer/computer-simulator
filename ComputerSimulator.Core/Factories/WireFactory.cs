@@ -4,10 +4,10 @@ using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Factories;
 
-public class WireFactory : IWire2Factory2
+public class WireFactory : IWireFactory
 {
     private readonly ComputerSettings _computerSettings;
-    private static readonly IWire2<bool> _powerWire = new Wire<bool>(true);
+    private static readonly IWire<bool> _powerWire = new Wire<bool>(true);
 
     public WireFactory(
         ComputerSettings computerSettings)
@@ -15,12 +15,12 @@ public class WireFactory : IWire2Factory2
         _computerSettings = computerSettings;
     }
     
-    public IWire2<T> CreateWire<T>(T initialValue)
+    public IWire<T> CreateWire<T>(T initialValue)
     {
         return new Wire<T>(initialValue);
     }
 
-    public IWireGroup<T> CreateGroup<T>(params IWire2<T>[] wires)
+    public IWireGroup<T> CreateGroup<T>(params IWire<T>[] wires)
     {
         return new WireGroup<T>(wires);
     }
@@ -40,12 +40,12 @@ public class WireFactory : IWire2Factory2
         return new Op(CreateWireSet(false, 3));
     }
 
-    public IWire2<T>[] CreateWireSet<T>(T initialValue)
+    public IWire<T>[] CreateWireSet<T>(T initialValue)
     {
         return CreateWireSet(initialValue, _computerSettings.WordSize);
     }
 
-    public IWire2<bool> PowerWire => _powerWire;
+    public IWire<bool> PowerWire => _powerWire;
 
     public int WordSize => _computerSettings.WordSize;
 
@@ -54,10 +54,10 @@ public class WireFactory : IWire2Factory2
         return new WireGroup<T>(CreateWireSet(initialValue, size));
     }
 
-    public IWire2<T>[] CreateWireSet<T>(T initialValue, int size)
+    public IWire<T>[] CreateWireSet<T>(T initialValue, int size)
     {
         return size
-            .InitArray<IWire2<T>>()
+            .InitArray<IWire<T>>()
             .Fill(() => CreateWire(initialValue));
     }
 }

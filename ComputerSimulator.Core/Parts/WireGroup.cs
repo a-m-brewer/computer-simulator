@@ -7,23 +7,23 @@ public interface IWireGroup
 {
 }
 
-public interface IWireGroup<T> : IWireGroup, IReadOnlyList<IWire2<T>>
+public interface IWireGroup<T> : IWireGroup, IReadOnlyList<IWire<T>>
 {
-    IWire2<T> this[OpCode index] { get; }
+    IWire<T> this[OpCode index] { get; }
 }
 
 public class WireGroup<T> : IWireGroup<T>
 {
-    private readonly IList<IWire2<T>> _wires;
+    private readonly IList<IWire<T>> _wires;
 
-    public WireGroup(IList<IWire2<T>> wires)
+    public WireGroup(IList<IWire<T>> wires)
     {
         _wires = wires;
     }
 
     public int Count => _wires.Count;
     
-    public IEnumerator<IWire2<T>> GetEnumerator()
+    public IEnumerator<IWire<T>> GetEnumerator()
     {
         return _wires.GetEnumerator();
     }
@@ -33,7 +33,7 @@ public class WireGroup<T> : IWireGroup<T>
         return GetEnumerator();
     }
 
-    public IWire2<T> this[int index] => _wires[index];
+    public IWire<T> this[int index] => _wires[index];
 
-    public IWire2<T> this[OpCode index] => _wires[(int)index];
+    public IWire<T> this[OpCode index] => _wires[(int)index];
 }

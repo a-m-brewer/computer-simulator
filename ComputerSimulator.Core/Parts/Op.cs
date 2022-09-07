@@ -11,9 +11,9 @@ public interface IOp : IWireGroup<bool>
 
 public class Op : IOp
 {
-    private readonly IList<IWire2<bool>> _wires;
+    private readonly IList<IWire<bool>> _wires;
 
-    public Op(IList<IWire2<bool>> wires)
+    public Op(IList<IWire<bool>> wires)
     {
         if (wires.Count != 3)
         {
@@ -23,7 +23,7 @@ public class Op : IOp
         _wires = wires;
     }
     
-    public IEnumerator<IWire2<bool>> GetEnumerator()
+    public IEnumerator<IWire<bool>> GetEnumerator()
     {
         return _wires.GetEnumerator();
     }
@@ -35,9 +35,9 @@ public class Op : IOp
 
     public int Count => _wires.Count;
 
-    public IWire2<bool> this[int index] => _wires[index];
+    public IWire<bool> this[int index] => _wires[index];
 
-    public IWire2<bool> this[OpCode index] => _wires[(int)index];
+    public IWire<bool> this[OpCode index] => _wires[(int)index];
     public void SetOpCode(OpCode opCode)
     {
         switch (opCode)

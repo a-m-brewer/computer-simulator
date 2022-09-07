@@ -4,29 +4,29 @@ namespace ComputerSimulator.Core.Gates;
 
 public interface IAnd2 : IComponent2
 {
-    IWire2<bool> InputA { get; }
+    IWire<bool> InputA { get; }
 
-    IWire2<bool> InputB { get; }
-    IWire2<bool> Output { get; }
+    IWire<bool> InputB { get; }
+    IWire<bool> Output { get; }
 }
 
 public class And2 : IAnd2
 {
     public And2(
-        IWire2<bool> inputA, 
-        IWire2<bool> inputB,
-        IWire2<bool> output)
+        IWire<bool> inputA, 
+        IWire<bool> inputB,
+        IWire<bool> output)
     {
         InputA = inputA;
         InputB = inputB;
         Output = output;
     }
     
-    public IWire2<bool> InputA { get; }
+    public IWire<bool> InputA { get; }
 
-    public IWire2<bool> InputB { get; }
+    public IWire<bool> InputB { get; }
 
-    public IWire2<bool> Output { get; }
+    public IWire<bool> Output { get; }
 
     public void Update()
     {

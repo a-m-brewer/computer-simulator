@@ -5,14 +5,14 @@ namespace ComputerSimulator.Core.Gates;
 public interface IAnd : IComponent2
 {
     IWireGroup<bool> Inputs { get; }
-    IWire2<bool> Output { get; }
+    IWire<bool> Output { get; }
 }
 
 public class And : IAnd
 {
     public And(
         IWireGroup<bool> inputs,
-        IWire2<bool> output)
+        IWire<bool> output)
     {
         Inputs = inputs;
         Output = output;
@@ -20,7 +20,7 @@ public class And : IAnd
     
     public IWireGroup<bool> Inputs { get; }
 
-    public IWire2<bool> Output { get; }
+    public IWire<bool> Output { get; }
 
     public void Update()
     {

@@ -6,11 +6,11 @@ namespace ComputerSimulator.Core.Circuits;
 
 public interface IMemoryBit : ICircuit
 {
-    public IWire2<bool> Input { get; }
+    public IWire<bool> Input { get; }
 
-    public IWire2<bool> Set { get; }
+    public IWire<bool> Set { get; }
 
-    public IWire2<bool> Output { get; }
+    public IWire<bool> Output { get; }
 }
 
 public class MemoryBit : CircuitBase, IMemoryBit
@@ -25,11 +25,11 @@ public class MemoryBit : CircuitBase, IMemoryBit
     private readonly INAnd2 _nAnd4;
 
     public MemoryBit(
-        IWire2<bool> input,
-        IWire2<bool> set,
-        IWire2<bool> output,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory)
+        IWire<bool> input,
+        IWire<bool> set,
+        IWire<bool> output,
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory)
     : base(componentFactory, wireFactory)
     {
         Input = input;
@@ -47,11 +47,11 @@ public class MemoryBit : CircuitBase, IMemoryBit
         _nAnd4 = ComponentFactory.CreateNAnd2(Output, b, c);
     }
     
-    public IWire2<bool> Input { get; }
+    public IWire<bool> Input { get; }
 
-    public IWire2<bool> Set { get; }
+    public IWire<bool> Set { get; }
 
-    public IWire2<bool> Output { get; }
+    public IWire<bool> Output { get; }
 
     public void Update()
     {

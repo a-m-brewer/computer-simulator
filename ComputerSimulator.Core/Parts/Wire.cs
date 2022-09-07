@@ -1,15 +1,15 @@
 namespace ComputerSimulator.Core.Parts;
 
-public interface IWire2
+public interface IWire
 {
 }
 
-public interface IWire2<T> : IWire2
+public interface IWire<T> : IWire
 {
     T Value { get; set; }
 }
 
-public class Wire<T> : IWire2<T>
+public class Wire<T> : IWire<T>
 {
     private T _value;
     private bool _valueSet;

@@ -6,7 +6,7 @@ namespace ComputerSimulator.Core.Parts;
 
 public interface IBus1 : IPart
 {
-    IWire2<bool> Bit { get; }
+    IWire<bool> Bit { get; }
     
     IWireGroup<bool> Inputs { get; }
     
@@ -20,11 +20,11 @@ public class Bus1 : PartsBase, IBus1
     private readonly IOr2 _or;
 
     public Bus1(
-        IWire2<bool> bit,
+        IWire<bool> bit,
         IWireGroup<bool> inputs,
         IWireGroup<bool> outputs,
-        IComponentFactory2 componentFactory, 
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IComponentFactory componentFactory, 
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         Bit = bit;
         Inputs = inputs;
@@ -37,7 +37,7 @@ public class Bus1 : PartsBase, IBus1
             .Fill(i => ComponentFactory.CreateAnd2(Inputs[i + 1], _not.Output, Outputs[i + 1]));
     }
 
-    public IWire2<bool> Bit { get; }
+    public IWire<bool> Bit { get; }
     public IWireGroup<bool> Inputs { get; }
     public IWireGroup<bool> Outputs { get; }
     

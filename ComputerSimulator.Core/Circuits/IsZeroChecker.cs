@@ -8,7 +8,7 @@ public interface IIsZeroChecker : ICircuit
 {
     IWireGroup<bool> Inputs { get; }
     
-    IWire2<bool> IsZero { get; }
+    IWire<bool> IsZero { get; }
 }
 
 public class IsZeroChecker : CircuitBase, IIsZeroChecker
@@ -18,9 +18,9 @@ public class IsZeroChecker : CircuitBase, IIsZeroChecker
 
     public IsZeroChecker(
         IWireGroup<bool> inputs,
-        IWire2<bool> isZero,
-        IComponentFactory2 componentFactory, 
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IWire<bool> isZero,
+        IComponentFactory componentFactory, 
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         Inputs = inputs;
         IsZero = isZero;
@@ -31,7 +31,7 @@ public class IsZeroChecker : CircuitBase, IIsZeroChecker
 
     public IWireGroup<bool> Inputs { get; }
 
-    public IWire2<bool> IsZero { get; }
+    public IWire<bool> IsZero { get; }
     
     public void Update()
     {

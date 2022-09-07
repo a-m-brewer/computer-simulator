@@ -9,9 +9,9 @@ public interface IWordAdder : ICircuit
 
     IWireGroup<bool> InputsB { get; }
     
-    IWire2<bool> CarryIn { get; }
+    IWire<bool> CarryIn { get; }
     
-    IWire2<bool> CarryOut { get; }
+    IWire<bool> CarryOut { get; }
     
     IWireGroup<bool> Sum { get; }
 }
@@ -23,11 +23,11 @@ public class WordAdder : CircuitBase, IWordAdder
     public WordAdder(
         IWireGroup<bool> inputsA,
         IWireGroup<bool> inputsB,
-        IWire2<bool> carryIn,
-        IWire2<bool> carryOut,
+        IWire<bool> carryIn,
+        IWire<bool> carryOut,
         IWireGroup<bool> sum,
-        IComponentFactory2 componentFactory,
-        IWire2Factory2 wireFactory) : base(componentFactory, wireFactory)
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         InputsA = inputsA;
         InputsB = inputsB;
@@ -51,9 +51,9 @@ public class WordAdder : CircuitBase, IWordAdder
 
     public IWireGroup<bool> InputsB { get; }
 
-    public IWire2<bool> CarryIn { get; }
+    public IWire<bool> CarryIn { get; }
 
-    public IWire2<bool> CarryOut { get; }
+    public IWire<bool> CarryOut { get; }
 
     public IWireGroup<bool> Sum { get; }
     
