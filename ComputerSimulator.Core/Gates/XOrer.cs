@@ -2,7 +2,7 @@
 
 namespace ComputerSimulator.Core.Gates;
 
-public interface IXOrer : IComponent2
+public interface IXOrer : IComponent
 {
     IWireGroup<bool> InputsA { get; }
 

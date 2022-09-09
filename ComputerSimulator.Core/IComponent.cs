@@ -1,6 +1,6 @@
 ﻿namespace ComputerSimulator.Core;
 
-public interface IComponent2
+public interface IComponent
 {
     void Update();
 }

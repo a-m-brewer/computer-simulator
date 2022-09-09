@@ -10,8 +10,8 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         ComputerSettings computerSettings)
     {
-        services.Scan(s => s.FromAssemblyOf<IComponent2>()
-            .AddClasses(f => f.AssignableTo<IComponent2>())
+        services.Scan(s => s.FromAssemblyOf<IComponent>()
+            .AddClasses(f => f.AssignableTo<IComponent>())
             .AsImplementedInterfaces()
             .WithTransientLifetime());
 

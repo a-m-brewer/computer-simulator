@@ -1,5 +1,5 @@
 namespace ComputerSimulator.Core.Circuits;
 
-public interface ICircuit : IComponent2
+public interface ICircuit : IComponent
 {
 }

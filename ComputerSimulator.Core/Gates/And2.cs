@@ -2,12 +2,8 @@
 
 namespace ComputerSimulator.Core.Gates;
 
-public interface IAnd2 : IComponent2
+public interface IAnd2 : IGate2
 {
-    IWire<bool> InputA { get; }
-
-    IWire<bool> InputB { get; }
-    IWire<bool> Output { get; }
 }
 
 public class And2 : IAnd2

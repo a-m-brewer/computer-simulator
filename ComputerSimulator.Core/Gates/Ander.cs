@@ -2,7 +2,7 @@
 
 namespace ComputerSimulator.Core.Gates;
 
-public interface IAnder : IComponent2
+public interface IAnder : IComponent
 {
     IWireGroup<bool> InputsA { get; }
 

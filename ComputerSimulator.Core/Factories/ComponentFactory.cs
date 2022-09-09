@@ -72,6 +72,8 @@ public interface IComponentFactory
     IClock CreateClock(IWire<bool> clk);
 
     IComputerClock CreateComputerClock(IWire<bool> clk, IWire<bool> clkE, IWire<bool> clkS);
+
+    IStepper CreateStepper(IWire<bool> clk, IWireGroup<bool> steps);
 }
 
 public class ComponentFactory : IComponentFactory
@@ -256,6 +258,11 @@ public class ComponentFactory : IComponentFactory
     public IComputerClock CreateComputerClock(IWire<bool> clk, IWire<bool> clkE, IWire<bool> clkS)
     {
         return new ComputerClock(clk, clkE, clkS, this, _wireFactory);
+    }
+
+    public IStepper CreateStepper(IWire<bool> clk, IWireGroup<bool> steps)
+    {
+        return new Stepper(clk, steps, this, _wireFactory);
     }
 
     public IMemoryBit CreateMemoryBit(

@@ -2,11 +2,8 @@
 
 namespace ComputerSimulator.Core.Gates;
 
-public interface IOr2 : IComponent2
+public interface IOr2 : IGate2
 {
-    IWire<bool> InputA { get; }
-    IWire<bool> InputB { get; }
-    IWire<bool> Output { get; }
 }
 
 public class Or2 : IOr2
