@@ -19,8 +19,8 @@ public class Stepper : PartsBase, IStepper
     private readonly IMemoryBit[] _memoryBits;
     private readonly INot _resetNot;
     private readonly INot _clkNot;
-    private readonly IOr2 _or1;
-    private readonly IOr2 _or2;
+    private readonly IOr2 _resetOrNotClk;
+    private readonly IOr2 _clkOrReset;
     private readonly INot[] _nots;
     private readonly IGate2[] _stepGates;
 
@@ -42,22 +42,22 @@ public class Stepper : PartsBase, IStepper
         _resetNot = ComponentFactory.CreateNot(Reset, WireFactory.CreateWire(false, "reset-not-output"));
         _clkNot = ComponentFactory.CreateNot(Clk, WireFactory.CreateWire(false, "clk-not-output"));
 
-        _or1 = ComponentFactory.CreateOr2(Reset, _clkNot.Output, WireFactory.CreateWire(false, "or1-output"));
-        _or2 = ComponentFactory.CreateOr2(Reset, Clk, WireFactory.CreateWire(false, "or2-output"));
+        _resetOrNotClk = ComponentFactory.CreateOr2(Reset, _clkNot.Output, WireFactory.CreateWire(false, "reset-or-not-clk-output"));
+        _clkOrReset = ComponentFactory.CreateOr2(Reset, Clk, WireFactory.CreateWire(false, "clk-or-reset"));
         
         _memoryBits = new IMemoryBit[12];
         for (var i = 0; i < _memoryBits.Length; i++)
         {
             _memoryBits[i] = ComponentFactory.CreateMemoryBit(
-                i % 2 == 0
-                    ? _or1.Output 
-                    : _or2.Output,
+                i == 0
+                    ? _resetNot.Output
+                    : _memoryBits[i - 1].Output,
                 i == _memoryBits.Length - 1
                     ? Reset
                     : WireFactory.CreateWire(false, $"memory-bits-{i}-output"),
-                i == 0
-                    ? _resetNot.Output
-                    : _memoryBits[i - 1].Output);
+                i % 2 == 0
+                    ? _resetOrNotClk.Output 
+                    : _clkOrReset.Output);
         }
 
         _nots = new INot[6];
@@ -90,8 +90,8 @@ public class Stepper : PartsBase, IStepper
         _resetNot.Update();
         _clkNot.Update();
         
-        _or1.Update();
-        _or2.Update();
+        _resetOrNotClk.Update();
+        _clkOrReset.Update();
 
         foreach (var memoryBit in _memoryBits)
         {
