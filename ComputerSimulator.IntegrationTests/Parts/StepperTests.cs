@@ -16,7 +16,10 @@ public class StepperTests : IntegrationTestBase
     [TestCase(6)]
     public void StepperWorksAsExpected(int onBit)
     {
-        var stepper = ComponentFactory.CreateStepper(CreateTestWire(false, "clk"), CreateTestWireGroup(false, 7, "step"));
+        var stepper = ComponentFactory.CreateStepper(
+            CreateTestWire(false, "clk"),
+            CreateTestWire(false, "reset"),
+            CreateTestWireGroup(false, 7, "step"));
 
         for (var i = 0; i <= onBit; i++)
         {

@@ -28,6 +28,16 @@ public class Stepper : PartsBase, IStepper
         IWire<bool> clk,
         IWireGroup<bool> steps,
         IComponentFactory componentFactory,
+        IWireFactory wireFactory) 
+        : this(clk, steps[^1], steps, componentFactory, wireFactory)
+    {
+    }
+    
+    public Stepper(
+        IWire<bool> clk,
+        IWire<bool> reset,
+        IWireGroup<bool> steps,
+        IComponentFactory componentFactory,
         IWireFactory wireFactory)
         : base(componentFactory, wireFactory)
     {
@@ -37,6 +47,7 @@ public class Stepper : PartsBase, IStepper
         }
         
         Clk = clk;
+        Reset = reset;
         Steps = steps;
 
         _resetNot = ComponentFactory.CreateNot(Reset, WireFactory.CreateWire(false, "reset-not-output"));
@@ -53,7 +64,7 @@ public class Stepper : PartsBase, IStepper
                     ? _resetNot.Output
                     : _memoryBits[i - 1].Output,
                 i == _memoryBits.Length - 1
-                    ? Reset
+                    ? Steps[^1]
                     : WireFactory.CreateWire(false, $"memory-bits-{i}-output"),
                 i % 2 == 0
                     ? _resetOrNotClk.Output 
@@ -76,13 +87,17 @@ public class Stepper : PartsBase, IStepper
             _stepGates[i] = i == 0
                 ? ComponentFactory.CreateOr2(Reset, _nots[i].Output, Steps[i])
                 : ComponentFactory.CreateAnd2(_memoryBits[mbIndex].Output, _nots[i].Output, Steps[i]);
-            mbIndex += 2;
+
+            if (i != 0)
+            {
+                mbIndex += 2;
+            }
         }
     }
 
     public IWire<bool> Clk { get; }
 
-    public IWire<bool> Reset => Steps[^1];
+    public IWire<bool> Reset { get; }
     public IWireGroup<bool> Steps { get; }
     
     public void Update()
