@@ -1,4 +1,5 @@
 ﻿using ComputerSimulator.Core.Circuits;
+using ComputerSimulator.Core.Constants;
 using ComputerSimulator.Core.Exceptions;
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Gates;
@@ -41,9 +42,9 @@ public class Stepper : PartsBase, IStepper
         IWireFactory wireFactory)
         : base(componentFactory, wireFactory)
     {
-        if (steps.Count != 7)
+        if (steps.Count != WireConstants.ExpectedNumberOfSteps)
         {
-            throw new ComputerSimulatorException($"{nameof(Steps)} incorrect length. expected 7 got {steps.Count}");
+            throw new ComputerSimulatorException($"{nameof(Steps)} incorrect length. expected {WireConstants.ExpectedNumberOfSteps} got {steps.Count}");
         }
         
         Clk = clk;
