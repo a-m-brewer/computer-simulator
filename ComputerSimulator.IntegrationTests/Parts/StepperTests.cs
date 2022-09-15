@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using ComputerSimulator.Core.Parts;
+using FluentAssertions;
 using FluentAssertions.Execution;
 using NUnit.Framework;
 
@@ -29,6 +30,60 @@ public class StepperTests : IntegrationTestBase
             stepper.Update();
         }
 
+        VerifyStep(stepper, onBit);
+    }
+
+    [Test]
+    public void CanResetTo0()
+    {
+        var stepper = ComponentFactory.CreateStepper(
+            CreateTestWire(false, "clk"),
+            CreateTestWire(false, "reset"),
+            CreateTestWireGroup(false, 7, "step"));
+
+        for (var i = 0; i <= 6; i++)
+        {
+            stepper.Clk.Value = true;
+            stepper.Update();
+            stepper.Clk.Value = false;
+            stepper.Update();
+        }
+
+        VerifyStep(stepper, 6);
+
+        stepper.Clk.Value = true;
+        stepper.Reset.Value = true;
+        stepper.Update();
+
+        VerifyStep(stepper, 0);
+    }
+
+    [Test]
+    public void StaysAtIndex7IfNotReset()
+    {
+        var stepper = ComponentFactory.CreateStepper(
+            CreateTestWire(false, "clk"),
+            CreateTestWire(false, "reset"),
+            CreateTestWireGroup(false, 7, "step"));
+
+        for (var i = 0; i <= 8; i++)
+        {
+            stepper.Clk.Value = true;
+            stepper.Update();
+            stepper.Clk.Value = false;
+            stepper.Update();
+        }
+
+        VerifyStep(stepper, 6);
+        
+        stepper.Clk.Value = true;
+        stepper.Update();
+        
+        VerifyStep(stepper, 6);
+    }
+
+    private static void VerifyStep(IStepper stepper, int onBit)
+    {
         using (new AssertionScope())
         {
             for (var i = 0; i < stepper.Steps.Count; i++)
@@ -43,84 +98,5 @@ public class StepperTests : IntegrationTestBase
         }
 
         stepper.Steps[onBit].Value.Should().BeTrue();
-    }
-
-    [Test]
-    public void CanResetTo0()
-    {
-        var stepper = ComponentFactory.CreateStepper(
-            CreateTestWire(false, "clk"),
-            CreateTestWire(false, "reset"),
-            CreateTestWireGroup(false, 7, "step"));
-
-        for (var i = 0; i < 8; i++)
-        {
-            stepper.Clk.Value = true;
-            stepper.Update();
-            stepper.Clk.Value = false;
-            stepper.Update();
-        }
-
-        stepper[]
-        
-        var output = stepperOutput;
-        var rest = stepperOutput.Where(w => output.IndexOf(w) != 6);
-        var restOn = rest.Any(w => w);
-        Assert.IsFalse(restOn);
-
-        stepper.Clk.Value = true;
-        stepper.Reset.Value = true;
-        stepper.Update();
-
-        Assert.IsTrue(stepperOutput[0]);
-        rest = stepperOutput.Where(w => stepperOutput.IndexOf(w) != 0);
-        restOn = rest.Any(w => w);
-        Assert.IsFalse(restOn);
-    }
-
-    [Test]
-    public void InfiniteStepper()
-    {
-        var stepper = TestUtils.CreateStepper();
-
-        var stepperOutput = new StepperOutput();
-
-        for (var i = 0; i < 8; i++)
-        {
-            stepper.Step(true, false);
-            stepperOutput = stepper.Step(false, false);
-        }
-
-        Assert.IsTrue(stepperOutput[6]);
-        var output = stepperOutput;
-        var rest = stepperOutput.Where(w => output.IndexOf(w) != 6);
-        var restOn = rest.Any(w => w);
-        Assert.IsFalse(restOn);
-
-        stepperOutput = stepper.Step(true);
-
-        Assert.IsTrue(stepperOutput[0]);
-        rest = stepperOutput.Where(w => stepperOutput.IndexOf(w) != 0);
-        restOn = rest.Any(w => w);
-        Assert.IsFalse(restOn);
-    }
-
-    [Test]
-    public void StaysAtIndex7IfNotReset()
-    {
-        var stepper = TestUtils.CreateStepper();
-
-        var stepperOutput = new StepperOutput();
-
-        for (var i = 0; i < 8; i++)
-        {
-            stepper.Step(true, false);
-            stepperOutput = stepper.Step(false, false);
-        }
-
-        Assert.IsTrue(stepperOutput[6]);
-        var rest = stepperOutput.Where(w => stepperOutput.IndexOf(w) != 6);
-        var restOn = rest.Any(w => w);
-        Assert.IsFalse(restOn);
     }
 }
