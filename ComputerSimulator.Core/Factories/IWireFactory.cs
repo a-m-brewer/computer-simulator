@@ -22,5 +22,8 @@ public interface IWireFactory
     // A wire that is always true
     IWire<bool> PowerWire { get; }
     
+    // A wire that is always false
+    IWire<bool> OffWire { get; }
+    
     int WordSize { get; }
 }

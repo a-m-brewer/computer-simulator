@@ -82,25 +82,40 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateGroup(false, WireConstants.ExpectedNumberOfSteps, "step"));
         
         // Enables
-        _ramEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, null!, RamEnable);
-        _accEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, null!, AccEnable);
+        _ramEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, WireFactory.OffWire, RamEnable);
+        _accEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, StepWire(6), AccEnable);
         
         _generalPurposeRegistersEnableAnd = new IAnd2[WireConstants.ExpectedNumberOfGeneralPurposeRegisters];
         for (var i = 0; i < WireConstants.ExpectedNumberOfGeneralPurposeRegisters; i++)
         {
-            _generalPurposeRegistersEnableAnd[i] = ComponentFactory.CreateAnd2(_clock.ClkE, null!, GeneralPurposeRegistersEnable[i]);
+            _generalPurposeRegistersEnableAnd[i] = ComponentFactory.CreateAnd2(
+                _clock.ClkE,
+                i switch
+                {
+                    0 => StepWire(5),
+                    1 => StepWire(4),
+                    _ => WireFactory.OffWire
+                }, 
+                GeneralPurposeRegistersEnable[i]);
         }
         
         // Sets
-        _marSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, null!, MarSet);
-        _accSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, null!, AccSet);
-        _ramSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, null!, RamSet);
-        _tmpSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, null!, TmpSet);
+        _marSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, WireFactory.OffWire, MarSet);
+        _accSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(5), AccSet);
+        _ramSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, WireFactory.OffWire, RamSet);
+        _tmpSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(4), TmpSet);
         
         _generalPurposeRegistersSetAnd = new IAnd2[WireConstants.ExpectedNumberOfGeneralPurposeRegisters];
         for (var i = 0; i < WireConstants.ExpectedNumberOfGeneralPurposeRegisters; i++)
         {
-            _generalPurposeRegistersSetAnd[i] = ComponentFactory.CreateAnd2(_clock.ClkS, null!, GeneralPurposeRegistersSet[i]);
+            _generalPurposeRegistersSetAnd[i] = ComponentFactory.CreateAnd2(
+                _clock.ClkS, 
+                i switch
+                {
+                    0 => StepWire(6),
+                    _ => WireFactory.OffWire
+                }, 
+                GeneralPurposeRegistersSet[i]);
         }
     }
 
@@ -146,5 +161,14 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         {
             generalPurposeRegisterSetAnd.Update();
         }
+    }
+
+    /// <summary>
+    /// Just an ease of use method so I can write code like the diagram
+    /// Diagram is 1 indexed 
+    /// </summary>
+    private IWire<bool> StepWire(int step)
+    {
+        return _stepper.Steps[step - 1];
     }
 }

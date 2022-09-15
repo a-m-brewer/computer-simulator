@@ -8,6 +8,7 @@ public class WireFactory : IWireFactory
 {
     private readonly ComputerSettings _computerSettings;
     private static readonly IWire<bool> _powerWire = new Wire<bool>(true, nameof(PowerWire));
+    private static readonly IWire<bool> _offWire = new Wire<bool>(false, nameof(OffWire));
 
     public WireFactory(
         ComputerSettings computerSettings)
@@ -46,6 +47,7 @@ public class WireFactory : IWireFactory
     }
 
     public IWire<bool> PowerWire => _powerWire;
+    public IWire<bool> OffWire => _offWire;
 
     public int WordSize => _computerSettings.WordSize;
 
