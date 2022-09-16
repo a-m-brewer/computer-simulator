@@ -10,6 +10,8 @@ public interface ICentralProcessingUnit : IPart
 
     #region Enables
 
+    IWire<bool> IarEnable { get; }
+
     IWire<bool> RamEnable { get; }
 
     IWire<bool> AccEnable { get; }
@@ -30,6 +32,10 @@ public interface ICentralProcessingUnit : IPart
 
     IWire<bool> TmpSet { get; }
     
+    IWire<bool> IarSet { get; }
+    
+    IWire<bool> IrSet { get; }
+
     IWireGroup<bool> GeneralPurposeRegistersSet { get; }
 
     #endregion
@@ -47,9 +53,15 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
     private readonly IAnd2 _ramSetAnd;
     private readonly IAnd2 _tmpSetAnd;
     private readonly IAnd2[] _generalPurposeRegistersSetAnd;
+    private readonly IAnd2 _iarEnableAnd;
+    private readonly IAnd2 _irSetAnd;
+    private readonly IAnd2 _iarSetAnd;
+    private readonly IOr2 _marSetOr;
+    private readonly IOr2 _accSetOr;
+    private readonly IOr2 _accEnableOr;
 
     public CentralProcessingUnit(
-        IWire<bool> bus1,
+        IWire<bool> iarEnable,
         IWire<bool> ramEnable,
         IWire<bool> accEnable,
         IWireGroup<bool> generalPurposeRegistersEnable,
@@ -58,11 +70,12 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         IWire<bool> accSet,
         IWire<bool> ramSet,
         IWire<bool> tmpSet,
+        IWire<bool> iarSet, 
+        IWire<bool> irSet,
         IWireGroup<bool> generalPurposeRegistersSet,
         IComponentFactory componentFactory,
         IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
-        Bus1 = bus1;
         RamEnable = ramEnable;
         AccEnable = accEnable;
         GeneralPurposeRegistersEnable = generalPurposeRegistersEnable;
@@ -72,6 +85,9 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         RamSet = ramSet;
         TmpSet = tmpSet;
         GeneralPurposeRegistersSet = generalPurposeRegistersSet;
+        IarEnable = iarEnable;
+        IarSet = iarSet;
+        IrSet = irSet;
 
         _clock = ComponentFactory.CreateComputerClock(
             WireFactory.CreateWire(false, "clk"),
@@ -82,8 +98,11 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateGroup(false, WireConstants.ExpectedNumberOfSteps, "step"));
         
         // Enables
-        _ramEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, WireFactory.OffWire, RamEnable);
-        _accEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, StepWire(6), AccEnable);
+        _iarEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, StepWire(1), IarEnable);
+        _ramEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, StepWire(2), RamEnable);
+
+        _accEnableOr = ComponentFactory.CreateOr2(StepWire(3), StepWire(6), WireFactory.CreateWire(false, "acc-enable-or"));
+        _accEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, _accEnableOr.Output, AccEnable);
         
         _generalPurposeRegistersEnableAnd = new IAnd2[WireConstants.ExpectedNumberOfGeneralPurposeRegisters];
         for (var i = 0; i < WireConstants.ExpectedNumberOfGeneralPurposeRegisters; i++)
@@ -101,8 +120,16 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         }
         
         // Sets
-        _marSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(4), MarSet);
-        _accSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(5), AccSet);
+        _irSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(2), IrSet);
+
+        _marSetOr = ComponentFactory.CreateOr2(StepWire(1), StepWire(4), WireFactory.CreateWire(false, "mar-set-or"));
+        _marSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _marSetOr.Output, MarSet);
+        
+        _iarSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(3), IarSet);
+
+        _accSetOr = ComponentFactory.CreateOr2(StepWire(1), StepWire(5), WireFactory.CreateWire(false, "acc-set-or"));
+        _accSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _accSetOr.Output, AccSet);
+
         _ramSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(5), RamSet);
         _tmpSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(4), TmpSet);
         
@@ -120,7 +147,9 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         }
     }
 
-    public IWire<bool> Bus1 { get; }
+    public IWire<bool> Bus1 => StepWire(1);
+
+    public IWire<bool> IarEnable { get; }
 
     public IWire<bool> RamEnable { get; }
 
@@ -138,6 +167,10 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
 
     public IWire<bool> TmpSet { get; }
 
+    public IWire<bool> IarSet { get; }
+
+    public IWire<bool> IrSet { get; }
+
     public IWireGroup<bool> GeneralPurposeRegistersSet { get; }
 
     public void Update()
@@ -145,7 +178,10 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _clock.Update();
         _stepper.Update();
         
+        _iarEnableAnd.Update();
         _ramEnableAnd.Update();
+        
+        _accEnableOr.Update();
         _accEnableAnd.Update();
 
         foreach (var generalPurposeRegisterEnableAnd in _generalPurposeRegistersEnableAnd)
@@ -153,8 +189,16 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             generalPurposeRegisterEnableAnd.Update();
         }
         
+        _irSetAnd.Update();
+        
+        _marSetOr.Update();
         _marSetAnd.Update();
+        
+        _iarSetAnd.Update();
+        
+        _accSetOr.Update();
         _accSetAnd.Update();
+        
         _ramSetAnd.Update();
         _tmpSetAnd.Update();
         

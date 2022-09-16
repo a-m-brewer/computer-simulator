@@ -78,7 +78,7 @@ public interface IComponentFactory
     IStepper CreateStepper(IWire<bool> clk, IWire<bool> reset, IWireGroup<bool> steps);
 
     ICentralProcessingUnit CreateCentralProcessingUnit(
-        IWire<bool> bus1,
+        IWire<bool> iarEnable,
         IWire<bool> ramEnable,
         IWire<bool> accEnable,
         IWireGroup<bool> generalPurposeRegistersEnable,
@@ -87,6 +87,8 @@ public interface IComponentFactory
         IWire<bool> accSet,
         IWire<bool> ramSet,
         IWire<bool> tmpSet,
+        IWire<bool> iarSet, 
+        IWire<bool> irSet,
         IWireGroup<bool> generalPurposeRegistersSet);
 }
 
@@ -285,7 +287,7 @@ public class ComponentFactory : IComponentFactory
     }
 
     public ICentralProcessingUnit CreateCentralProcessingUnit(
-        IWire<bool> bus1,
+        IWire<bool> iarEnable,
         IWire<bool> ramEnable,
         IWire<bool> accEnable,
         IWireGroup<bool> generalPurposeRegistersEnable,
@@ -294,10 +296,12 @@ public class ComponentFactory : IComponentFactory
         IWire<bool> accSet,
         IWire<bool> ramSet,
         IWire<bool> tmpSet,
+        IWire<bool> iarSet, 
+        IWire<bool> irSet,
         IWireGroup<bool> generalPurposeRegistersSet)
     {
         return new CentralProcessingUnit(
-            bus1,
+            iarEnable,
             ramEnable,
             accEnable,
             generalPurposeRegistersEnable,
@@ -306,6 +310,8 @@ public class ComponentFactory : IComponentFactory
             accSet,
             ramSet,
             tmpSet,
+            iarSet,
+            irSet,
             generalPurposeRegistersSet,
             this,
             _wireFactory);

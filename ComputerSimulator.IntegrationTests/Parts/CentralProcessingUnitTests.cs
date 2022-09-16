@@ -14,7 +14,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
     public void SetUp()
     {
         _sut = ComponentFactory.CreateCentralProcessingUnit(
-            CreateTestWire(false, "bus1"),
+            CreateTestWire(false, "iar-enable"),
             CreateTestWire(false, "ram-enable"),
             CreateTestWire(false, "acc-enable"),
             CreateTestWireGroup(false, WireConstants.ExpectedNumberOfGeneralPurposeRegisters,
@@ -24,6 +24,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             CreateTestWire(false, "acc-set"),
             CreateTestWire(false, "ram-set"),
             CreateTestWire(false, "tmp-set"),
+            CreateTestWire(false, "iar-set"),
+            CreateTestWire(false, "ir-set"),
             CreateTestWireGroup(false, WireConstants.ExpectedNumberOfGeneralPurposeRegisters,
                 "general-purpose-register-set")
         );
@@ -38,6 +40,18 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             {
                 PerformStep();
             }
+
+            [Test]
+            public void Bus1IsTrue()
+            {
+                _sut.Bus1.Value.Should().BeTrue();
+            }
+
+            [Test]
+            public void IarEnableIsTrue()
+            {
+                _sut.IarEnable.Value.Should().BeTrue();
+            }
         }
         
         public class CentralProcessingUnitStep1SetTests : CentralProcessingUnitStep1Tests
@@ -46,6 +60,24 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             public void Step1SetSetUp()
             {
                 PerformStep(2);
+            }
+            
+            [Test]
+            public void Bus1IsTrue()
+            {
+                _sut.Bus1.Value.Should().BeTrue();
+            }
+
+            [Test]
+            public void MarSetIsTrue()
+            {
+                _sut.MarSet.Value.Should().BeTrue();
+            }
+
+            [Test]
+            public void AccSetIsTrue()
+            {
+                _sut.AccSet.Value.Should().BeTrue();
             }
         }
     }
@@ -66,6 +98,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             {
                 PerformStep();
             }
+
+            [Test]
+            public void RamEnableIsTrue()
+            {
+                _sut.RamEnable.Value.Should().BeTrue();
+            }
         }
         
         public class CentralProcessingUnitStep2SetTests : CentralProcessingUnitStep2Tests
@@ -74,6 +112,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             public void Step2SetSetUp()
             {
                 PerformStep(2);
+            }
+
+            [Test]
+            public void IrSetIsTrue()
+            {
+                _sut.IrSet.Value.Should().BeTrue();
             }
         }
     }
@@ -94,6 +138,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             {
                 PerformStep();
             }
+
+            [Test]
+            public void AccEnableIsTrue()
+            {
+                _sut.AccEnable.Value.Should().BeTrue();
+            }
         }
         
         public class CentralProcessingUnitStep3SetTests : CentralProcessingUnitStep3Tests
@@ -102,6 +152,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             public void Step3SetSetUp()
             {
                 PerformStep(2);
+            }
+
+            [Test]
+            public void IarSetIsTrue()
+            {
+                _sut.IarSet.Value.Should().BeTrue();
             }
         }
     }
