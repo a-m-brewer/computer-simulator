@@ -129,6 +129,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
                 // Assert
                 _sut.GeneralPurposeRegistersEnable[1].Value.Should().BeTrue();
             }
+
+            [Test]
+            public void R2EnableIsTrue()
+            {
+                _sut.GeneralPurposeRegistersEnable[2].Value.Should().BeTrue();
+            }
         }
         
         public class CentralProcessingUnitStep4SetTests : CentralProcessingUnitStep4Tests
@@ -144,6 +150,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             {
                 // Assert
                 _sut.TmpSet.Value.Should().BeTrue();
+            }
+
+            [Test]
+            public void MarSetIsTrue()
+            {
+                _sut.MarSet.Value.Should().BeTrue();
             }
         }
     }
@@ -184,6 +196,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             public void AccSetIsTrue()
             {
                 _sut.AccSet.Value.Should().BeTrue();
+            }
+
+            [Test]
+            public void RamSetIsTrue()
+            {
+                _sut.RamSet.Value.Should().BeTrue();
             }
         }
     }

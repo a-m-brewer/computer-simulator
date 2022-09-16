@@ -94,15 +94,16 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
                 {
                     0 => StepWire(5),
                     1 => StepWire(4),
+                    2 => StepWire(4),
                     _ => WireFactory.OffWire
                 }, 
                 GeneralPurposeRegistersEnable[i]);
         }
         
         // Sets
-        _marSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, WireFactory.OffWire, MarSet);
+        _marSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(4), MarSet);
         _accSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(5), AccSet);
-        _ramSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, WireFactory.OffWire, RamSet);
+        _ramSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(5), RamSet);
         _tmpSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(4), TmpSet);
         
         _generalPurposeRegistersSetAnd = new IAnd2[WireConstants.ExpectedNumberOfGeneralPurposeRegisters];
