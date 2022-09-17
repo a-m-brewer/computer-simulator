@@ -39,6 +39,12 @@ public interface ICentralProcessingUnit : IPart
     IWireGroup<bool> GeneralPurposeRegistersSet { get; }
 
     #endregion
+
+    #region Inputs
+
+    IWireGroup<bool> InstructionRegister { get; }
+
+    #endregion
 }
 
 public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
@@ -73,6 +79,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         IWire<bool> iarSet, 
         IWire<bool> irSet,
         IWireGroup<bool> generalPurposeRegistersSet,
+        IWireGroup<bool> instructionRegister,
         IComponentFactory componentFactory,
         IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
@@ -85,6 +92,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         RamSet = ramSet;
         TmpSet = tmpSet;
         GeneralPurposeRegistersSet = generalPurposeRegistersSet;
+        InstructionRegister = instructionRegister;
         IarEnable = iarEnable;
         IarSet = iarSet;
         IrSet = irSet;
@@ -172,6 +180,8 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
     public IWire<bool> IrSet { get; }
 
     public IWireGroup<bool> GeneralPurposeRegistersSet { get; }
+
+    public IWireGroup<bool> InstructionRegister { get; }
 
     public void Update()
     {

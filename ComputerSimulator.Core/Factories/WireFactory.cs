@@ -7,8 +7,8 @@ namespace ComputerSimulator.Core.Factories;
 public class WireFactory : IWireFactory
 {
     private readonly ComputerSettings _computerSettings;
-    private static readonly IWire<bool> _powerWire = new Wire<bool>(true, nameof(PowerWire));
-    private static readonly IWire<bool> _offWire = new Wire<bool>(false, nameof(OffWire));
+    private static readonly IWire<bool> _powerWire = new ReadOnlyWire<bool>(true, nameof(PowerWire));
+    private static readonly IWire<bool> _offWire = new ReadOnlyWire<bool>(false, nameof(OffWire));
 
     public WireFactory(
         ComputerSettings computerSettings)

@@ -5,7 +5,6 @@ using NUnit.Framework;
 
 namespace ComputerSimulator.IntegrationTests.Parts;
 
-[TestFixture]
 public abstract class CentralProcessingUnitTests : IntegrationTestBase
 {
     private ICentralProcessingUnit _sut = null!;
@@ -27,7 +26,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             CreateTestWire(false, "iar-set"),
             CreateTestWire(false, "ir-set"),
             CreateTestWireGroup(false, WireConstants.ExpectedNumberOfGeneralPurposeRegisters,
-                "general-purpose-register-set")
+                "general-purpose-register-set"),
+            CreateTestWireGroup(false, "instruction-register-output")
         );
     }
 

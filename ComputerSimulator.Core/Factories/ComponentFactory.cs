@@ -89,7 +89,10 @@ public interface IComponentFactory
         IWire<bool> tmpSet,
         IWire<bool> iarSet, 
         IWire<bool> irSet,
-        IWireGroup<bool> generalPurposeRegistersSet);
+        IWireGroup<bool> generalPurposeRegistersSet,
+        IWireGroup<bool> instructionRegister);
+
+    IComputerPart CreateComputerPart();
 }
 
 public class ComponentFactory : IComponentFactory
@@ -298,7 +301,8 @@ public class ComponentFactory : IComponentFactory
         IWire<bool> tmpSet,
         IWire<bool> iarSet, 
         IWire<bool> irSet,
-        IWireGroup<bool> generalPurposeRegistersSet)
+        IWireGroup<bool> generalPurposeRegistersSet,
+        IWireGroup<bool> instructionRegister)
     {
         return new CentralProcessingUnit(
             iarEnable,
@@ -313,8 +317,14 @@ public class ComponentFactory : IComponentFactory
             iarSet,
             irSet,
             generalPurposeRegistersSet,
+            instructionRegister,
             this,
             _wireFactory);
+    }
+
+    public IComputerPart CreateComputerPart()
+    {
+        return new ComputerPart(this, _wireFactory);
     }
 
     public IMemoryBit CreateMemoryBit(
