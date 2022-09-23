@@ -12,6 +12,11 @@ public interface IWireFactory
 
     IWireGroup<T> CreateGroup<T>(T initialValue, int size, string? label = null);
 
+    ISetEnableWire<T> CreateSetEnableWire<T>(T initialValue, string? label = null);
+    ISetEnableWireGroup<T> CreateSetEnableWireGroup<T>(T initialValue, int size, string? label = null);
+
+    ICaez<T> CreateCaez<T>(T initialValue, string? label = null);
+    
     IBus CreateBus(string? label = null);
 
     IOp CreateOp(string? label = null);

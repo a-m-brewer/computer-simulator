@@ -7,13 +7,11 @@ namespace ComputerSimulator.IntegrationTests;
 
 public class IntegrationTestBase : HostTestBase
 {
-    private IWireFactory _wireFactory = null!;
-
     [SetUp]
     public void IntegrationSetUp()
     {
         ComputerSettings = GetRequiredService<ComputerSettings>();
-        _wireFactory = GetRequiredService<IWireFactory>();
+        WireFactory = GetRequiredService<IWireFactory>();
         ComponentFactory = GetRequiredService<IComponentFactory>();
     }
 
@@ -21,16 +19,17 @@ public class IntegrationTestBase : HostTestBase
     public void IntergrationTearDown()
     {
         ComputerSettings = null!;
-        _wireFactory = null!;
+        WireFactory = null!;
         ComponentFactory = null!;
     }
 
     protected ComputerSettings ComputerSettings { get; private set; } = null!;
     protected IComponentFactory ComponentFactory { get; private set; } = null!;
+    protected IWireFactory WireFactory { get; private set; } = null!;
     
     protected IWire<T> CreateTestWire<T>(T initialValue, string? label = null)
     {
-        return _wireFactory.CreateWire(initialValue, label);
+        return WireFactory.CreateWire(initialValue, label);
     }
 
     protected IWireGroup<T> CreateTestWireGroup<T>(T initialValue, string? label = null)
@@ -40,16 +39,16 @@ public class IntegrationTestBase : HostTestBase
 
     protected IWireGroup<T> CreateTestWireGroup<T>(T initialValue, int size, string? label = null)
     {
-        return _wireFactory.CreateGroup(initialValue, size, label);
+        return WireFactory.CreateGroup(initialValue, size, label);
     }
 
     protected IBus CreateTestBus(string? label = null)
     {
-        return _wireFactory.CreateBus(label);
+        return WireFactory.CreateBus(label);
     }
 
     protected IOp CreateTestOp(string? label = null)
     {
-        return _wireFactory.CreateOp(label);
+        return WireFactory.CreateOp(label);
     }
 }

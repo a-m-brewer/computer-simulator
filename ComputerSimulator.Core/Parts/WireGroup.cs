@@ -14,18 +14,18 @@ public interface IWireGroup<T> : IWireGroup, IReadOnlyList<IWire<T>>
 
 public class WireGroup<T> : IWireGroup<T>
 {
-    private readonly IList<IWire<T>> _wires;
+    protected readonly IList<IWire<T>> Wires;
 
     public WireGroup(IList<IWire<T>> wires)
     {
-        _wires = wires;
+        Wires = wires;
     }
 
-    public int Count => _wires.Count;
+    public int Count => Wires.Count;
     
     public IEnumerator<IWire<T>> GetEnumerator()
     {
-        return _wires.GetEnumerator();
+        return Wires.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -33,7 +33,7 @@ public class WireGroup<T> : IWireGroup<T>
         return GetEnumerator();
     }
 
-    public IWire<T> this[int index] => _wires[index];
+    public IWire<T> this[int index] => Wires[index];
 
-    public IWire<T> this[OpCode index] => _wires[(int)index];
+    public IWire<T> this[OpCode index] => Wires[(int)index];
 }

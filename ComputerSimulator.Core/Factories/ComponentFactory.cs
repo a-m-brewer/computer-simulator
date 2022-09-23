@@ -78,19 +78,21 @@ public interface IComponentFactory
     IStepper CreateStepper(IWire<bool> clk, IWire<bool> reset, IWireGroup<bool> steps);
 
     ICentralProcessingUnit CreateCentralProcessingUnit(
-        IWire<bool> iarEnable,
-        IWire<bool> ramEnable,
-        IWire<bool> accEnable,
-        IWireGroup<bool> generalPurposeRegistersEnable,
+        ISetEnableWire<bool> iar,
+        ISetEnableWire<bool> ram,
+        ISetEnableWire<bool> acc,
+        ISetEnableWire<bool> ioClk,
+        ISetEnableWireGroup<bool> generalPurposeRegisters,
         IOp op,
         IWire<bool> marSet,
-        IWire<bool> accSet,
-        IWire<bool> ramSet,
         IWire<bool> tmpSet,
-        IWire<bool> iarSet, 
         IWire<bool> irSet,
-        IWireGroup<bool> generalPurposeRegistersSet,
-        IWireGroup<bool> instructionRegister);
+        IWire<bool> flagsSet,
+        IWire<bool> carryInTmp,
+        IWire<bool> ioInputOutput, 
+        IWire<bool> ioDataAddress,
+        IWireGroup<bool> instructionRegister,
+        ICaez<bool> caez);
 
     IComputerPart CreateComputerPart();
 }
@@ -290,34 +292,38 @@ public class ComponentFactory : IComponentFactory
     }
 
     public ICentralProcessingUnit CreateCentralProcessingUnit(
-        IWire<bool> iarEnable,
-        IWire<bool> ramEnable,
-        IWire<bool> accEnable,
-        IWireGroup<bool> generalPurposeRegistersEnable,
+        ISetEnableWire<bool> iar,
+        ISetEnableWire<bool> ram,
+        ISetEnableWire<bool> acc,
+        ISetEnableWire<bool> ioClk,
+        ISetEnableWireGroup<bool> generalPurposeRegisters,
         IOp op,
         IWire<bool> marSet,
-        IWire<bool> accSet,
-        IWire<bool> ramSet,
         IWire<bool> tmpSet,
-        IWire<bool> iarSet, 
         IWire<bool> irSet,
-        IWireGroup<bool> generalPurposeRegistersSet,
-        IWireGroup<bool> instructionRegister)
+        IWire<bool> flagsSet,
+        IWire<bool> carryInTmp,
+        IWire<bool> ioInputOutput, 
+        IWire<bool> ioDataAddress,
+        IWireGroup<bool> instructionRegister,
+        ICaez<bool> caez)
     {
         return new CentralProcessingUnit(
-            iarEnable,
-            ramEnable,
-            accEnable,
-            generalPurposeRegistersEnable,
+            iar,
+            ram,
+            acc,
+            ioClk,
+            generalPurposeRegisters,
             op,
             marSet,
-            accSet,
-            ramSet,
             tmpSet,
-            iarSet,
             irSet,
-            generalPurposeRegistersSet,
+            flagsSet,
+            carryInTmp,
+            ioInputOutput,
+            ioDataAddress,
             instructionRegister,
+            caez,
             this,
             _wireFactory);
     }

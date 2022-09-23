@@ -30,34 +30,34 @@ public class ComputerPart : PartsBase, IComputerPart
 
         var irSet = WireFactory.CreateWire(false, "ir-set");
         _instructionRegister = ComponentFactory.CreateRegister(irSet, WireFactory.PowerWire, _bus, WireFactory.CreateGroup(false, "ir-output"));
-        
+
         _cpu = ComponentFactory.CreateCentralProcessingUnit(
-            WireFactory.CreateWire(false, "iar-enable"),
-            WireFactory.CreateWire(false, "ram-enable"),
-            WireFactory.CreateWire(false, "acc-enable"),
-            WireFactory.CreateGroup(false, WireConstants.ExpectedNumberOfGeneralPurposeRegisters,
-                "general-purpose-register-enable"),
+            WireFactory.CreateSetEnableWire(false, "iar"),
+            WireFactory.CreateSetEnableWire(false, "ram"),
+            WireFactory.CreateSetEnableWire(false, "acc"),
+            WireFactory.CreateSetEnableWire(false, "ioClk"),
+            WireFactory.CreateSetEnableWireGroup(false, WireConstants.ExpectedNumberOfGeneralPurposeRegisters, "general-purpose-registers"),
             WireFactory.CreateOp("op"),
             WireFactory.CreateWire(false, "mar-set"),
-            WireFactory.CreateWire(false, "acc-set"),
-            WireFactory.CreateWire(false, "ram-set"),
             WireFactory.CreateWire(false, "tmp-set"),
-            WireFactory.CreateWire(false, "iar-set"),
             irSet,
-            WireFactory.CreateGroup(false, WireConstants.ExpectedNumberOfGeneralPurposeRegisters,
-                "general-purpose-register-set"),
-            _instructionRegister.Outputs
-            );
+            WireFactory.CreateWire(false, "flags-set"),
+            WireFactory.CreateWire(false, "carry-in-tmp"),
+            WireFactory.CreateWire(false, "io-input-output"),
+            WireFactory.CreateWire(false, "io-data-address"),
+            WireFactory.CreateGroup(false, "instruction-register"),
+            WireFactory.CreateCaez(false, "caez")
+        );
 
-        _instructionAddressRegister = ComponentFactory.CreateRegister(_cpu.IarSet, _cpu.IarEnable, _bus, _bus);
+        _instructionAddressRegister = ComponentFactory.CreateRegister(_cpu.Iar.Set, _cpu.Iar.Enable, _bus, _bus);
         
         _registers = new IRegister[WireConstants.ExpectedNumberOfGeneralPurposeRegisters];
         for (var i = 0; i < WireConstants.ExpectedNumberOfGeneralPurposeRegisters; i++)
         {
-            _registers[i] = ComponentFactory.CreateRegister(_cpu.GeneralPurposeRegistersSet[i], _cpu.GeneralPurposeRegistersEnable[i], _bus, _bus);
+            _registers[i] = ComponentFactory.CreateRegister(_cpu.GeneralPurposeRegisters[i].Set, _cpu.GeneralPurposeRegisters[i].Enable, _bus, _bus);
         }
 
-        _ram = ComponentFactory.CreateRam(_cpu.MarSet, _bus, _cpu.RamSet, _cpu.RamEnable, _bus);
+        _ram = ComponentFactory.CreateRam(_cpu.MarSet, _bus, _cpu.Ram.Set, _cpu.Ram.Enable, _bus);
 
         _tmpRegister = ComponentFactory.CreateRegister(_cpu.TmpSet, WireFactory.PowerWire, _bus, WireFactory.CreateGroup(false, "tmp-output"));
 
@@ -74,7 +74,7 @@ public class ComputerPart : PartsBase, IComputerPart
             WireFactory.OffWire,
             WireFactory.OffWire);
 
-        _acc = ComponentFactory.CreateRegister(_cpu.AccSet, _cpu.AccEnable, _alu.Outputs, _bus);
+        _acc = ComponentFactory.CreateRegister(_cpu.Acc.Set, _cpu.Acc.Enable, _alu.Outputs, _bus);
     }
 
     public void Update()
