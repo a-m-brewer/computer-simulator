@@ -22,5 +22,5 @@ public class Caez<T> : WireGroup<T>, ICaez<T>
     public IWire<T> C => Wires[0];
     public IWire<T> A => Wires[1];
     public IWire<T> E => Wires[2];
-    public IWire<T> Z => Wires[4];
+    public IWire<T> Z => Wires[3];
 }
