@@ -1,5 +1,8 @@
-﻿using ComputerSimulator.Core.Constants;
+﻿using ComputerSimulator.Core.Circuits;
+using ComputerSimulator.Core.Constants;
+using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Factories;
+using ComputerSimulator.Core.Gates;
 
 namespace ComputerSimulator.Core.Parts;
 
@@ -50,6 +53,28 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
 {
     private readonly IComputerClock _clock;
     private readonly IStepper _stepper;
+    private readonly IAnd2 _tmpSetAnd;
+    private readonly IAnd2 _accSetAnd;
+    private readonly IAnd2 _accEnableAnd;
+    private readonly IAnd2 _marSetAnd;
+    private readonly IAnd2 _ramSetAnd;
+    private readonly IOr _accSetOr;
+    private readonly IOr _marSetOr;
+    private readonly IAnd2 _iarEnableAnd;
+    private readonly IAnd2 _irSetAnd;
+    private readonly IAnd2 _ramEnableAnd;
+    private readonly IAnd2 _iarSetAnd;
+    private readonly IOr _accEnableOr;
+    private readonly IDecoder _regAEnable2X4;
+    private readonly IDecoder _regBEnable2X4;
+    private readonly IDecoder _regBSet2X4;
+    private readonly IAnd[] _gprAEnableDecoderAnd;
+    private readonly IAnd[] _gprBEnableDecoderAnd;
+    private readonly IAnd[] _gprBSetDecoderAnd;
+    private readonly IOr2[] _gprEnableOr;
+    private readonly IOr _regAEnableOr;
+    private readonly IOr _regBEnableOr;
+    private readonly IOr _regBSetOr;
 
     public CentralProcessingUnit(
         ISetEnableWire<bool> iar,
@@ -92,6 +117,72 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
 
         _stepper = ComponentFactory.CreateStepper(_clock.Clk,
             WireFactory.CreateGroup(false, WireConstants.ExpectedNumberOfSteps, "step"));
+
+        _accEnableOr = ComponentFactory.CreateOr(WireFactory.CreateGroup(StepWire(3), StepWire(6)),
+            WireFactory.CreateWire(false, nameof(_accEnableOr)));
+        
+        _iarEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, StepWire(1), Iar.Enable);
+        _ramEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, StepWire(2), Ram.Enable);
+        _accEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, _accEnableOr.Output, Acc.Enable);
+
+        _regAEnableOr = ComponentFactory.CreateOr(
+            WireFactory.CreateGroup(Array.Empty<IWire<bool>>()),
+            WireFactory.CreateWire(false, nameof(_regAEnableOr)));
+        _regBEnableOr = ComponentFactory.CreateOr(
+            WireFactory.CreateGroup(Array.Empty<IWire<bool>>()),
+            WireFactory.CreateWire(false, nameof(_regBEnableOr)));
+        _regBSetOr = ComponentFactory.CreateOr(
+            WireFactory.CreateGroup(Array.Empty<IWire<bool>>()),
+            WireFactory.CreateWire(false, nameof(_regBSetOr)));
+
+        _regAEnable2X4 = ComponentFactory
+            .CreateDecoder(WireFactory.CreateGroup(InstructionRegister[4], InstructionRegister[5]));
+
+        var regBWireGroup = WireFactory.CreateGroup(InstructionRegister[6], InstructionRegister[7]);
+
+        _regBEnable2X4 = ComponentFactory
+            .CreateDecoder(regBWireGroup);
+        _regBSet2X4 = ComponentFactory
+            .CreateDecoder(regBWireGroup);
+
+        _gprAEnableDecoderAnd = _regAEnable2X4.OutputSize
+            .InitArray<IAnd>()
+            .Fill(i => ComponentFactory.CreateAnd(
+                WireFactory.CreateGroup(_clock.ClkE, _regAEnableOr.Output, _regAEnable2X4.Outputs[i]),
+                WireFactory.CreateWire(false, $"{nameof(_gprAEnableDecoderAnd)}[{i}]")));
+        
+        _gprBEnableDecoderAnd = _regBEnable2X4.OutputSize
+            .InitArray<IAnd>()
+            .Fill(i => ComponentFactory.CreateAnd(
+                WireFactory.CreateGroup(_clock.ClkE, _regBEnableOr.Output, _regBEnable2X4.Outputs[i]),
+                WireFactory.CreateWire(false, $"{nameof(_gprBEnableDecoderAnd)}[{i}]")));
+        
+        _gprBSetDecoderAnd = _regBSet2X4.OutputSize
+            .InitArray<IAnd>()
+            .Fill(i => ComponentFactory.CreateAnd(
+                WireFactory.CreateGroup(_clock.ClkS, _regBSetOr.Output, _regBSet2X4.Outputs[i]),
+                WireFactory.CreateWire(false, $"{nameof(_gprBSetDecoderAnd)}[{i}]")));
+
+        _gprEnableOr = 4
+            .InitArray<IOr2>()
+            .Fill(i =>
+                ComponentFactory.CreateOr2(
+                    _gprAEnableDecoderAnd[i].Output,
+                    _gprBEnableDecoderAnd[i].Output,
+                    GeneralPurposeRegisters[i].Enable));
+
+            _marSetOr = ComponentFactory.CreateOr(WireFactory.CreateGroup(StepWire(1), StepWire(4)),
+            WireFactory.CreateWire(false, nameof(_marSetOr)));
+        _accSetOr = ComponentFactory.CreateOr(WireFactory.CreateGroup(StepWire(1), StepWire(5)),
+            WireFactory.CreateWire(false, nameof(_accSetOr)));
+
+        _irSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(2), IrSet);
+        _marSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(4), MarSet);
+        _iarSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(3), Iar.Set);
+        _accSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _accSetOr.Output, Acc.Set);
+        _ramSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(5), Ram.Set);
+        _tmpSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(4), TmpSet);
+        
     }
     
     public IWire<bool> Bus1 => StepWire(1);
@@ -123,6 +214,36 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
     {
         _clock.Update();
         _stepper.Update();
+        
+        _regAEnableOr.Update();
+        _regBEnableOr.Update();
+        _regBSetOr.Update();
+        
+        _regAEnable2X4.Update();
+        _regBEnable2X4.Update();
+        _regBSet2X4.Update();
+        
+        _gprAEnableDecoderAnd.Update();
+        _gprBEnableDecoderAnd.Update();
+        _gprBSetDecoderAnd.Update();
+        
+        _gprEnableOr.Update();
+        
+        _accEnableOr.Update();
+        
+        _iarEnableAnd.Update();
+        _ramEnableAnd.Update();
+        _accEnableAnd.Update();
+
+        _marSetOr.Update();
+        _accSetOr.Update();
+        
+        _irSetAnd.Update();
+        _marSetAnd.Update();
+        _iarSetAnd.Update();
+        _accSetAnd.Update();
+        _ramSetAnd.Update();
+        _tmpSetAnd.Update();
     }
 
     /// <summary>
