@@ -235,7 +235,10 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
                 _step4AndIr3X8DecoderAnds[1].Output),
             WireFactory.CreateWire(false, nameof(_regAEnableOr)));
         _regBEnableOr = ComponentFactory.CreateOr(
-            WireFactory.CreateGroup(_step4Ir0And.Output, _step5AndIr3X8DecoderAnds[1].Output),
+            WireFactory.CreateGroup(
+                _step4Ir0And.Output,
+                _step5AndIr3X8DecoderAnds[1].Output,
+                _step4AndIr3X8DecoderAnds[3].Output),
             WireFactory.CreateWire(false, nameof(_regBEnableOr)));
         _regBSetOr = ComponentFactory.CreateOr(
             WireFactory.CreateGroup(
@@ -290,6 +293,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _iarSetOr = ComponentFactory.CreateOr(
             WireFactory.CreateGroup(
                 StepWire(3),
+                _step4AndIr3X8DecoderAnds[3].Output,
                 _step6AndIr3X8DecoderAnds[2].Output),
             WireFactory.CreateWire(false, $"{nameof(_iarSetOr)}-output"));
         _accSetOr = ComponentFactory.CreateOr(
