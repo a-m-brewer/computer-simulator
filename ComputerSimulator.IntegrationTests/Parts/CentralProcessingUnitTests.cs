@@ -1,5 +1,6 @@
 using System;
 using ComputerSimulator.Core.Constants;
+using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Parts;
 using FluentAssertions;
 using NUnit.Framework;
@@ -199,9 +200,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             {
                 _sut.InstructionRegister[0].Value = aluFlag;
 
+                const int regBPos = 1;
+                SetupRegPositions(0, regBPos);
+
                 PerformStep();
 
-                VerifyRegEnable(aluFlag);
+                VerifyRegEnable(aluFlag, regBPos);
             }
 
             [Test]
@@ -214,9 +218,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
                 _sut.InstructionRegister[0].Value = aluFlag;
                 _sut.InstructionRegister[3].Value = decoder;
 
+                const int regAPos = 0;
+                SetupRegPositions(regAPos, 1);
+
                 PerformStep();
 
-                VerifyRegEnable(aluFlag);
+                VerifyRegEnable(!aluFlag, regAPos);
             }
 
             [Test]
@@ -245,9 +252,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
                 _sut.InstructionRegister[2].Value = true;
                 _sut.InstructionRegister[3].Value = true;
 
+                const int regBPos = 1;
+                SetupRegPositions(0, regBPos);
+
                 PerformStep();
 
-                VerifyRegEnable(true);
+                VerifyRegEnable(true, regBPos);
             }
 
             [Test]
@@ -303,9 +313,13 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
                 _sut.InstructionRegister[3].Value = true;
                 _sut.InstructionRegister[4].Value = output;
 
+                const int regBPos = 1;
+                
+                SetupRegBPositions(regBPos);
+
                 PerformStep();
 
-                VerifyRegEnable(output);
+                VerifyRegEnable(output, regBPos);
             }
         }
 
@@ -465,9 +479,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             {
                 _sut.InstructionRegister[0].Value = aluFlag;
 
+                const int regAPos = 0;
+                SetupRegPositions(regAPos, 1);
+                
                 PerformStep();
 
-                VerifyRegEnable(aluFlag);
+                VerifyRegEnable(aluFlag, regAPos);
             }
 
             [Test]
@@ -480,10 +497,13 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
                 _sut.InstructionRegister[0].Value = aluFlag;
                 _sut.InstructionRegister[3].Value = decoder;
 
+                const int regBPos = 1;
+                SetupRegPositions(0, regBPos);
+                
                 PerformStep();
 
                 VerifyWireShouldBe(s => s.Ram.Enable, ramSet);
-                VerifyRegEnable(rbSet);
+                VerifyRegEnable(rbSet, regBPos);
             }
 
             [Test]
@@ -597,10 +617,13 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
                 _sut.InstructionRegister[0].Value = aluFlag;
                 _sut.InstructionRegister[3].Value = decoder;
 
+                const int regBPos = 1;
+                SetupRegPositions(0, regBPos);
+                
                 PerformStep();
 
                 VerifyWireShouldBe(v => v.Ram.Set, ramSet);
-                VerifyRegSet(rbSet);
+                VerifyRegSet(rbSet, regBPos);
             }
 
             [Test]
@@ -608,9 +631,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             {
                 _sut.InstructionRegister[2].Value = true;
 
+                const int regBPos = 1;
+                SetupRegPositions(0, regBPos);
+                
                 PerformStep();
 
-                VerifyRegSet(true);
+                VerifyRegSet(true, regBPos);
             }
 
             [Test]
@@ -654,9 +680,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
                 _sut.InstructionRegister[3].Value = true;
                 _sut.InstructionRegister[4].Value = output;
 
+                const int regBPos = 1;
+                SetupRegBPositions(regBPos);
+                
                 PerformStep();
 
-                VerifyRegSet(!output);
+                VerifyRegSet(!output, regBPos);
             }
         }
     }
@@ -783,9 +812,12 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
                 _sut.InstructionRegister[2].Value = ir2;
                 _sut.InstructionRegister[3].Value = ir3;
 
+                const int regBPos = 1;
+                SetupRegPositions(0, regBPos);
+                
                 PerformStep();
 
-                VerifyRegSet(expected);
+                VerifyRegSet(expected, regBPos);
             }
 
             [Test]
@@ -869,15 +901,37 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             .Be(expected);
     }
 
-    private void VerifyRegEnable(bool expected)
+    private void SetupRegPositions(int a, int b)
     {
-        // Using register 0 as without setting last 2 bits (false, false) that is the addresses of register 0
-        VerifyWireShouldBe(s => s.GeneralPurposeRegisters[0].Enable, expected);
+        SetupRegAPositions(a);
+        SetupRegBPositions(b);
+    }
+    
+    private void SetupRegAPositions(int a)
+    {
+        var aBool = a.ToBinaryBools(2);
+
+        _sut.InstructionRegister[4].Value = aBool[0];
+        _sut.InstructionRegister[5].Value = aBool[1];
+    }
+    
+    private void SetupRegBPositions(int b)
+    {
+        var bBool = b.ToBinaryBools(2);
+
+        _sut.InstructionRegister[6].Value = bBool[0];
+        _sut.InstructionRegister[7].Value = bBool[1];
     }
 
-    private void VerifyRegSet(bool expected)
+    private void VerifyRegEnable(bool expected, int position)
     {
         // Using register 0 as without setting last 2 bits (false, false) that is the addresses of register 0
-        VerifyWireShouldBe(s => s.GeneralPurposeRegisters[0].Set, expected);
+        VerifyWireShouldBe(s => s.GeneralPurposeRegisters[position].Enable, expected);
+    }
+
+    private void VerifyRegSet(bool expected, int position)
+    {
+        // Using register 0 as without setting last 2 bits (false, false) that is the addresses of register 0
+        VerifyWireShouldBe(s => s.GeneralPurposeRegisters[position].Set, expected);
     }
 }

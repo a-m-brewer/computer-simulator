@@ -160,7 +160,8 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateWire(false, $"{nameof(_caezOr)}-output"));
 
         _ir3X8Decoder = ComponentFactory.CreateDecoder(
-            WireFactory.CreateGroup(InstructionRegister[1], InstructionRegister[2], InstructionRegister[3]));
+            WireFactory.CreateGroup(
+                InstructionRegister[3], InstructionRegister[2], InstructionRegister[1]));
         _irNot = ComponentFactory.CreateNot(InstructionRegister[0],
             WireFactory.CreateWire(false, $"{nameof(_irNot)}-output"));
         _ir3X8DecoderAnds = _ir3X8Decoder.OutputSize
@@ -241,13 +242,13 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
                 _ir3X8DecoderAnds[7].Output,
                 _notIr4.Output),
             WireFactory.CreateWire(false, $"{nameof(_step5Ir3X8Decoder7NotIr4And)}-ouput"));
-        
+
         _aluAnds = 3
             .InitArray<IAnd>()
             .Fill(i =>
                 ComponentFactory.CreateAnd(
                     WireFactory.CreateGroup(InstructionRegister[0], StepWire(5), InstructionRegister[i + 1]),
-                    WireFactory.CreateWire(false, $"{nameof(_aluAnds)}-output[{i}]")));
+                    Op[i]));
 
         _irAnd = ComponentFactory.CreateAnd(
             WireFactory.CreateGroup(InstructionRegister[1], InstructionRegister[2], InstructionRegister[3]),
@@ -314,7 +315,8 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateGroup(
                 _step6Ir0IrNotAnd.Output,
                 _step5AndIr3X8DecoderAnds[0].Output,
-                _step5AndIr3X8DecoderAnds[2].Output),
+                _step5AndIr3X8DecoderAnds[2].Output,
+                _step5Ir3X8Decoder7NotIr4And.Output),
             WireFactory.CreateWire(false, nameof(_regBSetOr)));
 
         _regAEnable2X4 = ComponentFactory
@@ -343,7 +345,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             .InitArray<IAnd>()
             .Fill(i => ComponentFactory.CreateAnd(
                 WireFactory.CreateGroup(_clock.ClkS, _regBSetOr.Output, _regBSet2X4.Outputs[i]),
-                WireFactory.CreateWire(false, $"{nameof(_gprBSetDecoderAnd)}[{i}]")));
+                GeneralPurposeRegisters[i].Set));
 
         _gprEnableOr = 4
             .InitArray<IOr2>()
@@ -381,7 +383,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateWire(false, nameof(_accSetOr)));
         _flagsOr = ComponentFactory.CreateOr2(
             _step4AndIr3X8DecoderAnds[6].Output,
-            WireFactory.OffWire,
+            _step5Ir0And.Output,
             WireFactory.CreateWire(false, $"{nameof(_flagsOr)}-output"));
 
         _irSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(2), IrSet);
@@ -400,7 +402,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _ioClkEAnd = ComponentFactory.CreateAnd2(
             _clock.ClkE,
             _step5Ir3X8Decoder7NotIr4And.Output,
-            WireFactory.CreateWire(false, $"{nameof(_ioClkEAnd)}-output"));
+            IoClk.Enable);
     }
 
     public IWire<bool> Bus1 { get; }
