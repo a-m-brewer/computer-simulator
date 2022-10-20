@@ -2,9 +2,8 @@
 
 namespace ComputerSimulator.Core.Gates;
 
-public interface IGate2 : IComponent 
+public interface IGate2 : ISingleOutput 
 {
     IWire<bool> InputA { get; }
     IWire<bool> InputB { get; }
-    IWire<bool> Output { get; }
 }
