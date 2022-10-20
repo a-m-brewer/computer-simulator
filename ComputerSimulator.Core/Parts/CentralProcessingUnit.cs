@@ -97,6 +97,8 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
     private readonly IAnd2 _zAnd;
     private readonly IOr _caezOr;
     private readonly IAnd2 _carryInTmpAnd;
+    private readonly IOr2 _flagsOr;
+    private readonly IAnd2 _flagsAnd;
 
     public CentralProcessingUnit(
         IWire<bool> bus1,
@@ -268,7 +270,8 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateGroup(
                 StepWire(1),
                 _step4AndIr3X8DecoderAnds[2].Output,
-                _step4AndIr3X8DecoderAnds[5].Output),
+                _step4AndIr3X8DecoderAnds[5].Output,
+                _step4AndIr3X8DecoderAnds[6].Output),
             Bus1);
         _iarEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, _iarEnableOr.Output, Iar.Enable);
         _ramEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, _ramEnableOr.Output, Ram.Enable);
@@ -352,6 +355,10 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
                 _step4AndIr3X8DecoderAnds[2].Output,
                 _step4AndIr3X8DecoderAnds[5].Output),
             WireFactory.CreateWire(false, nameof(_accSetOr)));
+        _flagsOr = ComponentFactory.CreateOr2(
+            _step4AndIr3X8DecoderAnds[6].Output,
+            WireFactory.OffWire,
+            WireFactory.CreateWire(false, $"{nameof(_flagsOr)}-output"));
 
         _irSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(2), IrSet);
         _marSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _marSetOr.Output, MarSet);
@@ -360,6 +367,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _ramSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _step5AndIr3X8DecoderAnds[1].Output, Ram.Set);
         _tmpSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _step4Ir0And.Output, TmpSet);
         _carryInTmpAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _step4Ir0And.Output, CarryInTmp);
+        _flagsAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _flagsOr.Output, FlagsSet);
     }
 
     public IWire<bool> Bus1 { get; }
@@ -439,6 +447,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _marSetOr.Update();
         _iarSetOr.Update();
         _accSetOr.Update();
+        _flagsOr.Update();
 
         _irSetAnd.Update();
         _marSetAnd.Update();
@@ -447,6 +456,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _ramSetAnd.Update();
         _tmpSetAnd.Update();
         _carryInTmpAnd.Update();
+        _flagsAnd.Update();
     }
 
     /// <summary>
