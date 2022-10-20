@@ -16,6 +16,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
     public void SetUp()
     {
         _sut = ComponentFactory.CreateCentralProcessingUnit(
+            WireFactory.CreateWire(false, "bus1"),
             WireFactory.CreateSetEnableWire(false, "iar"),
             WireFactory.CreateSetEnableWire(false, "ram"),
             WireFactory.CreateSetEnableWire(false, "acc"),

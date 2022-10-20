@@ -78,6 +78,7 @@ public interface IComponentFactory
     IStepper CreateStepper(IWire<bool> clk, IWire<bool> reset, IWireGroup<bool> steps);
 
     ICentralProcessingUnit CreateCentralProcessingUnit(
+        IWire<bool> bus1,
         ISetEnableWire<bool> iar,
         ISetEnableWire<bool> ram,
         ISetEnableWire<bool> acc,
@@ -292,6 +293,7 @@ public class ComponentFactory : IComponentFactory
     }
 
     public ICentralProcessingUnit CreateCentralProcessingUnit(
+        IWire<bool> bus1,
         ISetEnableWire<bool> iar,
         ISetEnableWire<bool> ram,
         ISetEnableWire<bool> acc,
@@ -309,6 +311,7 @@ public class ComponentFactory : IComponentFactory
         ICaez<bool> caez)
     {
         return new CentralProcessingUnit(
+            bus1,
             iar,
             ram,
             acc,

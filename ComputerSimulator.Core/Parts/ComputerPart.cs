@@ -32,6 +32,7 @@ public class ComputerPart : PartsBase, IComputerPart
         _instructionRegister = ComponentFactory.CreateRegister(irSet, WireFactory.PowerWire, _bus, WireFactory.CreateGroup(false, "ir-output"));
 
         _cpu = ComponentFactory.CreateCentralProcessingUnit(
+            WireFactory.CreateWire(false, "bus1"),
             WireFactory.CreateSetEnableWire(false, "iar"),
             WireFactory.CreateSetEnableWire(false, "ram"),
             WireFactory.CreateSetEnableWire(false, "acc"),

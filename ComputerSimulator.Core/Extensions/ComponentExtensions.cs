@@ -9,4 +9,13 @@ public static class ComponentExtensions
             component.Update();
         }
     }
+    
+    public static void Update<T>(this Dictionary<int, T> components)
+        where T : IComponent
+    {
+        foreach (var component in components.Values)
+        {
+            component.Update();
+        }
+    }
 }
