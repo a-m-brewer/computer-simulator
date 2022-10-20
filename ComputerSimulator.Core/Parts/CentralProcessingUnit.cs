@@ -174,6 +174,11 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
                 2,
                 ComponentFactory.CreateAnd2(StepWire(5), _ir3X8DecoderAnds[2].Output,
                     WireFactory.CreateWire(false, $"{nameof(_step5AndIr3X8DecoderAnds)}[2]-output"))
+            },
+            {
+                4,
+                ComponentFactory.CreateAnd2(StepWire(5), _ir3X8DecoderAnds[4].Output,
+                    WireFactory.CreateWire(false, $"{nameof(_step5AndIr3X8DecoderAnds)}[4]-output"))
             }
         };
 
@@ -209,13 +214,18 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateWire(false, $"{nameof(_step6Ir0IrNotAnd)}-output"));
 
         _iarEnableOr =
-            ComponentFactory.CreateOr(WireFactory.CreateGroup(StepWire(1), _step4AndIr3X8DecoderAnds[2].Output),
+            ComponentFactory.CreateOr(
+                WireFactory.CreateGroup(
+                    StepWire(1),
+                    _step4AndIr3X8DecoderAnds[2].Output,
+                    _step4AndIr3X8DecoderAnds[4].Output),
                 WireFactory.CreateWire(false, $"{nameof(_iarEnableOr)}-output"));
         _ramEnableOr = ComponentFactory.CreateOr(
             WireFactory.CreateGroup(
                 StepWire(2),
                 _step5AndIr3X8DecoderAnds[0].Output,
-                _step5AndIr3X8DecoderAnds[2].Output),
+                _step5AndIr3X8DecoderAnds[2].Output,
+                _step5AndIr3X8DecoderAnds[4].Output),
             WireFactory.CreateWire(false, $"{nameof(_ramEnableOr)}-output"));
         _accEnableOr = ComponentFactory.CreateOr(
             WireFactory.CreateGroup(
@@ -288,12 +298,14 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
                 StepWire(1),
                 _step4AndIr3X8DecoderAnds[0].Output,
                 _step4AndIr3X8DecoderAnds[1].Output,
-                _step4AndIr3X8DecoderAnds[2].Output),
+                _step4AndIr3X8DecoderAnds[2].Output,
+                _step4AndIr3X8DecoderAnds[4].Output),
             WireFactory.CreateWire(false, nameof(_marSetOr)));
         _iarSetOr = ComponentFactory.CreateOr(
             WireFactory.CreateGroup(
                 StepWire(3),
                 _step4AndIr3X8DecoderAnds[3].Output,
+                _step5AndIr3X8DecoderAnds[4].Output,
                 _step6AndIr3X8DecoderAnds[2].Output),
             WireFactory.CreateWire(false, $"{nameof(_iarSetOr)}-output"));
         _accSetOr = ComponentFactory.CreateOr(
