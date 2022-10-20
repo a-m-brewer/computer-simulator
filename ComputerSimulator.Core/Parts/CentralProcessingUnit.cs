@@ -75,6 +75,12 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
     private readonly IOr _regAEnableOr;
     private readonly IOr _regBEnableOr;
     private readonly IOr _regBSetOr;
+    private readonly IAnd[] _aluAnds;
+    private readonly IAnd _irAnd;
+    private readonly INot _irNot;
+    private readonly IAnd2 _step4Ir0And;
+    private readonly IAnd2 _step5Ir0And;
+    private readonly IAnd _step6Ir0IrNotAnd;
 
     public CentralProcessingUnit(
         ISetEnableWire<bool> iar,
@@ -118,7 +124,28 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _stepper = ComponentFactory.CreateStepper(_clock.Clk,
             WireFactory.CreateGroup(false, WireConstants.ExpectedNumberOfSteps, "step"));
 
-        _accEnableOr = ComponentFactory.CreateOr(WireFactory.CreateGroup(StepWire(3), StepWire(6)),
+        _aluAnds = 3
+            .InitArray<IAnd>()
+            .Fill(i => 
+                ComponentFactory.CreateAnd(WireFactory.CreateGroup(InstructionRegister[0], StepWire(5), InstructionRegister[i + 1]),
+                    WireFactory.CreateWire(false, $"{_aluAnds}-output[{i}]")));
+
+        _irAnd = ComponentFactory.CreateAnd(
+            WireFactory.CreateGroup(InstructionRegister[1], InstructionRegister[2], InstructionRegister[3]),
+            WireFactory.CreateWire(false, $"{_irAnd}-output"));
+        _irNot = ComponentFactory.CreateNot(
+            _irAnd.Output,
+            WireFactory.CreateWire(false, $"{nameof(_irNot)}-output"));
+
+        _step4Ir0And = ComponentFactory.CreateAnd2(StepWire(4), InstructionRegister[0],
+            WireFactory.CreateWire(false, $"{nameof(_step4Ir0And)}-output"));
+        _step5Ir0And = ComponentFactory.CreateAnd2(StepWire(5), InstructionRegister[0],
+            WireFactory.CreateWire(false, $"{nameof(_step5Ir0And)}-output"));
+        _step6Ir0IrNotAnd = ComponentFactory.CreateAnd(
+            WireFactory.CreateGroup(StepWire(6), InstructionRegister[0], _irNot.Output),
+            WireFactory.CreateWire(false, $"{nameof(_step6Ir0IrNotAnd)}-output"));
+
+        _accEnableOr = ComponentFactory.CreateOr(WireFactory.CreateGroup(StepWire(3), _step6Ir0IrNotAnd.Output),
             WireFactory.CreateWire(false, nameof(_accEnableOr)));
         
         _iarEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, StepWire(1), Iar.Enable);
@@ -126,13 +153,13 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _accEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, _accEnableOr.Output, Acc.Enable);
 
         _regAEnableOr = ComponentFactory.CreateOr(
-            WireFactory.CreateGroup(Array.Empty<IWire<bool>>()),
+            WireFactory.CreateGroup(new [] {_step5Ir0And.Output}),
             WireFactory.CreateWire(false, nameof(_regAEnableOr)));
         _regBEnableOr = ComponentFactory.CreateOr(
-            WireFactory.CreateGroup(Array.Empty<IWire<bool>>()),
+            WireFactory.CreateGroup(new [] {_step4Ir0And.Output}),
             WireFactory.CreateWire(false, nameof(_regBEnableOr)));
         _regBSetOr = ComponentFactory.CreateOr(
-            WireFactory.CreateGroup(Array.Empty<IWire<bool>>()),
+            WireFactory.CreateGroup(new [] {_step6Ir0IrNotAnd.Output}),
             WireFactory.CreateWire(false, nameof(_regBSetOr)));
 
         _regAEnable2X4 = ComponentFactory
@@ -171,9 +198,9 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
                     _gprBEnableDecoderAnd[i].Output,
                     GeneralPurposeRegisters[i].Enable));
 
-            _marSetOr = ComponentFactory.CreateOr(WireFactory.CreateGroup(StepWire(1), StepWire(4)),
+        _marSetOr = ComponentFactory.CreateOr(WireFactory.CreateGroup(StepWire(1), StepWire(4)),
             WireFactory.CreateWire(false, nameof(_marSetOr)));
-        _accSetOr = ComponentFactory.CreateOr(WireFactory.CreateGroup(StepWire(1), StepWire(5)),
+        _accSetOr = ComponentFactory.CreateOr(WireFactory.CreateGroup(StepWire(1), _step5Ir0And.Output),
             WireFactory.CreateWire(false, nameof(_accSetOr)));
 
         _irSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(2), IrSet);
@@ -181,7 +208,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _iarSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(3), Iar.Set);
         _accSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _accSetOr.Output, Acc.Set);
         _ramSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(5), Ram.Set);
-        _tmpSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(4), TmpSet);
+        _tmpSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _step4Ir0And.Output, TmpSet);
         
     }
     
@@ -214,6 +241,14 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
     {
         _clock.Update();
         _stepper.Update();
+        
+        _aluAnds.Update();
+        _irAnd.Update();
+        _irNot.Update();
+        
+        _step4Ir0And.Update();
+        _step5Ir0And.Update();
+        _step6Ir0IrNotAnd.Update();
         
         _regAEnableOr.Update();
         _regBEnableOr.Update();
