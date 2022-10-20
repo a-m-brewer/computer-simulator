@@ -28,6 +28,27 @@ public class DecoderTests : IntegrationTestBase
     }
     
     [Test]
+    [TestCase(false, false, true, false, false, false)]
+    [TestCase(false, true, false, true, false, false)]
+    [TestCase(true, false, false, false, true, false)]
+    [TestCase(true, true, false, false, false, true)]
+    public void TruthTable2X4(bool i1, bool i0, in bool o0, bool o1, bool o2, bool o3)
+    {
+        const int decoderInputSize = 2;
+        var sut = ComponentFactory.CreateDecoder(CreateTestWireGroup(false, decoderInputSize));
+
+        sut.Inputs[0].Value = i0;
+        sut.Inputs[1].Value = i1;
+        
+        sut.Update();
+
+        sut.Outputs[0].Value.Should().Be(o0);
+        sut.Outputs[1].Value.Should().Be(o1);
+        sut.Outputs[2].Value.Should().Be(o2);
+        sut.Outputs[3].Value.Should().Be(o3);
+    }
+    
+    [Test]
     public void Decoder8X256Tests()
     {
         for (var expected = 0; expected < 256; expected++)

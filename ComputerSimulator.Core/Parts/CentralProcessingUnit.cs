@@ -99,6 +99,11 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
     private readonly IAnd2 _carryInTmpAnd;
     private readonly IOr2 _flagsOr;
     private readonly IAnd2 _flagsAnd;
+    private readonly IAnd _step4Ir3X8Decoder7Ir4And;
+    private readonly IAnd2 _ioClkSAnd;
+    private readonly INot _notIr4;
+    private readonly IAnd _step5Ir3X8Decoder7NotIr4And;
+    private readonly IAnd2 _ioClkEAnd;
 
     public CentralProcessingUnit(
         IWire<bool> bus1,
@@ -220,6 +225,23 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             }
         };
 
+        _step4Ir3X8Decoder7Ir4And = ComponentFactory.CreateAnd(
+            WireFactory.CreateGroup(
+                StepWire(4),
+                _ir3X8DecoderAnds[7].Output,
+                InstructionRegister[4]),
+            WireFactory.CreateWire(false, $"{nameof(_step4Ir3X8Decoder7Ir4And)}-output"));
+
+        _notIr4 = ComponentFactory.CreateNot(InstructionRegister[4],
+            WireFactory.CreateWire(false, $"{nameof(_notIr4)}-output"));
+
+        _step5Ir3X8Decoder7NotIr4And = ComponentFactory.CreateAnd(
+            WireFactory.CreateGroup(
+                StepWire(5),
+                _ir3X8DecoderAnds[7].Output,
+                _notIr4.Output),
+            WireFactory.CreateWire(false, $"{nameof(_step5Ir3X8Decoder7NotIr4And)}-ouput"));
+        
         _aluAnds = 3
             .InitArray<IAnd>()
             .Fill(i =>
@@ -285,7 +307,8 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateGroup(
                 _step4Ir0And.Output,
                 _step5AndIr3X8DecoderAnds[1].Output,
-                _step4AndIr3X8DecoderAnds[3].Output),
+                _step4AndIr3X8DecoderAnds[3].Output,
+                _step4Ir3X8Decoder7Ir4And.Output),
             WireFactory.CreateWire(false, nameof(_regBEnableOr)));
         _regBSetOr = ComponentFactory.CreateOr(
             WireFactory.CreateGroup(
@@ -345,6 +368,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
                 _step4AndIr3X8DecoderAnds[3].Output,
                 _step5AndIr3X8DecoderAnds[4].Output,
                 _step5AndIr3X8DecoderAnds[5].Output,
+                _step5Ir3X8Decoder7NotIr4And.Output,
                 _step6AndIr3X8DecoderAnds[2].Output,
                 _step6AndIr3X8DecoderAnds[5].Output),
             WireFactory.CreateWire(false, $"{nameof(_iarSetOr)}-output"));
@@ -368,6 +392,15 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _tmpSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _step4Ir0And.Output, TmpSet);
         _carryInTmpAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _step4Ir0And.Output, CarryInTmp);
         _flagsAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _flagsOr.Output, FlagsSet);
+
+        _ioClkSAnd = ComponentFactory.CreateAnd2(
+            _clock.ClkS,
+            _step4Ir3X8Decoder7Ir4And.Output,
+            IoClk.Set);
+        _ioClkEAnd = ComponentFactory.CreateAnd2(
+            _clock.ClkE,
+            _step5Ir3X8Decoder7NotIr4And.Output,
+            WireFactory.CreateWire(false, $"{nameof(_ioClkEAnd)}-output"));
     }
 
     public IWire<bool> Bus1 { get; }
@@ -412,6 +445,10 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _step4AndIr3X8DecoderAnds.Update();
         _step5AndIr3X8DecoderAnds.Update();
         _step6AndIr3X8DecoderAnds.Update();
+        
+        _step4Ir3X8Decoder7Ir4And.Update();
+        _notIr4.Update();
+        _step5Ir3X8Decoder7NotIr4And.Update();
 
         _aluAnds.Update();
         _irAnd.Update();
@@ -457,6 +494,11 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _tmpSetAnd.Update();
         _carryInTmpAnd.Update();
         _flagsAnd.Update();
+
+        IoInputOutput.Value = InstructionRegister[4].Value;
+        IoDataAddress.Value = InstructionRegister[5].Value;
+        _ioClkSAnd.Update();
+        _ioClkEAnd.Update();
     }
 
     /// <summary>
