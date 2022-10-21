@@ -1,4 +1,7 @@
-﻿namespace ComputerSimulator.Core.Extensions;
+﻿using ComputerSimulator.Core.Circuits;
+using ComputerSimulator.Core.Exceptions;
+
+namespace ComputerSimulator.Core.Extensions;
 
 public static class ComponentExtensions
 {
@@ -17,5 +20,18 @@ public static class ComponentExtensions
         {
             component.Update();
         }
+    }
+
+    public static void SetRegisterValue(this IRegister register, IList<bool> values)
+    {
+        register.Set.Value = true;
+
+        for (var i = 0; i < values.Count(); i++)
+        {
+            register.Inputs[i].Value = values[i];
+        }
+        
+        register.Update();
+        register.Set.Value = false;
     }
 }

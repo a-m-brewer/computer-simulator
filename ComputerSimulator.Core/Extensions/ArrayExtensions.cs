@@ -20,4 +20,9 @@ public static class ArrayExtensions
     {
         return array.Fill(() => new T());
     }
+    
+    public static T[] Fill<T>(this T[] array, T value) where T : new()
+    {
+        return array.Fill(() => value);
+    }
 }

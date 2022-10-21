@@ -6,18 +6,25 @@ namespace ComputerSimulator.Core.Parts;
 
 public interface IComputerPart : IPart
 {
+    IBus Bus { get; }
+    
+    ICentralProcessingUnit Cpu { get; }
+    
+    IRegister Iar { get; }
+    
+    IRam Ram { get; }
 }
 
 public class ComputerPart : PartsBase, IComputerPart
 {
-    private readonly ICentralProcessingUnit _cpu;
-
     public ComputerPart(
         IComponentFactory componentFactory,
         IWireFactory wireFactory)
         : base(componentFactory, wireFactory)
     {
-        _cpu = ComponentFactory.CreateCentralProcessingUnit(
+        Bus = WireFactory.CreateBus("bus");
+
+        Cpu = ComponentFactory.CreateCentralProcessingUnit(
             WireFactory.CreateWire(false, "bus1"),
             WireFactory.CreateSetEnableWire(false, "iar"),
             WireFactory.CreateSetEnableWire(false, "ram"),
@@ -35,10 +42,29 @@ public class ComputerPart : PartsBase, IComputerPart
             WireFactory.CreateGroup(false, "instruction-register"),
             WireFactory.CreateCaez(false, "caez")
         );
+
+        Ram = ComponentFactory.CreateRam(
+            Cpu.MarSet,
+            Bus,
+            Cpu.Ram.Set,
+            Cpu.Ram.Enable,
+            Bus
+        );
+
+        Iar = ComponentFactory.CreateRegister(
+            Cpu.Iar.Set,
+            Cpu.Iar.Enable,
+            Bus,
+            Bus);
     }
 
     public void Update()
     {
-        _cpu.Update();
+        Cpu.Update();
     }
+
+    public IBus Bus { get; }
+    public ICentralProcessingUnit Cpu { get; }
+    public IRegister Iar { get; }
+    public IRam Ram { get; }
 }
