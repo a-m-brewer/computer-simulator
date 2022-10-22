@@ -20,10 +20,7 @@ public class AluTests : IntegrationTestBase
             CreateTestWire(false),
             CreateTestOp(),
             CreateTestWireGroup(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false));
+            WireFactory.CreateCaez(false));
     }
 
     [Test]
@@ -49,7 +46,7 @@ public class AluTests : IntegrationTestBase
         _sut.Update();
         
         // Assert
-        _sut.CarryOut.Value.Should().BeTrue();
+        _sut.Caez.C.Value.Should().BeTrue();
         
         using (new AssertionScope())
         {
@@ -198,7 +195,7 @@ public class AluTests : IntegrationTestBase
         _sut.Update();
 
         // Assert
-        _sut.Equal.Value.Should().Be(equal);
+        _sut.Caez.E.Value.Should().Be(equal);
 
         using (new AssertionScope())
         {
@@ -208,7 +205,7 @@ public class AluTests : IntegrationTestBase
             }
         }
 
-        _sut.ALarger.Value.Should().Be(aLarger);
+        _sut.Caez.A.Value.Should().Be(aLarger);
     }
     
     [Test]
@@ -232,6 +229,6 @@ public class AluTests : IntegrationTestBase
         _sut.Update();
         
         // Assert
-        _sut.IsZero.Value.Should().BeTrue();
+        _sut.Caez.Z.Value.Should().BeTrue();
     }
 }

@@ -31,6 +31,8 @@ public interface IComponentFactory
 
     IRegister CreateRegister(IWire<bool> set, IWire<bool> enable, IWireGroup<bool> inputs, IWireGroup<bool> outputs);
 
+    ICaezRegister CreateCaezRegister(IWire<bool> set, ICaez<bool> inputs, ICaez<bool> outputs);
+
     IDecoder CreateDecoder(IWireGroup<bool> inputs);
 
     IShifter CreateRightShifter(IWire<bool> shiftIn, IWire<bool> shiftOut, IWireGroup<bool> input, IWireGroup<bool> output);
@@ -64,8 +66,7 @@ public interface IComponentFactory
     IIsZeroChecker CreateIsZeroChecker(IWireGroup<bool> inputs, IWire<bool> output);
 
     IArithmeticLogicUnit CreateArithmeticLogicUnit(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB,
-        IWire<bool> carryIn, IOp op, IWireGroup<bool> outputs, IWire<bool> carryOut,
-        IWire<bool> aLarger, IWire<bool> equal, IWire<bool> isZero);
+        IWire<bool> carryIn, IOp op, IWireGroup<bool> outputs, ICaez<bool> caez);
 
     IBus1 CreateBus1(IWire<bool> bit, IWireGroup<bool> inputs, IWireGroup<bool> outputs);
 
@@ -192,6 +193,11 @@ public class ComponentFactory : IComponentFactory
         return new Register(set, enable, inputs, outputs, this, _wireFactory);
     }
 
+    public ICaezRegister CreateCaezRegister(IWire<bool> set, ICaez<bool> inputs, ICaez<bool> outputs)
+    {
+        return new CaezRegister(set, inputs, outputs, this, _wireFactory);
+    }
+
     public IDecoder CreateDecoder(IWireGroup<bool> inputs)
     {
         var outputSize = Decoder.CalculateOutputSize(inputs.Count);
@@ -262,9 +268,9 @@ public class ComponentFactory : IComponentFactory
     }
 
     public IArithmeticLogicUnit CreateArithmeticLogicUnit(IWireGroup<bool> inputsA, IWireGroup<bool> inputsB, IWire<bool> carryIn, IOp op,
-        IWireGroup<bool> outputs, IWire<bool> carryOut, IWire<bool> aLarger, IWire<bool> equal, IWire<bool> isZero)
+        IWireGroup<bool> outputs, ICaez<bool> caez)
     {
-        return new ArithmeticLogicUnit(inputsA, inputsB, carryIn, op, outputs, carryOut, aLarger, equal, isZero, this, _wireFactory);
+        return new ArithmeticLogicUnit(inputsA, inputsB, carryIn, op, outputs, caez, this, _wireFactory);
     }
 
     public IBus1 CreateBus1(IWire<bool> bit, IWireGroup<bool> inputs, IWireGroup<bool> outputs)

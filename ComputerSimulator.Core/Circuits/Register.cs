@@ -16,14 +16,13 @@ public interface IRegister : ICircuit
     /// <summary>
     /// Purely for debug/testing purposes only. Do not use for any actual code
     /// </summary>
-    bool[] StoredValues { get; }
+    IWireGroup<bool> StoredValue { get; }
 }
 
 public class Register : CircuitBase, IRegister
 {
     private readonly IEnabler _enabler;
     private readonly IWord _word;
-    private readonly IWireGroup<bool> _internalGroup;
 
     public Register(
         IWire<bool> set,
@@ -33,10 +32,10 @@ public class Register : CircuitBase, IRegister
         IComponentFactory componentFactory,
         IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
-        _internalGroup = WireFactory.CreateGroup(false);
+        StoredValue = WireFactory.CreateGroup(false);
 
-        _word = ComponentFactory.CreateWord(inputs, _internalGroup, set);
-        _enabler = ComponentFactory.CreateEnabler(enable, _internalGroup, outputs);
+        _word = ComponentFactory.CreateWord(inputs, StoredValue, set);
+        _enabler = ComponentFactory.CreateEnabler(enable, StoredValue, outputs);
     }
 
     public IWire<bool> Set => _word.Set;
@@ -46,10 +45,7 @@ public class Register : CircuitBase, IRegister
     public IWireGroup<bool> Inputs => _word.Inputs;
 
     public IWireGroup<bool> Outputs => _enabler.Outputs;
-
-    public bool[] StoredValues => _internalGroup
-        .Select(s => s.Value)
-        .ToArray();
+    public IWireGroup<bool> StoredValue { get; }
 
     public void Update()
     {

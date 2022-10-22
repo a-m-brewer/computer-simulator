@@ -30,9 +30,9 @@ public class RegisterTests : IntegrationTestBase
         // Assert
         using (new AssertionScope())
         {
-            for (var i = 0; i < sut.StoredValues.Length; i++)
+            for (var i = 0; i < sut.StoredValue.Count; i++)
             {
-                sut.StoredValues[i].Should().BeTrue();
+                sut.StoredValue[i].Value.Should().BeTrue();
             }
         }
 

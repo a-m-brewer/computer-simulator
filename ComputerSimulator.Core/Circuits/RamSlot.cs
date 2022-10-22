@@ -19,7 +19,7 @@ public interface IRamSlot : ICircuit
     /// <summary>
     /// Purely for debug/testing purposes only. Do not use for any actual code
     /// </summary>
-    bool[] StoredValues { get; }
+    IRegister Memory { get; }
 }
 
 public class RamSlot : PartsBase, IRamSlot
@@ -28,8 +28,6 @@ public class RamSlot : PartsBase, IRamSlot
     private readonly IAnd _xAnd;
     private readonly IAnd _setAnd;
     private readonly IAnd _enableAnd;
-    // ReSharper disable once NotAccessedField.Local
-    private readonly IRegister _register;
 
     public RamSlot(
         IWire<bool> x,
@@ -45,7 +43,7 @@ public class RamSlot : PartsBase, IRamSlot
         _setAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_xAnd.Output, set), WireFactory.CreateWire(false));
         _enableAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_xAnd.Output, enable), WireFactory.CreateWire(false));
         
-        _register = ComponentFactory.CreateRegister(_setAnd.Output, _enableAnd.Output, Io, Io);
+        Memory = ComponentFactory.CreateRegister(_setAnd.Output, _enableAnd.Output, Io, Io);
     }
 
     public IWire<bool> Set => _setAnd.Inputs[1];
@@ -58,7 +56,7 @@ public class RamSlot : PartsBase, IRamSlot
 
     public IBus Io { get; }
 
-    public bool[] StoredValues => _register.StoredValues;
+    public IRegister Memory { get; }
 
     public void Update()
     {
@@ -66,6 +64,6 @@ public class RamSlot : PartsBase, IRamSlot
         _setAnd.Update();
         _enableAnd.Update();
         
-        _register.Update();
+        Memory.Update();
     }
 }

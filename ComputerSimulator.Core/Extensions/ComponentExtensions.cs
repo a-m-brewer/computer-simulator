@@ -26,7 +26,7 @@ public static class ComponentExtensions
     {
         register.Set.Value = true;
 
-        for (var i = 0; i < values.Count(); i++)
+        for (var i = 0; i < values.Count; i++)
         {
             register.Inputs[i].Value = values[i];
         }

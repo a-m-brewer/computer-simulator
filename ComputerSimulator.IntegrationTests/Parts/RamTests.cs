@@ -31,16 +31,16 @@ public class RamTests : IntegrationTestBase
         // Put address into MAR bus
         for (var i = 0; i < ramAddressInBools.Length; i++)
         {
-            sut.MarInputBus[i].Value = ramAddressInBools[i];
+            sut.Mar.Inputs[i].Value = ramAddressInBools[i];
         }
         
         // Set that address in the MAR
-        sut.MarSet.Value = true;
+        sut.Mar.Set.Value = true;
         
         sut.Update();
         
         // Stop any new values coming in
-        sut.MarSet.Value = false;
+        sut.Mar.Set.Value = false;
         
         // Value to store will be all true for test purposes
         const int valueToStoreInRam = 0xFFFF;

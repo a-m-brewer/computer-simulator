@@ -46,9 +46,9 @@ public class RamSlotTests : IntegrationTestBase
         // Assert
         using (new AssertionScope())
         {
-            for (var i = 0; i < sut.StoredValues.Length; i++)
+            for (var i = 0; i < sut.Memory.StoredValue.Count; i++)
             {
-                sut.StoredValues[i].Should().Be(expected);
+                sut.Memory.StoredValue[i].Value.Should().Be(expected);
             }
         }
     }
@@ -88,9 +88,9 @@ public class RamSlotTests : IntegrationTestBase
         
         sut.Update();
 
-        for (var i = 0; i < sut.StoredValues.Length; i++)
+        for (var i = 0; i < sut.Memory.StoredValue.Count; i++)
         {
-            sut.StoredValues[i].Should().Be(true);
+            sut.Memory.StoredValue[i].Value.Should().Be(true);
         }
 
         using (new AssertionScope())

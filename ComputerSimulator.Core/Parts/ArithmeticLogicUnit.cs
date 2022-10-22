@@ -31,14 +31,8 @@ public interface IArithmeticLogicUnit : IPart
     
     // C in diagram
     IWireGroup<bool> Outputs { get; }
-    
-    IWire<bool> CarryOut { get; }
-    
-    IWire<bool> ALarger { get; }
-    
-    IWire<bool> Equal { get; }
-    
-    IWire<bool> IsZero { get; }
+
+    ICaez<bool> Caez { get; }
 }
 
 public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
@@ -89,10 +83,7 @@ public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
         IWire<bool> carryIn,
         IOp op,
         IWireGroup<bool> outputs,
-        IWire<bool> carryOut,
-        IWire<bool> aLarger,
-        IWire<bool> equal,
-        IWire<bool> isZero,
+        ICaez<bool> caez,
         IComponentFactory componentFactory,
         IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
@@ -107,26 +98,23 @@ public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
         }
         
         Outputs = outputs;
-        CarryOut = carryOut;
-        ALarger = aLarger;
-        Equal = equal;
-        IsZero = isZero;
+        Caez = caez;
 
         _decoder3X8 = ComponentFactory.CreateDecoder(Op);
 
         // Add
         _add = ComponentFactory.CreateWordAdder(InputsA, InputsB, CarryIn, WireFactory.CreateWire(false), WireFactory.CreateGroup(false));
-        _addAnd = ComponentFactory.CreateAnd2(_add.CarryOut, _decoder3X8.Outputs[OpCode.Add], CarryOut);
+        _addAnd = ComponentFactory.CreateAnd2(_add.CarryOut, _decoder3X8.Outputs[OpCode.Add], Caez.C);
         _addEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.Add], _add.Sum, Outputs);
 
         // Shift Right
         _shiftRight = ComponentFactory.CreateRightShifter(CarryIn, WireFactory.CreateWire(false), InputsA, WireFactory.CreateGroup(false));
-        _shiftRightAnd = ComponentFactory.CreateAnd2(_shiftRight.ShiftOut, _decoder3X8.Outputs[OpCode.Shr], CarryOut);
+        _shiftRightAnd = ComponentFactory.CreateAnd2(_shiftRight.ShiftOut, _decoder3X8.Outputs[OpCode.Shr], Caez.C);
         _shiftRightEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.Shr], _shiftRight.Output, Outputs);
         
         // Shift Left
         _shiftLeft = ComponentFactory.CreateLeftShifter(CarryIn, WireFactory.CreateWire(false), InputsA, WireFactory.CreateGroup(false));
-        _shiftLeftAnd = ComponentFactory.CreateAnd2(_shiftLeft.ShiftOut, _decoder3X8.Outputs[OpCode.Shl], CarryOut);
+        _shiftLeftAnd = ComponentFactory.CreateAnd2(_shiftLeft.ShiftOut, _decoder3X8.Outputs[OpCode.Shl], Caez.C);
         _shiftLeftEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.Shl], _shiftLeft.Output, Outputs);
         
         // Noter
@@ -148,11 +136,11 @@ public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
         // Word Comparator
         _wordComparator = ComponentFactory.CreateWordComparator(
             InputsA, InputsB, WireFactory.PowerWire, WireFactory.CreateWire(false), WireFactory.CreateGroup(false), 
-            Equal, ALarger);
+            Caez.E, Caez.A);
         _wordComparatorEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.Cmp], _wordComparator.UnEqual, Outputs);
 
         // Is Zero
-        _isZeroChecker = ComponentFactory.CreateIsZeroChecker(Outputs, IsZero);
+        _isZeroChecker = ComponentFactory.CreateIsZeroChecker(Outputs, Caez.Z);
     }
 
     public IWireGroup<bool> InputsA { get; }
@@ -160,11 +148,8 @@ public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
     public IWire<bool> CarryIn { get; }
     public IOp Op { get; }
     public IWireGroup<bool> Outputs { get; }
-    public IWire<bool> CarryOut { get; }
-    public IWire<bool> ALarger { get; }
-    public IWire<bool> Equal { get; }
-    public IWire<bool> IsZero { get; }
-    
+    public ICaez<bool> Caez { get; }
+
     public void Update()
     {
         _decoder3X8.Update();

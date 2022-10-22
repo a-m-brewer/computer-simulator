@@ -7,15 +7,15 @@ namespace ComputerSimulator.Core.Parts;
 
 public interface IRam : ICircuit
 {
-    IBus MarInputBus { get; }
-
-    IWire<bool> MarSet { get; }
+    IRegister Mar { get; }
 
     IBus Io { get; }
 
     IWire<bool> Set { get; }
 
     IWire<bool> Enable { get; }
+    
+    IRamSlot[][] Slots { get; }
 }
 
 public class Ram : PartsBase, IRam
@@ -24,8 +24,6 @@ public class Ram : PartsBase, IRam
 
     // Internal Circuits
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-    private readonly IRamSlot[][] _slots;
-    private readonly IRegister _mar;
     private readonly IDecoder _decoderX;
     private readonly IDecoder _decoderY;
 
@@ -44,48 +42,47 @@ public class Ram : PartsBase, IRam
         Io = io;
         
         // enable always true for MAR
-        _mar = ComponentFactory
+        Mar = ComponentFactory
             .CreateRegister(marSet, WireFactory.CreateWire(true), marInputBus, WireFactory.CreateGroup(false));
 
         var decoderInputSize = computerSettings.WordSize / 2;
 
         _decoderX = ComponentFactory.CreateDecoder(WireFactory.CreateGroup(decoderInputSize
             .InitArray<IWire<bool>>()
-            .Fill(i => _mar.Outputs[i])));
+            .Fill(i => Mar.Outputs[i])));
         
         _decoderY = ComponentFactory.CreateDecoder(WireFactory.CreateGroup(decoderInputSize
             .InitArray<IWire<bool>>()
-            .Fill(i => _mar.Outputs[i + decoderInputSize])));
+            .Fill(i => Mar.Outputs[i + decoderInputSize])));
 
-        _slots = new IRamSlot[_decoderY.OutputSize][];
+        Slots = new IRamSlot[_decoderY.OutputSize][];
         for (var y = 0; y < _decoderY.OutputSize; y++)
         {
-            _slots[y] = new IRamSlot[_decoderX.OutputSize];
+            Slots[y] = new IRamSlot[_decoderX.OutputSize];
             for (var x = 0; x < _decoderX.OutputSize; x++)
             {
-                _slots[y][x] = ComponentFactory.CreateRamSlot(_decoderX.Outputs[x], _decoderY.Outputs[y], Set, Enable, Io);
+                Slots[y][x] = ComponentFactory.CreateRamSlot(_decoderX.Outputs[x], _decoderY.Outputs[y], Set, Enable, Io);
             }
         }
     }
 
-    public IBus MarInputBus => _mar.Inputs as IBus ?? throw new Exception("expected that MAR is using a IBus WireGroup<bool>");
-
-    public IWire<bool> MarSet => _mar.Set;
+    public IRegister Mar { get; }
 
     public IBus Io { get; }
 
     public IWire<bool> Set { get; }
 
     public IWire<bool> Enable { get; }
+    public IRamSlot[][] Slots { get; }
 
     public void Update()
     {
-        _mar.Update();
+        Mar.Update();
 
         _decoderX.Update();
         _decoderY.Update();
         
-        var currSlot = _slots[_decoderY.EnabledIndex][_decoderX.EnabledIndex];
+        var currSlot = Slots[_decoderY.EnabledIndex][_decoderX.EnabledIndex];
         
         currSlot.Update();
     }
