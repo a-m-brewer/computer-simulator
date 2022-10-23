@@ -91,8 +91,7 @@ public class ComputerPartTests : IntegrationTestBase
 
         var instruction = new[] { true, false, false, false, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory
-            .SetRegisterValue(instruction);
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
 
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(50));
         _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(25));
@@ -261,18 +260,20 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanStoreDataInRam()
     {
-        var instruction = _byteFactory.Create(false, false, false, true, false, false, false, true);
+        var instruction = new [] { false, false, false, true, false, false, false, true };
 
-        _sut.ComputerState.Ram.InternalRegisters[0][0].ApplyOnce(instruction);
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
 
-        _sut.ComputerState.GeneralPurposeRegisters[0].ApplyOnce(_byteFactory.Create(1));
-        _sut.ComputerState.GeneralPurposeRegisters[1].ApplyOnce(_byteFactory.Create(255));
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(1));
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(255));
 
-        StepFull(6);
+        PerformFullStep(6);
 
-        var result = _sut.ComputerState.Ram.InternalRegisters[0][1].Data;
+        var result = _sut.Ram.Slots[0][1].Memory.StoredValue;
 
-        Assert.IsTrue(result.All(a => a));
+        result
+            .Should()
+            .AllSatisfy(w => w.Value.Should().BeTrue());
     }
 
     // DATA RB, xxxx xxxx
@@ -280,16 +281,18 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformDataInstruction()
     {
-        var instruction = _byteFactory.Create(false, false, true, false, false, false, false, false);
-        _sut.ComputerState.Ram.InternalRegisters[0][0].ApplyOnce(instruction);
+        var instruction = new [] { false, false, true, false, false, false, false, false };
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
 
-        _sut.ComputerState.Ram.InternalRegisters[0][1].ApplyOnce(_byteFactory.Create(255));
+        _sut.Ram.Slots[0][1].Memory.SetRegisterValue(CreateNumber(255));
 
-        StepFull(6);
+        PerformFullStep(6);
 
-        var result = _sut.ComputerState.GeneralPurposeRegisters[0].Data;
+        var result = _sut.GeneralPurposeRegisters[0].StoredValue;
 
-        Assert.IsTrue(result.All(a => a));
+        result
+            .Should()
+            .AllSatisfy(w => w.Value.Should().BeTrue());
     }
 
     // JMPR RB
@@ -297,16 +300,18 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformJumpRegisterInstruction()
     {
-        var instruction = _byteFactory.Create(false, false, true, true, false, false, false, false);
-        _sut.ComputerState.Ram.InternalRegisters[0][0].ApplyOnce(instruction);
+        var instruction = new [] { false, false, true, true, false, false, false, false };
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
 
-        _sut.ComputerState.GeneralPurposeRegisters[0].ApplyOnce(_fullByte);
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
 
-        StepFull(6);
+        PerformFullStep(6);
 
-        var result = _sut.ComputerState.Iar.Data;
+        var result = _sut.Iar.StoredValue;
 
-        Assert.IsTrue(result.All(a => a));
+        result
+            .Should()
+            .AllSatisfy(w => w.Value.Should().BeTrue());
     }
 
     // JMP Addr
@@ -314,16 +319,18 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformJumpInstruction()
     {
-        var instruction = _byteFactory.Create(false, true, false, false, false, false, false, false);
-        _sut.ComputerState.Ram.InternalRegisters[0][0].ApplyOnce(instruction);
+        var instruction = new [] { false, true, false, false, false, false, false, false };
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
 
-        _sut.ComputerState.Ram.InternalRegisters[0][1].ApplyOnce(_fullByte);
+        _sut.Ram.Slots[0][1].Memory.SetRegisterValue(_max);
 
-        StepFull(6);
+        PerformFullStep(6);
 
-        var result = _sut.ComputerState.Iar.Data;
+        var result = _sut.Iar.StoredValue;
 
-        Assert.IsTrue(result.All(a => a));
+        result
+            .Should()
+            .AllSatisfy(w => w.Value.Should().BeTrue());
     }
 
     // JC Addr
@@ -331,25 +338,27 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformJumpIfEqualIsOn()
     {
-        var addInstruction = _byteFactory.Create(true, false, false, false, false, false, false, true);
+        var addInstruction = new [] { true, false, false, false, false, false, false, true };
 
-        _sut.ComputerState.Ram.InternalRegisters[0][0].ApplyOnce(addInstruction);
-        var instruction = _byteFactory.Create(false, true, false, true, false, false, true, false);
-        _sut.ComputerState.Ram.InternalRegisters[0][1].ApplyOnce(instruction);
-        _sut.ComputerState.Ram.InternalRegisters[0][2].ApplyOnce(_fullByte);
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(addInstruction);
+        var instruction = new [] { false, true, false, true, false, false, true, false };
+        _sut.Ram.Slots[0][1].Memory.SetRegisterValue(instruction);
+        _sut.Ram.Slots[0][2].Memory.SetRegisterValue(_max);
 
-        _sut.ComputerState.GeneralPurposeRegisters[0].ApplyOnce(_byteFactory.Create(200));
-        _sut.ComputerState.GeneralPurposeRegisters[1].ApplyOnce(_byteFactory.Create(200));
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(200));
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(200));
 
-        StepFull(6);
+        PerformFullStep(6);
 
-        Step(1);
+        PerformStep();
 
-        StepFull(6);
+        PerformFullStep(6);
 
-        var result = _sut.ComputerState.Iar.Data;
+        var result = _sut.Iar.StoredValue;
 
-        Assert.IsTrue(result.All(a => a));
+        result
+            .Should()
+            .AllSatisfy(w => w.Value.Should().BeTrue());
     }
 
     // JC Addr
@@ -357,63 +366,68 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformJumpIfCarryIsOn()
     {
-        var addInstruction = _byteFactory.Create(true, false, false, false, false, false, false, true);
+        var addInstruction = new [] { true, false, false, false, false, false, false, true };
 
-        _sut.ComputerState.Ram.InternalRegisters[0][0].ApplyOnce(addInstruction);
-        var instruction = _byteFactory.Create(false, true, false, true, true, false, false, false);
-        _sut.ComputerState.Ram.InternalRegisters[0][1].ApplyOnce(instruction);
-        _sut.ComputerState.Ram.InternalRegisters[0][2].ApplyOnce(_fullByte);
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(addInstruction);
+        var instruction = new [] { false, true, false, true, true, false, false, false };
+        _sut.Ram.Slots[0][1].Memory.SetRegisterValue(instruction);
+        _sut.Ram.Slots[0][2].Memory.SetRegisterValue(_max);
 
-        _sut.ComputerState.GeneralPurposeRegisters[0].ApplyOnce(_byteFactory.Create(200));
-        _sut.ComputerState.GeneralPurposeRegisters[1].ApplyOnce(_byteFactory.Create(200));
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(200));
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(200));
 
-        StepFull(6);
+        PerformFullStep(6);
+        
+        _sut.Caez.StoredValue.C.Value.Should().BeTrue();
 
-        Assert.IsTrue(_sut.ComputerState.Flags.Data.C);
+        PerformStep();
 
-        Step(1);
+        PerformFullStep(6);
 
-        StepFull(6);
+        var result = _sut.Iar.StoredValue;
 
-        var result = _sut.ComputerState.Iar.Data;
-
-        Assert.IsTrue(result.All(a => a));
+        result
+            .Should()
+            .AllSatisfy(w => w.Value.Should().BeTrue());
     }
 
     [Test]
     public void CanClearFlags()
     {
-        var addInstruction = _byteFactory.Create(true, false, false, false, false, false, false, true);
-        _sut.ComputerState.Ram.InternalRegisters[0][0].ApplyOnce(addInstruction);
+        var addInstruction = new [] { true, false, false, false, false, false, false, true };
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(addInstruction);
 
-        var clearInstruction = _byteFactory.Create(false, true, true, false, false, false, false, false);
-        _sut.ComputerState.Ram.InternalRegisters[0][1].ApplyOnce(clearInstruction);
+        var clearInstruction = new [] { false, true, true, false, false, false, false, false };
+        _sut.Ram.Slots[0][1].Memory.SetRegisterValue(clearInstruction);
 
-        _sut.ComputerState.GeneralPurposeRegisters[0].ApplyOnce(_byteFactory.Create(200));
-        _sut.ComputerState.GeneralPurposeRegisters[1].ApplyOnce(_byteFactory.Create(200));
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(200));
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(200));
 
-        StepFull(6);
+        PerformFullStep(6);
 
-        Assert.IsTrue(_sut.ComputerState.Flags.Data.C);
-        Assert.IsFalse(_sut.ComputerState.Flags.Data.A);
-        Assert.IsTrue(_sut.ComputerState.Flags.Data.E);
-        Assert.IsFalse(_sut.ComputerState.Flags.Data.Z);
+        _sut.Caez.StoredValue.C.Value.Should().BeTrue();
+        _sut.Caez.StoredValue.A.Value.Should().BeFalse();
+        _sut.Caez.StoredValue.E.Value.Should().BeTrue();
+        _sut.Caez.StoredValue.Z.Value.Should().BeFalse();
 
-        Step(1);
+        PerformStep();
 
-        StepFull(3);
+        PerformFullStep(3);
 
-        Assert.IsTrue(_sut.ComputerState.Bus1.Set);
-        Step(1);
-        Assert.IsTrue(_sut.ComputerState.Flags.Set);
-        Step(2);
+        _sut.Bus1.Bit.Value.Should().BeTrue();
+        
+        PerformStep();
 
-        StepFull(2);
+        _sut.Caez.Set.Value.Should().BeTrue();
 
-        Assert.IsFalse(_sut.ComputerState.Flags.Data.C);
-        Assert.IsFalse(_sut.ComputerState.Flags.Data.A);
-        Assert.IsFalse(_sut.ComputerState.Flags.Data.E);
-        Assert.IsFalse(_sut.ComputerState.Flags.Data.Z);
+        PerformStep(2);
+
+        PerformFullStep(2);
+
+        _sut.Caez.StoredValue.C.Value.Should().BeFalse();
+        _sut.Caez.StoredValue.A.Value.Should().BeFalse();
+        _sut.Caez.StoredValue.E.Value.Should().BeFalse();
+        _sut.Caez.StoredValue.Z.Value.Should().BeFalse();
     }
 
     // TODO: Create instructions for IOBus pg. 149
@@ -421,57 +435,65 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanInputIoDataToRb()
     {
-        _sut.ComputerState.Io.Bus.Data = new BusMessage<IByte> { Name = "FromIO", Data = _fullByte };
-        var instruction = _byteFactory.Create(false, true, true, true, false, false, false, false);
-        _sut.ComputerState.Ram.InternalRegisters[0][0].ApplyOnce(instruction);
+        _sut.IoBus.CpuBus.SetValue(_max);
+        var instruction = new [] { false, true, true, true, false, false, false, false };
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
 
-        StepFull(6);
+        PerformFullStep(6);
 
-        var result = _sut.ComputerState.GeneralPurposeRegisters[0].Data;
+        var result = _sut.GeneralPurposeRegisters[0].StoredValue;
 
-        Assert.IsTrue(result.All(a => a));
+        result
+            .Should()
+            .AllSatisfy(w => w.Value.Should().BeTrue());
     }
 
     [Test]
     public void CanInputIoAddressToRb()
     {
-        _sut.ComputerState.Io.Bus.Data = new BusMessage<IByte> { Name = "FromIO", Data = _fullByte };
-        var instruction = _byteFactory.Create(false, true, true, true, false, true, false, false);
-        _sut.ComputerState.Ram.InternalRegisters[0][0].ApplyOnce(instruction);
+        _sut.IoBus.CpuBus.SetValue(_max);
+        var instruction = new [] { false, true, true, true, false, true, false, false };
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
 
-        StepFull(6);
+        PerformFullStep(6);
 
-        var result = _sut.ComputerState.GeneralPurposeRegisters[0].Data;
+        var result = _sut.GeneralPurposeRegisters[0].StoredValue;
 
-        Assert.IsTrue(result.All(a => a));
+        result
+            .Should()
+            .AllSatisfy(w => w.Value.Should().BeTrue());
     }
 
     [Test]
     public void CanOutputToIoAsData()
     {
-        _sut.ComputerState.GeneralPurposeRegisters[0].ApplyOnce(_fullByte);
-        var instruction = _byteFactory.Create(false, true, true, true, true, false, false, false);
-        _sut.ComputerState.Ram.InternalRegisters[0][0].ApplyOnce(instruction);
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
+        var instruction = new [] { false, true, true, true, true, false, false, false };
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
 
-        StepFull(6);
+        PerformFullStep(6);
 
-        var result = _sut.ComputerState.Io.Bus.Data.Data;
+        var result = _sut.IoBus.CpuBus;
 
-        Assert.IsTrue(result.All(a => a));
+        result
+            .Should()
+            .AllSatisfy(w => w.Value.Should().BeTrue());
     }
 
     [Test]
     public void CanOutputToIoAsAddress()
     {
-        _sut.ComputerState.GeneralPurposeRegisters[0].ApplyOnce(_fullByte);
-        var instruction = _byteFactory.Create(false, true, true, true, true, true, false, false);
-        _sut.ComputerState.Ram.InternalRegisters[0][0].ApplyOnce(instruction);
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
+        var instruction = new [] { false, true, true, true, true, true, false, false };
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
 
-        StepFull(6);
+        PerformFullStep(6);
 
-        var result = _sut.ComputerState.Io.Bus.Data.Data;
+        var result = _sut.IoBus.CpuBus;
 
-        Assert.IsTrue(result.All(a => a));
+        result
+            .Should()
+            .AllSatisfy(w => w.Value.Should().BeTrue());
     }
 
     private void PerformStep(int steps = 1)

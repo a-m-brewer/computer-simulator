@@ -38,6 +38,14 @@ public class Op : IOp
     public IWire<bool> this[int index] => _wires[index];
 
     public IWire<bool> this[OpCode index] => _wires[(int)index];
+    public void SetValue(bool[] values)
+    {
+        for (var i = 0; i < values.Length; i++)
+        {
+            _wires[i].Value = values[i];
+        }
+    }
+
     public void SetOpCode(OpCode opCode)
     {
         switch (opCode)

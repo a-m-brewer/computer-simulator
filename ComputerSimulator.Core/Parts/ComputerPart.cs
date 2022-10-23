@@ -11,7 +11,7 @@ public interface IComputerPart : IPart
     
     IArithmeticLogicUnit Alu { get; }
     
-    IBus Bus { get; }
+    IIoBus IoBus { get; }
     
     IBus1 Bus1 { get; }
     
@@ -37,7 +37,7 @@ public class ComputerPart : PartsBase, IComputerPart
         IWireFactory wireFactory)
         : base(componentFactory, wireFactory)
     {
-        Bus = WireFactory.CreateBus("bus");
+        IoBus = WireFactory.CreateIoBus("io");
 
         var irSet = WireFactory.CreateWire(false, "ir-set");
         var flags = WireFactory.CreateWire(false, "flags-set");
@@ -45,15 +45,15 @@ public class ComputerPart : PartsBase, IComputerPart
         Ir = ComponentFactory.CreateRegister(
             irSet,
             WireFactory.PowerWire,
-            Bus,
-            Bus);
+            IoBus.CpuBus,
+            IoBus.CpuBus);
 
         Cpu = ComponentFactory.CreateCentralProcessingUnit(
             WireFactory.CreateWire(false, "bus1"),
             WireFactory.CreateSetEnableWire(false, "iar"),
             WireFactory.CreateSetEnableWire(false, "ram"),
             WireFactory.CreateSetEnableWire(false, "acc"),
-            WireFactory.CreateSetEnableWire(false, "ioClk"),
+            IoBus.Clk,
             WireFactory.CreateSetEnableWireGroup(false, WireConstants.ExpectedNumberOfGeneralPurposeRegisters, "general-purpose-registers"),
             WireFactory.CreateOp("op"),
             WireFactory.CreateWire(false, "mar-set"),
@@ -61,8 +61,8 @@ public class ComputerPart : PartsBase, IComputerPart
             irSet,
             WireFactory.CreateWire(false, "flags-set"),
             WireFactory.CreateWire(false, "carry-in-tmp"),
-            WireFactory.CreateWire(false, "io-input-output"),
-            WireFactory.CreateWire(false, "io-data-address"),
+            IoBus.InputOutput,
+            IoBus.DataAddress,
             Ir.Outputs,
             WireFactory.CreateCaez(false, "caez")
         );
@@ -73,13 +73,13 @@ public class ComputerPart : PartsBase, IComputerPart
                 ComponentFactory.CreateRegister(
                     Cpu.GeneralPurposeRegisters[i].Set,
                     Cpu.GeneralPurposeRegisters[i].Enable,
-                    Bus,
-                    Bus));
+                    IoBus.CpuBus,
+                    IoBus.CpuBus));
 
         Tmp = ComponentFactory.CreateRegister(
             Cpu.TmpSet,
             WireFactory.PowerWire,
-            Bus,
+            IoBus.CpuBus,
             WireFactory.CreateGroup(false, $"{nameof(Tmp)}-output"));
 
         Bus1 = ComponentFactory.CreateBus1(
@@ -88,7 +88,7 @@ public class ComputerPart : PartsBase, IComputerPart
             WireFactory.CreateGroup(false, $"{nameof(Bus1)}-output"));
 
         Alu = ComponentFactory.CreateArithmeticLogicUnit(
-            Bus,
+            IoBus.CpuBus,
             Bus1.Outputs,
             Cpu.CarryInTmp,
             Cpu.Op,
@@ -104,23 +104,23 @@ public class ComputerPart : PartsBase, IComputerPart
 
         Ram = ComponentFactory.CreateRam(
             Cpu.MarSet,
-            Bus,
+            IoBus.CpuBus,
             Cpu.Ram.Set,
             Cpu.Ram.Enable,
-            Bus
+            IoBus.CpuBus
         );
 
         Acc = ComponentFactory.CreateRegister(
             Cpu.Acc.Set,
             Cpu.Acc.Enable,
             Alu.Outputs,
-            Bus);
+            IoBus.CpuBus);
         
         Iar = ComponentFactory.CreateRegister(
             Cpu.Iar.Set,
             Cpu.Iar.Enable,
-            Bus,
-            Bus);
+            IoBus.CpuBus,
+            IoBus.CpuBus);
     }
 
     public void Update()
@@ -130,7 +130,8 @@ public class ComputerPart : PartsBase, IComputerPart
 
     public IRegister Acc { get; }
     public IArithmeticLogicUnit Alu { get; }
-    public IBus Bus { get; }
+    public IIoBus IoBus { get; }
+
     public IBus1 Bus1 { get; }
     public ICaezRegister Caez { get; }
     public ICentralProcessingUnit Cpu { get; }

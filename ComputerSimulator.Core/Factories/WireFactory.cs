@@ -49,6 +49,16 @@ public class WireFactory : IWireFactory
         );
     }
 
+    public IIoBus CreateIoBus(string? label = null)
+    {
+        return new IoBus(
+            CreateBus(CreateLabel(label, "cpu-bus")),
+            CreateWire(false, CreateLabel(label, "i/o")),
+            CreateWire(false, CreateLabel(label, "Data/Address")),
+            CreateSetEnableWire(false, CreateLabel(label, "i/o-clk"))
+        );
+    }
+
     public IBus CreateBus(string? label = null)
     {
         return new EventBus(CreateWireSet(false, _computerSettings.WordSize, label));

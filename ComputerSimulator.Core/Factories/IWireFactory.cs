@@ -17,6 +17,8 @@ public interface IWireFactory
 
     ICaez<T> CreateCaez<T>(T initialValue, string? label = null);
     
+    IIoBus CreateIoBus(string? label = null);
+
     IBus CreateBus(string? label = null);
 
     IOp CreateOp(string? label = null);
