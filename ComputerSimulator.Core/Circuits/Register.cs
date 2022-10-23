@@ -30,9 +30,10 @@ public class Register : CircuitBase, IRegister
         IWireGroup<bool> inputs,
         IWireGroup<bool> outputs,
         IComponentFactory componentFactory,
-        IWireFactory wireFactory) : base(componentFactory, wireFactory)
+        IWireFactory wireFactory,
+        IWireGroup<bool>? storedValue = null) : base(componentFactory, wireFactory)
     {
-        StoredValue = WireFactory.CreateGroup(false);
+        StoredValue = storedValue ?? WireFactory.CreateGroup(false, "stored-value");
 
         _word = ComponentFactory.CreateWord(inputs, StoredValue, set);
         _enabler = ComponentFactory.CreateEnabler(enable, StoredValue, outputs);

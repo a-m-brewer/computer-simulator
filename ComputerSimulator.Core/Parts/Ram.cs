@@ -16,6 +16,8 @@ public interface IRam : ICircuit
     IWire<bool> Enable { get; }
     
     IRamSlot[][] Slots { get; }
+
+    void UpdateMemory();
 }
 
 public class Ram : PartsBase, IRam
@@ -79,6 +81,11 @@ public class Ram : PartsBase, IRam
     {
         Mar.Update();
 
+        UpdateMemory();
+    }
+    
+    public void UpdateMemory()
+    {
         _decoderX.Update();
         _decoderY.Update();
         

@@ -40,7 +40,8 @@ public class ComputerPart : PartsBase, IComputerPart
         IoBus = WireFactory.CreateIoBus("io");
 
         var irSet = WireFactory.CreateWire(false, "ir-set");
-        var flags = WireFactory.CreateWire(false, "flags-set");
+        var caezSet = WireFactory.CreateWire(false, "flags-set");
+        var caez = WireFactory.CreateCaez(false, $"{nameof(Caez)}-outputs");
 
         Ir = ComponentFactory.CreateRegister(
             irSet,
@@ -59,12 +60,12 @@ public class ComputerPart : PartsBase, IComputerPart
             WireFactory.CreateWire(false, "mar-set"),
             WireFactory.CreateWire(false, "tmp-set"),
             irSet,
-            WireFactory.CreateWire(false, "flags-set"),
+            caezSet,
             WireFactory.CreateWire(false, "carry-in-tmp"),
             IoBus.InputOutput,
             IoBus.DataAddress,
             Ir.Outputs,
-            WireFactory.CreateCaez(false, "caez")
+            caez
         );
 
         GeneralPurposeRegisters = WireConstants.ExpectedNumberOfGeneralPurposeRegisters
@@ -97,9 +98,9 @@ public class ComputerPart : PartsBase, IComputerPart
         );
 
         Caez = ComponentFactory.CreateCaezRegister(
-            flags,
+            caezSet,
             Alu.Caez,
-            WireFactory.CreateCaez(false, $"{nameof(Caez)}-outputs")
+            caez
         );
 
         Ram = ComponentFactory.CreateRam(
@@ -123,11 +124,6 @@ public class ComputerPart : PartsBase, IComputerPart
             IoBus.CpuBus);
     }
 
-    public void Update()
-    {
-        Cpu.Update();
-    }
-
     public IRegister Acc { get; }
     public IArithmeticLogicUnit Alu { get; }
     public IIoBus IoBus { get; }
@@ -140,4 +136,31 @@ public class ComputerPart : PartsBase, IComputerPart
     public IRegister Ir { get; }
     public IRam Ram { get; }
     public IRegister Tmp { get; }
+    
+    public void Update()
+    {
+        Cpu.Update();
+        
+        Iar.Update();
+        
+        Ram.Mar.Update();
+        
+        Ir.Update();
+        
+        Ram.UpdateMemory();
+        
+        Tmp.Update();
+        
+        Caez.Update();
+        
+        Bus1.Update();
+        
+        Alu.Update();
+        
+        Acc.Update();
+        
+        GeneralPurposeRegisters.Update();
+        
+        Cpu.UpdatePins();
+    }
 }

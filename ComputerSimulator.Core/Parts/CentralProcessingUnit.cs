@@ -47,12 +47,21 @@ public interface ICentralProcessingUnit : IPart
     ICaez<bool> Caez { get; }
 
     #endregion
+
+    #region Parts
+
+    IStepper Stepper { get; }
+
+    #endregion
+
+    void Step();
+
+    void UpdatePins();
 }
 
 public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
 {
     private readonly IComputerClock _clock;
-    private readonly IStepper _stepper;
     private readonly IAnd2 _tmpSetAnd;
     private readonly IAnd2 _accSetAnd;
     private readonly IAnd2 _accEnableAnd;
@@ -146,7 +155,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateWire(false, "clk-enable"),
             WireFactory.CreateWire(false, "clk-set"));
 
-        _stepper = ComponentFactory.CreateStepper(_clock.Clk,
+        Stepper = ComponentFactory.CreateStepper(_clock.Clk,
             WireFactory.CreateGroup(false, WireConstants.ExpectedNumberOfSteps, "step"));
         
         // CAEZ
@@ -429,12 +438,22 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
     public IWireGroup<bool> InstructionRegister { get; }
 
     public ICaez<bool> Caez { get; }
+    public IStepper Stepper { get; }
 
     public void Update()
     {
+        Step();
+        UpdatePins();
+    }
+    
+    public void Step()
+    {
         _clock.Update();
-        _stepper.Update();
+        Stepper.Update();
+    }
 
+    public void UpdatePins()
+    {
         _cAnd.Update();
         _aAnd.Update();
         _eAnd.Update();
@@ -509,6 +528,6 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
     /// </summary>
     private IWire<bool> StepWire(int step)
     {
-        return _stepper.Steps[step - 1];
+        return Stepper.Steps[step - 1];
     }
 }

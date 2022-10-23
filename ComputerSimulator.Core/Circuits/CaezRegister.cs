@@ -17,6 +17,8 @@ public interface ICaezRegister
     /// Purely for debug/testing purposes only. Do not use for any actual code
     /// </summary>
     ICaez<bool> StoredValue { get; }
+
+    void Update();
 }
 
 public class CaezRegister : Register, ICaezRegister
@@ -26,7 +28,15 @@ public class CaezRegister : Register, ICaezRegister
         ICaez<bool> inputs, 
         ICaez<bool> outputs,
         IComponentFactory componentFactory,
-        IWireFactory wireFactory) : base(set, wireFactory.PowerWire, inputs, outputs, componentFactory, wireFactory)
+        IWireFactory wireFactory) 
+        : base(
+            set,
+            wireFactory.PowerWire,
+            inputs,
+            outputs,
+            componentFactory,
+            wireFactory,
+            wireFactory.CreateCaez(false, "stored-value"))
     {
     }
 

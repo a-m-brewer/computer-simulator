@@ -30,7 +30,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         _sut.Iar.SetRegisterValue(_max);
 
-        PerformStep();
+        PerformFullStep();
 
         _sut.Ram.Mar.StoredValue
             .Should()
@@ -42,7 +42,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         _sut.Iar.SetRegisterValue(_min);
 
-        PerformStep();
+        PerformFullStep();
 
         _sut.Acc.StoredValue
             .ToInt()
@@ -78,6 +78,19 @@ public class ComputerPartTests : IntegrationTestBase
             .ToInt()
             .Should()
             .Be(1);
+    }
+    
+    [Test]
+    public void AfterStep3IrIsInstructionStoredInRam()
+    {
+        _sut.Iar.SetRegisterValue(_min);
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(_max);
+
+        PerformFullStep(3);
+
+        _sut.Ir.StoredValue
+            .Should()
+            .AllSatisfy(w => w.Value.Should().BeTrue());
     }
 
     // Full instructions
