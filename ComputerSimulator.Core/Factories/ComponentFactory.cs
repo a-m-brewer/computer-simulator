@@ -224,10 +224,10 @@ public class ComponentFactory : IComponentFactory
 
     public IMemoryBit[] CreateMemoryBitSet(IWireGroup<bool> inputs, IWireGroup<bool> outputs, IWire<bool> set)
     {
-        var memory = _computerSettings
+        var memory = inputs.Count
             .InitArray<IMemoryBit>();
 
-        for (var i = 0; i < _computerSettings.WordSize; i++)
+        for (var i = 0; i < inputs.Count; i++)
         {
             memory[i] = CreateMemoryBit(inputs[i], outputs[i], set);
         }
