@@ -2,6 +2,7 @@
 using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NUnit.Framework;
 
 namespace ComputerSimulator.IntegrationTests.Parts;
@@ -97,6 +98,70 @@ public class ComputerPartTests : IntegrationTestBase
 
     // ADD R0 R1
     // 1 000 00 01
+    
+    [Test]
+    public void CanAddTwoNumbersTogetherStep3()
+    {
+        var instruction = new[] { true, false, false, false, false, false, false, true };
+
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(50));
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(25));
+
+        PerformFullStep(3);
+
+        using (new AssertionScope())
+        {
+            for (var i = 0; i < instruction.Length; i++)
+            {
+                _sut.Ir.StoredValue[i].Value.Should().Be(instruction[i]);
+            }
+        }
+    }
+
+    [Test]
+    public void CanAddTwoNumbersTogetherStep4EnableRegBValueOnBus()
+    {
+        var instruction = new[] { true, false, false, false, false, false, false, true };
+
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+
+        const int regBValue = 25;
+        
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(50));
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(regBValue));
+
+        PerformFullStep(3);
+        PerformStep();
+
+        _sut.IoBus.CpuBus
+            .ToInt()
+            .Should()
+            .Be(regBValue);
+    }
+        
+    [Test]
+    public void CanAddTwoNumbersTogetherStep4TmpShouldBeRegB()
+    {
+        var instruction = new[] { true, false, false, false, false, false, false, true };
+
+        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+
+        const int regBValue = 25;
+        
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(50));
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(regBValue));
+
+        PerformFullStep(4);
+
+        _sut.Tmp
+            .StoredValue
+            .ToInt()
+            .Should()
+            .Be(regBValue);
+    }
+    
     [Test]
     public void CanAddTwoNumbersTogether()
     {

@@ -141,6 +141,15 @@ public class ComputerPart : PartsBase, IComputerPart
     {
         Cpu.Update();
         
+        UpdateNonCpuComponents();
+        
+        Cpu.UpdatePins();
+        
+        UpdateNonCpuComponents();
+    }
+
+    private void UpdateNonCpuComponents()
+    {
         Iar.Update();
         
         Ram.Mar.Update();
@@ -158,9 +167,7 @@ public class ComputerPart : PartsBase, IComputerPart
         Alu.Update();
         
         Acc.Update();
-        
+
         GeneralPurposeRegisters.Update();
-        
-        Cpu.UpdatePins();
     }
 }
