@@ -49,9 +49,9 @@ public class BitComparator : CircuitBase, IBitComparator
         ALarger = aLarger;
 
         _xor1 = ComponentFactory.CreateXOr2(InputA, InputB, UnEqual);
-        _not2 = ComponentFactory.CreateNot(_xor1.Output, WireFactory.CreateWire(false));
+        _not2 = ComponentFactory.CreateNot(_xor1.Output, WireFactory.CreateWire<bool>());
         _and3 = ComponentFactory.CreateAnd2(_not2.Output, AllBitsAboveEqual, Equal);
-        _and4 = ComponentFactory.CreateAnd(WireFactory.CreateGroup(AllBitsAboveEqual, InputA, UnEqual), WireFactory.CreateWire(false));
+        _and4 = ComponentFactory.CreateAnd(WireFactory.CreateGroup(AllBitsAboveEqual, InputA, UnEqual), WireFactory.CreateWire<bool>());
         _or5 = ComponentFactory.CreateOr2(_and4.Output, AAboveLarger, ALarger);
     }
 

@@ -12,7 +12,7 @@ public class NoterTests : IntegrationTestBase
     public void GateTest(bool input)
     {
         // Arrange
-        var sut = ComponentFactory.CreateNoter(CreateTestWireGroup(false), CreateTestWireGroup(false));
+        var sut = ComponentFactory.CreateNoter(CreateTestWireGroup<bool>(), CreateTestWireGroup<bool>());
         
         // Act
         foreach (var wire in sut.Inputs)

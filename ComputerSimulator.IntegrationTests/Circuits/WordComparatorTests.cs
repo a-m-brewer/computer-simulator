@@ -18,13 +18,13 @@ public class WordComparatorTests : IntegrationTestBase
         var inputBBools = b.ToBinaryBools(ComputerSettings.WordSize);
         
         var sut = ComponentFactory.CreateWordComparator(
-            CreateTestWireGroup(false),
-            CreateTestWireGroup(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWireGroup(false),
-            CreateTestWire(false),
-            CreateTestWire(false));
+            CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWireGroup<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>());
         
         // Act
         sut.AllBitsAboveEqual.Value = true;

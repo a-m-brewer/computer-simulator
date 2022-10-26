@@ -13,7 +13,7 @@ public class RightShifterWireFactory : IShifterWireFactory
     
     public (IWireGroup<bool> R1OutputGroup, IWireGroup<bool>  R2InputGroup) CreateInternalWires(IWire<bool> shiftIn, IWire<bool> shiftOut)
     {
-        var internalWires = _wireFactory.CreateWireSet(false, _wireFactory.WordSize - 1);
+        var internalWires = _wireFactory.CreateWireSet<bool>(_wireFactory.WordSize - 1);
 
         var r1OutputGroup = _wireFactory.CreateGroup(new[] { shiftOut }.Concat(internalWires).ToArray());
         var r2InputGroup = _wireFactory.CreateGroup(internalWires.Concat(new[] { shiftIn }).ToArray());

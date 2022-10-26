@@ -36,9 +36,9 @@ public class MemoryBit : CircuitBase, IMemoryBit
         Output = output;
         Set = set;
         
-        var a = WireFactory.CreateWire(false);
-        var b = WireFactory.CreateWire(false);
-        var c = WireFactory.CreateWire(false);
+        var a = WireFactory.CreateWire<bool>();
+        var b = WireFactory.CreateWire<bool>();
+        var c = WireFactory.CreateWire<bool>();
         
         
         _nAnd1 = ComponentFactory.CreateNAnd2(Input, Set, a);

@@ -25,7 +25,7 @@ public class IsZeroChecker : CircuitBase, IIsZeroChecker
         Inputs = inputs;
         IsZero = isZero;
 
-        _or = ComponentFactory.CreateOr(Inputs, WireFactory.CreateWire(false));
+        _or = ComponentFactory.CreateOr(Inputs, WireFactory.CreateWire<bool>());
         _not = ComponentFactory.CreateNot(_or.Output, IsZero);
     }
 

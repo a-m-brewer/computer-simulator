@@ -30,7 +30,7 @@ public class Bus1 : PartsBase, IBus1
         Inputs = inputs;
         Outputs = outputs;
 
-        _not = ComponentFactory.CreateNot(Bit, WireFactory.CreateWire(false));
+        _not = ComponentFactory.CreateNot(Bit, WireFactory.CreateWire<bool>());
         _or = ComponentFactory.CreateOr2(Inputs[0], Bit, Outputs[0]);
         _ands = (WireFactory.WordSize - 1)
             .InitArray<IAnd2>()

@@ -14,7 +14,7 @@ public class ComputerClockTests : IntegrationTestBase
     public void CanCompleteCycles(bool expectedClk, bool expectedClkE, bool expectedClkS, int cycles)
     {
         // Arrange
-        var sut = ComponentFactory.CreateComputerClock(CreateTestWire(false), CreateTestWire(false), CreateTestWire(false));
+        var sut = ComponentFactory.CreateComputerClock(CreateTestWire<bool>(), CreateTestWire<bool>(), CreateTestWire<bool>());
         
         // Act
         for (var i = 0; i < cycles; i++)

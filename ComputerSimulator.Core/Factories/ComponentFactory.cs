@@ -202,7 +202,7 @@ public class ComponentFactory : IComponentFactory
     {
         var outputSize = Decoder.CalculateOutputSize(inputs.Count);
 
-        var outputs = _wireFactory.CreateGroup(false, outputSize);
+        var outputs = _wireFactory.CreateGroup<bool>(outputSize);
 
         return new Decoder(inputs, outputs, this, _wireFactory);
     }

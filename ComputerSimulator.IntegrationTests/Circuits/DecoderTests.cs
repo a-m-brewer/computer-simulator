@@ -14,7 +14,7 @@ public class DecoderTests : IntegrationTestBase
     public void TruthTable2X4(bool i1, bool i0, bool o0, bool o1, bool o2, bool o3)
     {
         const int decoderInputSize = 2;
-        var sut = ComponentFactory.CreateDecoder(CreateTestWireGroup(false, decoderInputSize));
+        var sut = ComponentFactory.CreateDecoder(CreateTestWireGroup<bool>(decoderInputSize));
 
         sut.Inputs[0].Value = i0;
         sut.Inputs[1].Value = i1;
@@ -35,7 +35,7 @@ public class DecoderTests : IntegrationTestBase
     public void TruthTable2X4(bool i1, bool i0, in bool o0, bool o1, bool o2, bool o3)
     {
         const int decoderInputSize = 2;
-        var sut = ComponentFactory.CreateDecoder(CreateTestWireGroup(false, decoderInputSize));
+        var sut = ComponentFactory.CreateDecoder(CreateTestWireGroup<bool>(decoderInputSize));
 
         sut.Inputs[0].Value = i0;
         sut.Inputs[1].Value = i1;
@@ -58,7 +58,7 @@ public class DecoderTests : IntegrationTestBase
 
             var input = expected.ToBinaryBools(decoderInputSize);
             
-            var sut = ComponentFactory.CreateDecoder(CreateTestWireGroup(false, decoderInputSize));
+            var sut = ComponentFactory.CreateDecoder(CreateTestWireGroup<bool>(decoderInputSize));
 
             // Act
             for (var i = 0; i < input.Length; i++)

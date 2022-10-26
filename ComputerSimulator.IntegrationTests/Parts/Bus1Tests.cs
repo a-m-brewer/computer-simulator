@@ -11,8 +11,8 @@ public class Bus1Tests : IntegrationTestBase
     public void BitNotSetPassesBitsThrough()
     {
         // Arrange
-        var sut = ComponentFactory.CreateBus1(CreateTestWire(false), CreateTestWireGroup(false),
-            CreateTestWireGroup(false));
+        var sut = ComponentFactory.CreateBus1(CreateTestWire<bool>(), CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>());
         
         // Act
         sut.Bit.Value = false;
@@ -38,8 +38,8 @@ public class Bus1Tests : IntegrationTestBase
     public void BitSetOutputShouldBe1()
     {
         // Arrange
-        var sut = ComponentFactory.CreateBus1(CreateTestWire(false), CreateTestWireGroup(false),
-            CreateTestWireGroup(false));
+        var sut = ComponentFactory.CreateBus1(CreateTestWire<bool>(), CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>());
         
         // Act
         sut.Bit.Value = true;

@@ -14,13 +14,13 @@ public class BitComparatorTests : IntegrationTestBase
     {
         // Arrange
         var sut = ComponentFactory.CreateBitComparator(
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false));
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>());
         
         // Act
         sut.InputA.Value = a;
@@ -41,13 +41,13 @@ public class BitComparatorTests : IntegrationTestBase
     {
         // Arrange
         var sut = ComponentFactory.CreateBitComparator(
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false));
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>());
         
         // Act
         sut.InputA.Value = false;

@@ -43,7 +43,7 @@ public class ComputerClock : PartsBase, IComputerClock
         ClkS = clkS;
 
         _clkClock = ComponentFactory.CreateClock(Clk);
-        _clkDClock = ComponentFactory.CreateClock(WireFactory.CreateWire(false));
+        _clkDClock = ComponentFactory.CreateClock(WireFactory.CreateWire<bool>());
 
         _or = ComponentFactory.CreateOr2(_clkClock.Clk, _clkDClock.Clk, ClkE);
         _and = ComponentFactory.CreateAnd2(_clkClock.Clk, _clkDClock.Clk, ClkS);

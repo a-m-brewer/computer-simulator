@@ -13,7 +13,7 @@ public class MemoryBitTests : IntegrationTestBase
     public void MemoryGate(bool i, bool s, bool o)
     {
         // Arrange
-        var sut = ComponentFactory.CreateMemoryBit(CreateTestWire(false), CreateTestWire(false), CreateTestWire(false));
+        var sut = ComponentFactory.CreateMemoryBit(CreateTestWire<bool>(), CreateTestWire<bool>(), CreateTestWire<bool>());
 
         // Act
         sut.Input.Value = i;
@@ -29,7 +29,7 @@ public class MemoryBitTests : IntegrationTestBase
     public void ShouldKeepStateIfSetIfFalse()
     {
         // Arrange
-        var sut = ComponentFactory.CreateMemoryBit(CreateTestWire(false), CreateTestWire(false), CreateTestWire(false));
+        var sut = ComponentFactory.CreateMemoryBit(CreateTestWire<bool>(), CreateTestWire<bool>(), CreateTestWire<bool>());
         
         // Act / Assert
         sut.Set.Value = true;

@@ -42,7 +42,7 @@ public class WordAdder : CircuitBase, IWordAdder
                 InputsA[i],
                 InputsB[i],
                 i == 0 ? CarryIn : _bitAdders[i - 1].CarryOut,
-                i == WireFactory.WordSize - 1 ? CarryOut : WireFactory.CreateWire(false),
+                i == WireFactory.WordSize - 1 ? CarryOut : WireFactory.CreateWire<bool>(),
                 Sum[i]);
         }
     }

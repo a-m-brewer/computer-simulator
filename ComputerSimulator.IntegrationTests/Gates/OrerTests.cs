@@ -15,9 +15,9 @@ public class OrerTests : IntegrationTestBase
     {
         // Arrange
         var sut = ComponentFactory.CreateOrer(
-            CreateTestWireGroup(false),
-            CreateTestWireGroup(false),
-            CreateTestWireGroup(false));
+            CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>());
         
         // Act
         foreach (var aInput in sut.InputsA)

@@ -20,10 +20,10 @@ public class RamTests : IntegrationTestBase
 
         var sw = Stopwatch.StartNew();
         var sut = ComponentFactory.CreateRam(
-            CreateTestWire(false),
+            CreateTestWire<bool>(),
             CreateTestBus(),
-            CreateTestWire(false),
-            CreateTestWire(false),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
             CreateTestBus());
         Console.WriteLine($"Ram took {sw.ElapsedMilliseconds}ms to construct");
 

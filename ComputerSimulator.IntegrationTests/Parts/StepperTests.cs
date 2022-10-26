@@ -18,9 +18,9 @@ public class StepperTests : IntegrationTestBase
     public void StepperWorksAsExpected(int onBit)
     {
         var stepper = ComponentFactory.CreateStepper(
-            CreateTestWire(false, "clk"),
-            CreateTestWire(false, "reset"),
-            CreateTestWireGroup(false, 7, "step"));
+            CreateTestWire<bool>("clk"),
+            CreateTestWire<bool>("reset"),
+            CreateTestWireGroup<bool>(7, "step"));
 
         for (var i = 0; i <= onBit; i++)
         {
@@ -37,9 +37,9 @@ public class StepperTests : IntegrationTestBase
     public void CanResetTo0()
     {
         var stepper = ComponentFactory.CreateStepper(
-            CreateTestWire(false, "clk"),
-            CreateTestWire(false, "reset"),
-            CreateTestWireGroup(false, 7, "step"));
+            CreateTestWire<bool>("clk"),
+            CreateTestWire<bool>("reset"),
+            CreateTestWireGroup<bool>(7, "step"));
 
         for (var i = 0; i <= 6; i++)
         {
@@ -62,9 +62,9 @@ public class StepperTests : IntegrationTestBase
     public void StaysAtIndex7IfNotReset()
     {
         var stepper = ComponentFactory.CreateStepper(
-            CreateTestWire(false, "clk"),
-            CreateTestWire(false, "reset"),
-            CreateTestWireGroup(false, 7, "step"));
+            CreateTestWire<bool>("clk"),
+            CreateTestWire<bool>("reset"),
+            CreateTestWireGroup<bool>(7, "step"));
 
         for (var i = 0; i <= 8; i++)
         {

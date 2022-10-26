@@ -52,8 +52,8 @@ public class WordComparator : CircuitBase, IWordComparator
                 i == WireFactory.WordSize - 1 ? AllBitsAboveEqual : _bitComparators[i + 1].Equal,
                 i == WireFactory.WordSize - 1 ? AAboveLarger : _bitComparators[i + 1].ALarger,
                 UnEqual[i],
-                i == 0 ? Equal : WireFactory.CreateWire(false),
-                i == 0 ? ALarger : WireFactory.CreateWire(false));
+                i == 0 ? Equal : WireFactory.CreateWire<bool>(),
+                i == 0 ? ALarger : WireFactory.CreateWire<bool>());
         }
     }
 

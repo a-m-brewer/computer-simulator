@@ -36,7 +36,7 @@ public class CaezRegister : Register, ICaezRegister
             outputs,
             componentFactory,
             wireFactory,
-            wireFactory.CreateCaez(false, "stored-value"))
+            wireFactory.CreateCaez<bool>("stored-value"))
     {
     }
 

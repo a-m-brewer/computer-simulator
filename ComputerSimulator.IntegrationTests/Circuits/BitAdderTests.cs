@@ -18,11 +18,11 @@ public class BitAdderTests : IntegrationTestBase
     {
         // Arrange
         var sut = ComponentFactory.CreateBitAdder(
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false));
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>());
         
         // Act
         sut.InputA.Value = a;

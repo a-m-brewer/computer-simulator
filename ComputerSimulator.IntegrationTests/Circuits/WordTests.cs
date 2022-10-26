@@ -12,9 +12,9 @@ public class WordTests : IntegrationTestBase
     public void Word_OutputOnlyUpdatesIfSetIsTrue(bool set)
     {
         // Arrange
-        var inputs = CreateTestWireGroup(false);
-        var outputs = CreateTestWireGroup(false);
-        var setWire = CreateTestWire(false);
+        var inputs = CreateTestWireGroup<bool>();
+        var outputs = CreateTestWireGroup<bool>();
+        var setWire = CreateTestWire<bool>();
 
         var sut = ComponentFactory.CreateWord(inputs, outputs, setWire);
 

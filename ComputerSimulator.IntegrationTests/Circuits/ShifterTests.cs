@@ -14,10 +14,10 @@ public class ShifterTests : IntegrationTestBase
         var inputBools = input.ToBinaryBools(ComputerSettings.WordSize);
 
         var sut = ComponentFactory.CreateRightShifter(
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWireGroup(false),
-            CreateTestWireGroup(false));
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>());
             
         // Act
         for (var i = 0; i < sut.Input.Count; i++)
@@ -44,10 +44,10 @@ public class ShifterTests : IntegrationTestBase
         var inputBools = input.ToBinaryBools(ComputerSettings.WordSize);
 
         var sut = ComponentFactory.CreateLeftShifter(
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWireGroup(false),
-            CreateTestWireGroup(false));
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>());
             
         // Act
         for (var i = 0; i < sut.Input.Count; i++)

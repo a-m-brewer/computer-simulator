@@ -45,7 +45,7 @@ public class Ram : PartsBase, IRam
         
         // enable always true for MAR
         Mar = ComponentFactory
-            .CreateRegister(marSet, WireFactory.CreateWire(true), marInputBus, WireFactory.CreateGroup(false));
+            .CreateRegister(marSet, WireFactory.PowerWire, marInputBus, WireFactory.CreateGroup<bool>());
 
         var decoderInputSize = computerSettings.WordSize / 2;
 

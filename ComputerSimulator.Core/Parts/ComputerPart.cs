@@ -39,9 +39,9 @@ public class ComputerPart : PartsBase, IComputerPart
     {
         IoBus = WireFactory.CreateIoBus("io");
 
-        var irSet = WireFactory.CreateWire(false, "ir-set");
-        var caezSet = WireFactory.CreateWire(false, "flags-set");
-        var caez = WireFactory.CreateCaez(false, $"{nameof(Caez)}-outputs");
+        var irSet = WireFactory.CreateWire<bool>("ir-set");
+        var caezSet = WireFactory.CreateWire<bool>("flags-set");
+        var caez = WireFactory.CreateCaez<bool>($"{nameof(Caez)}-outputs");
 
         Ir = ComponentFactory.CreateRegister(
             irSet,
@@ -50,18 +50,18 @@ public class ComputerPart : PartsBase, IComputerPart
             IoBus.CpuBus);
 
         Cpu = ComponentFactory.CreateCentralProcessingUnit(
-            WireFactory.CreateWire(false, "bus1"),
-            WireFactory.CreateSetEnableWire(false, "iar"),
-            WireFactory.CreateSetEnableWire(false, "ram"),
-            WireFactory.CreateSetEnableWire(false, "acc"),
+            WireFactory.CreateWire<bool>("bus1"),
+            WireFactory.CreateSetEnableWire<bool>("iar"),
+            WireFactory.CreateSetEnableWire<bool>("ram"),
+            WireFactory.CreateSetEnableWire<bool>("acc"),
             IoBus.Clk,
-            WireFactory.CreateSetEnableWireGroup(false, WireConstants.ExpectedNumberOfGeneralPurposeRegisters, "general-purpose-registers"),
+            WireFactory.CreateSetEnableWireGroup<bool>(WireConstants.ExpectedNumberOfGeneralPurposeRegisters, "general-purpose-registers"),
             WireFactory.CreateOp("op"),
-            WireFactory.CreateWire(false, "mar-set"),
-            WireFactory.CreateWire(false, "tmp-set"),
+            WireFactory.CreateWire<bool>("mar-set"),
+            WireFactory.CreateWire<bool>("tmp-set"),
             irSet,
             caezSet,
-            WireFactory.CreateWire(false, "carry-in-tmp"),
+            WireFactory.CreateWire<bool>("carry-in-tmp"),
             IoBus.InputOutput,
             IoBus.DataAddress,
             Ir.Outputs,
@@ -81,20 +81,20 @@ public class ComputerPart : PartsBase, IComputerPart
             Cpu.TmpSet,
             WireFactory.PowerWire,
             IoBus.CpuBus,
-            WireFactory.CreateGroup(false, $"{nameof(Tmp)}-output"));
+            WireFactory.CreateGroup<bool>($"{nameof(Tmp)}-output"));
 
         Bus1 = ComponentFactory.CreateBus1(
             Cpu.Bus1,
             Tmp.Outputs,
-            WireFactory.CreateGroup(false, $"{nameof(Bus1)}-output"));
+            WireFactory.CreateGroup<bool>($"{nameof(Bus1)}-output"));
 
         Alu = ComponentFactory.CreateArithmeticLogicUnit(
             IoBus.CpuBus,
             Bus1.Outputs,
             Cpu.CarryInTmp,
             Cpu.Op,
-            WireFactory.CreateGroup(false, $"{nameof(Alu)}-outputs"),
-            WireFactory.CreateCaez(false, $"{nameof(Alu)}.{nameof(Alu.Caez)}")
+            WireFactory.CreateGroup<bool>($"{nameof(Alu)}-outputs"),
+            WireFactory.CreateCaez<bool>($"{nameof(Alu)}.{nameof(Alu.Caez)}")
         );
 
         Caez = ComponentFactory.CreateCaezRegister(

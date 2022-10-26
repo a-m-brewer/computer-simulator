@@ -14,7 +14,7 @@ public class IsZeroCheckerTests : IntegrationTestBase
         // Arrange
         var inputBools = value.ToBinaryBools(ComputerSettings.WordSize);
         
-        var sut = ComponentFactory.CreateIsZeroChecker(CreateTestWireGroup(false), CreateTestWire(false));
+        var sut = ComponentFactory.CreateIsZeroChecker(CreateTestWireGroup<bool>(), CreateTestWire<bool>());
         
         // Act
         for (var i = 0; i < sut.Inputs.Count; i++)

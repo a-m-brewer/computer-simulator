@@ -15,11 +15,11 @@ public class WordAdderTests : IntegrationTestBase
         var bNumber = 150.ToBinaryBools(ComputerSettings.WordSize);
 
         var sut = ComponentFactory.CreateWordAdder(
-            CreateTestWireGroup(false),
-            CreateTestWireGroup(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWireGroup(false));
+            CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWireGroup<bool>());
         
         // Act
         for (var i = 0; i < aNumber.Length; i++)
@@ -43,11 +43,11 @@ public class WordAdderTests : IntegrationTestBase
     {
         // Arrange
         var sut = ComponentFactory.CreateWordAdder(
-            CreateTestWireGroup(false),
-            CreateTestWireGroup(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWireGroup(false));
+            CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWireGroup<bool>());
         
         // Act
         sut.CarryIn.Value = true;

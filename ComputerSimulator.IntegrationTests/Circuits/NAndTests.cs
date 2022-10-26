@@ -13,8 +13,8 @@ public class NAndTests : IntegrationTestBase
     public void NAnd_TruthTableTest(bool a, bool b, bool expected)
     {
         // Arrange
-        var inputs = CreateTestWireGroup(false, 2);
-        var output = CreateTestWire(false);
+        var inputs = CreateTestWireGroup<bool>(2);
+        var output = CreateTestWire<bool>();
 
         var sut = ComponentFactory.CreateNAnd(inputs, output);
 

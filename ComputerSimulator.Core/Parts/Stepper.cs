@@ -51,11 +51,11 @@ public class Stepper : PartsBase, IStepper
         Reset = reset;
         Steps = steps;
 
-        _resetNot = ComponentFactory.CreateNot(Reset, WireFactory.CreateWire(false, "reset-not-output"));
-        _clkNot = ComponentFactory.CreateNot(Clk, WireFactory.CreateWire(false, "clk-not-output"));
+        _resetNot = ComponentFactory.CreateNot(Reset, WireFactory.CreateWire<bool>("reset-not-output"));
+        _clkNot = ComponentFactory.CreateNot(Clk, WireFactory.CreateWire<bool>("clk-not-output"));
 
-        _resetOrNotClk = ComponentFactory.CreateOr2(Reset, _clkNot.Output, WireFactory.CreateWire(false, "reset-or-not-clk-output"));
-        _clkOrReset = ComponentFactory.CreateOr2(Reset, Clk, WireFactory.CreateWire(false, "clk-or-reset"));
+        _resetOrNotClk = ComponentFactory.CreateOr2(Reset, _clkNot.Output, WireFactory.CreateWire<bool>("reset-or-not-clk-output"));
+        _clkOrReset = ComponentFactory.CreateOr2(Reset, Clk, WireFactory.CreateWire<bool>("clk-or-reset"));
         
         _memoryBits = new IMemoryBit[12];
         for (var i = 0; i < _memoryBits.Length; i++)
@@ -66,7 +66,7 @@ public class Stepper : PartsBase, IStepper
                     : _memoryBits[i - 1].Output,
                 i == _memoryBits.Length - 1
                     ? Steps[^1]
-                    : WireFactory.CreateWire(false, $"memory-bits-{i}-output"),
+                    : WireFactory.CreateWire<bool>($"memory-bits-{i}-output"),
                 i % 2 == 0
                     ? _resetOrNotClk.Output 
                     : _clkOrReset.Output);
@@ -76,7 +76,7 @@ public class Stepper : PartsBase, IStepper
         var mbIndex = 1;
         for (var i = 0; i < _nots.Length; i++)
         {
-            _nots[i] = ComponentFactory.CreateNot(_memoryBits[mbIndex].Output, WireFactory.CreateWire(false, $"not-{i}-output"));
+            _nots[i] = ComponentFactory.CreateNot(_memoryBits[mbIndex].Output, WireFactory.CreateWire<bool>($"not-{i}-output"));
             mbIndex += 2;
         }
 

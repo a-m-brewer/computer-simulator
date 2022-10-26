@@ -13,7 +13,7 @@ public class OrTests : IntegrationTestBase
     public void GateTest(bool inputA, bool inputB, bool expectedOutput)
     {
         // Arrange
-        var sut = ComponentFactory.CreateOr(CreateTestWireGroup(false, 2), CreateTestWire(false));
+        var sut = ComponentFactory.CreateOr(CreateTestWireGroup<bool>(2), CreateTestWire<bool>());
 
         // Act
         sut.Inputs[0].Value = inputA;

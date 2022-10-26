@@ -11,10 +11,10 @@ public class RegisterTests : IntegrationTestBase
     {
         // Arrange
         var sut = ComponentFactory.CreateRegister(
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWireGroup(false),
-            CreateTestWireGroup(false));
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>());
         
         // Act
         sut.Enable.Value = false;
@@ -50,10 +50,10 @@ public class RegisterTests : IntegrationTestBase
     {
         // Arrange
         var sut = ComponentFactory.CreateRegister(
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWireGroup(false),
-            CreateTestWireGroup(false));
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>());
         
         // Act
         sut.Enable.Value = false;

@@ -39,9 +39,9 @@ public class RamSlot : PartsBase, IRamSlot
         IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         Io = io;
-        _xAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(x, y), WireFactory.CreateWire(false));
-        _setAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_xAnd.Output, set), WireFactory.CreateWire(false));
-        _enableAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_xAnd.Output, enable), WireFactory.CreateWire(false));
+        _xAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(x, y), WireFactory.CreateWire<bool>());
+        _setAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_xAnd.Output, set), WireFactory.CreateWire<bool>());
+        _enableAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_xAnd.Output, enable), WireFactory.CreateWire<bool>());
         
         Memory = ComponentFactory.CreateRegister(_setAnd.Output, _enableAnd.Output, Io, Io);
     }

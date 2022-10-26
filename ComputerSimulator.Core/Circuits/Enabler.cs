@@ -32,7 +32,7 @@ public class Enabler : CircuitBase, IEnabler
         Inputs = inputs;
         Outputs = outputs;
         
-        _internalOutput = WireFactory.CreateGroup(false, outputs.Count);
+        _internalOutput = WireFactory.CreateGroup<bool>(outputs.Count);
 
         _ands = inputs.Count
             .InitArray<IAnd>()

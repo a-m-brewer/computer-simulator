@@ -15,9 +15,9 @@ public class AnderTests : IntegrationTestBase
     {
         // Arrange
         var sut = ComponentFactory.CreateAnder(
-            CreateTestWireGroup(false),
-            CreateTestWireGroup(false),
-            CreateTestWireGroup(false));
+            CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>());
         
         // Act
         foreach (var aInput in sut.InputsA)

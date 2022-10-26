@@ -23,9 +23,9 @@ public class Wire<T> : IResettableWire<T> where T : new()
     private bool _valueSet;
     private readonly string? _label;
 
-    public Wire(T value, string? label = null)
+    public Wire(string? label = null)
     {
-        _value = value;
+        _value = new T();
         _label = label;
     }
 

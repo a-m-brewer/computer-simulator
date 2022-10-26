@@ -103,39 +103,39 @@ public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
         _decoder3X8 = ComponentFactory.CreateDecoder(Op);
 
         // Add
-        _add = ComponentFactory.CreateWordAdder(InputsA, InputsB, CarryIn, WireFactory.CreateWire(false), WireFactory.CreateGroup(false));
+        _add = ComponentFactory.CreateWordAdder(InputsA, InputsB, CarryIn, WireFactory.CreateWire<bool>(), WireFactory.CreateGroup<bool>());
         _addAnd = ComponentFactory.CreateAnd2(_add.CarryOut, _decoder3X8.Outputs[OpCode.Add], Caez.C);
         _addEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.Add], _add.Sum, Outputs);
 
         // Shift Right
-        _shiftRight = ComponentFactory.CreateRightShifter(CarryIn, WireFactory.CreateWire(false), InputsA, WireFactory.CreateGroup(false));
+        _shiftRight = ComponentFactory.CreateRightShifter(CarryIn, WireFactory.CreateWire<bool>(), InputsA, WireFactory.CreateGroup<bool>());
         _shiftRightAnd = ComponentFactory.CreateAnd2(_shiftRight.ShiftOut, _decoder3X8.Outputs[OpCode.Shr], Caez.C);
         _shiftRightEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.Shr], _shiftRight.Output, Outputs);
         
         // Shift Left
-        _shiftLeft = ComponentFactory.CreateLeftShifter(CarryIn, WireFactory.CreateWire(false), InputsA, WireFactory.CreateGroup(false));
+        _shiftLeft = ComponentFactory.CreateLeftShifter(CarryIn, WireFactory.CreateWire<bool>(), InputsA, WireFactory.CreateGroup<bool>());
         _shiftLeftAnd = ComponentFactory.CreateAnd2(_shiftLeft.ShiftOut, _decoder3X8.Outputs[OpCode.Shl], Caez.C);
         _shiftLeftEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.Shl], _shiftLeft.Output, Outputs);
         
         // Noter
-        _noter = ComponentFactory.CreateNoter(InputsA, WireFactory.CreateGroup(false));
+        _noter = ComponentFactory.CreateNoter(InputsA, WireFactory.CreateGroup<bool>());
         _noterEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.Not], _noter.Outputs, Outputs);
         
         // And
-        _ander = ComponentFactory.CreateAnder(InputsA, InputsB, WireFactory.CreateGroup(false));
+        _ander = ComponentFactory.CreateAnder(InputsA, InputsB, WireFactory.CreateGroup<bool>());
         _anderEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.And], _ander.Outputs, Outputs);
         
         // Orer
-        _orer = ComponentFactory.CreateOrer(InputsA, InputsB, WireFactory.CreateGroup(false));
+        _orer = ComponentFactory.CreateOrer(InputsA, InputsB, WireFactory.CreateGroup<bool>());
         _orerEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.Or], _orer.Outputs, Outputs);
         
         // Xorer
-        _xorer = ComponentFactory.CreateXOrer(InputsA, InputsB, WireFactory.CreateGroup(false));
+        _xorer = ComponentFactory.CreateXOrer(InputsA, InputsB, WireFactory.CreateGroup<bool>());
         _xorerEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.XOr], _xorer.Outputs, Outputs);
         
         // Word Comparator
         _wordComparator = ComponentFactory.CreateWordComparator(
-            InputsA, InputsB, WireFactory.PowerWire, WireFactory.CreateWire(false), WireFactory.CreateGroup(false), 
+            InputsA, InputsB, WireFactory.PowerWire, WireFactory.CreateWire<bool>(), WireFactory.CreateGroup<bool>(), 
             Caez.E, Caez.A);
         _wordComparatorEnabler = ComponentFactory.CreateEnabler(_decoder3X8.Outputs[OpCode.Cmp], _wordComparator.UnEqual, Outputs);
 

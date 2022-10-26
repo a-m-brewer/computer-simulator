@@ -17,23 +17,23 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
     public void SetUp()
     {
         _sut = ComponentFactory.CreateCentralProcessingUnit(
-            WireFactory.CreateWire(false, "bus1"),
-            WireFactory.CreateSetEnableWire(false, "iar"),
-            WireFactory.CreateSetEnableWire(false, "ram"),
-            WireFactory.CreateSetEnableWire(false, "acc"),
-            WireFactory.CreateSetEnableWire(false, "ioClk"),
-            WireFactory.CreateSetEnableWireGroup(false, WireConstants.ExpectedNumberOfGeneralPurposeRegisters,
+            WireFactory.CreateWire<bool>("bus1"),
+            WireFactory.CreateSetEnableWire<bool>("iar"),
+            WireFactory.CreateSetEnableWire<bool>("ram"),
+            WireFactory.CreateSetEnableWire<bool>("acc"),
+            WireFactory.CreateSetEnableWire<bool>("ioClk"),
+            WireFactory.CreateSetEnableWireGroup<bool>(WireConstants.ExpectedNumberOfGeneralPurposeRegisters,
                 "general-purpose-registers"),
             WireFactory.CreateOp("op"),
-            WireFactory.CreateWire(false, "mar-set"),
-            WireFactory.CreateWire(false, "tmp-set"),
-            WireFactory.CreateWire(false, "ir-set"),
-            WireFactory.CreateWire(false, "flags-set"),
-            WireFactory.CreateWire(false, "carry-in-tmp"),
-            WireFactory.CreateWire(false, "io-input-output"),
-            WireFactory.CreateWire(false, "io-data-address"),
-            WireFactory.CreateGroup(false, "instruction-register"),
-            WireFactory.CreateCaez(false, "caez")
+            WireFactory.CreateWire<bool>("mar-set"),
+            WireFactory.CreateWire<bool>("tmp-set"),
+            WireFactory.CreateWire<bool>("ir-set"),
+            WireFactory.CreateWire<bool>("flags-set"),
+            WireFactory.CreateWire<bool>("carry-in-tmp"),
+            WireFactory.CreateWire<bool>("io-input-output"),
+            WireFactory.CreateWire<bool>("io-data-address"),
+            WireFactory.CreateGroup<bool>("instruction-register"),
+            WireFactory.CreateCaez<bool>("caez")
         );
     }
 

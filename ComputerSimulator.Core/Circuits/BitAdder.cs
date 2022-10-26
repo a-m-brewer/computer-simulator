@@ -40,10 +40,10 @@ public class BitAdder : CircuitBase, IBitAdder
         CarryOut = carryOut;
         Sum = sum;
 
-        _xOrInput = ComponentFactory.CreateXOr2(InputA, InputB, WireFactory.CreateWire(false));
+        _xOrInput = ComponentFactory.CreateXOr2(InputA, InputB, WireFactory.CreateWire<bool>());
         _xOrSum = ComponentFactory.CreateXOr2(_xOrInput.Output, CarryIn, Sum);
-        _carryOutAnd1 = ComponentFactory.CreateAnd2(carryIn, _xOrInput.Output, WireFactory.CreateWire(false));
-        _carryOutAnd2 = ComponentFactory.CreateAnd2(InputA, InputB, WireFactory.CreateWire(false));
+        _carryOutAnd1 = ComponentFactory.CreateAnd2(carryIn, _xOrInput.Output, WireFactory.CreateWire<bool>());
+        _carryOutAnd2 = ComponentFactory.CreateAnd2(InputA, InputB, WireFactory.CreateWire<bool>());
         _carryOutOr = ComponentFactory.CreateOr2(_carryOutAnd1.Output, _carryOutAnd2.Output, CarryOut);
     }
 

@@ -15,12 +15,12 @@ public class AluTests : IntegrationTestBase
     public void SetUp()
     {
         _sut = ComponentFactory.CreateArithmeticLogicUnit(
-            CreateTestWireGroup(false),
-            CreateTestWireGroup(false),
-            CreateTestWire(false),
+            CreateTestWireGroup<bool>(),
+            CreateTestWireGroup<bool>(),
+            CreateTestWire<bool>(),
             CreateTestOp(),
-            CreateTestWireGroup(false),
-            WireFactory.CreateCaez(false));
+            CreateTestWireGroup<bool>(),
+            WireFactory.CreateCaez<bool>());
     }
 
     [Test]

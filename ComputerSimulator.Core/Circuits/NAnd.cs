@@ -27,7 +27,7 @@ public class NAnd : CircuitBase, INAnd
         Inputs = inputs;
         Output = output;
 
-        var andToNot = WireFactory.CreateWire(false);
+        var andToNot = WireFactory.CreateWire<bool>();
             
         _andGate = ComponentFactory.CreateAnd(Inputs, andToNot);
         _notGate = ComponentFactory.CreateNot(andToNot, Output);

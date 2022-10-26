@@ -16,9 +16,9 @@ public class EnablerTests : IntegrationTestBase
     public void Enabler_OutputOnlyUpdatesIfEnableIsTrue(bool enable)
     {
         // Arrange
-        var inputs = CreateTestWireGroup(false);
-        var outputs = CreateTestWireGroup(false);
-        var enableWire = CreateTestWire(false);
+        var inputs = CreateTestWireGroup<bool>();
+        var outputs = CreateTestWireGroup<bool>();
+        var enableWire = CreateTestWire<bool>();
 
         var sut = ComponentFactory.CreateEnabler(enableWire, inputs, outputs);
 
@@ -48,7 +48,7 @@ public class EnablerTests : IntegrationTestBase
     public void Enabler_EnableNotSet_DoesNotRaiseEventsForInputs(bool enable)
     {
         // Arrange
-        var inputs = CreateTestWireGroup(false);
+        var inputs = CreateTestWireGroup<bool>();
 
         var outputWire0 = new Mock<IWire<bool>>(); 
         
@@ -65,7 +65,7 @@ public class EnablerTests : IntegrationTestBase
         var outputs = new Mock<IWireGroup<bool>>();
         outputs.SetupListMock(outputWires);
         
-        var enableWire = CreateTestWire( false);
+        var enableWire = CreateTestWire<bool>();
         
         var sut = ComponentFactory.CreateEnabler(enableWire, inputs, outputs.Object);
 

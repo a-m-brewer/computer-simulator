@@ -25,10 +25,10 @@ public class RamSlotTests : IntegrationTestBase
         var set = truthTable[2];
 
         var sut = ComponentFactory.CreateRamSlot(
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
             CreateTestBus());
 
         // Act
@@ -59,10 +59,10 @@ public class RamSlotTests : IntegrationTestBase
         // Arrange
 
         var sut = ComponentFactory.CreateRamSlot(
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
-            CreateTestWire(false),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
+            CreateTestWire<bool>(),
             CreateTestBus());
 
         // Act

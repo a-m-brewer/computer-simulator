@@ -16,9 +16,9 @@ public class WireFactory : IWireFactory
         _computerSettings = computerSettings;
     }
 
-    public IWire<T> CreateWire<T>(T initialValue, string? label = null) where T : new()
+    public IWire<T> CreateWire<T>(string? label = null) where T : new()
     {
-        return new Wire<T>(initialValue, label);
+        return new Wire<T>(label);
     }
 
     public IWireGroup<T> CreateGroup<T>(params IWire<T>[] wires) where T : new()
@@ -26,26 +26,26 @@ public class WireFactory : IWireFactory
         return new WireGroup<T>(wires);
     }
 
-    public IWireGroup<T> CreateGroup<T>(T initialValue, string? label = null) where T : new()
+    public IWireGroup<T> CreateGroup<T>(string? label = null) where T : new()
     {
-        return CreateGroup(initialValue, _computerSettings.WordSize, label);
+        return CreateGroup<T>(_computerSettings.WordSize, label);
     }
 
-    public ISetEnableWireGroup<T> CreateSetEnableWireGroup<T>(T initialValue, int size, string? label = null) where T : new()
+    public ISetEnableWireGroup<T> CreateSetEnableWireGroup<T>(int size, string? label = null) where T : new()
     {
         return new SetEnableWireGroup<T>(
             size
                 .InitArray<ISetEnableWire<T>>()
-                .Fill(i => CreateSetEnableWire(initialValue, $"{label}-{i}")));
+                .Fill(i => CreateSetEnableWire<T>($"{label}-{i}")));
     }
 
-    public ICaez<T> CreateCaez<T>(T initialValue, string? label = null) where T : new()
+    public ICaez<T> CreateCaez<T>(string? label = null) where T : new()
     {
         return new Caez<T>(
-            CreateWire(initialValue, CreateLabel(label, "c")),
-            CreateWire(initialValue, CreateLabel(label, "a")),
-            CreateWire(initialValue, CreateLabel(label, "e")),
-            CreateWire(initialValue, CreateLabel(label, "z"))
+            CreateWire<T>(CreateLabel(label, "c")),
+            CreateWire<T>(CreateLabel(label, "a")),
+            CreateWire<T>(CreateLabel(label, "e")),
+            CreateWire<T>(CreateLabel(label, "z"))
         );
     }
 
@@ -53,25 +53,25 @@ public class WireFactory : IWireFactory
     {
         return new IoBus(
             CreateBus(CreateLabel(label, "cpu-bus")),
-            CreateWire(false, CreateLabel(label, "i/o")),
-            CreateWire(false, CreateLabel(label, "Data/Address")),
-            CreateSetEnableWire(false, CreateLabel(label, "i/o-clk"))
+            CreateWire<bool>(CreateLabel(label, "i/o")),
+            CreateWire<bool>(CreateLabel(label, "Data/Address")),
+            CreateSetEnableWire<bool>(CreateLabel(label, "i/o-clk"))
         );
     }
 
     public IBus CreateBus(string? label = null)
     {
-        return new EventBus(CreateWireSet(false, _computerSettings.WordSize, label));
+        return new EventBus(CreateWireSet<bool>(_computerSettings.WordSize, label));
     }
 
     public IOp CreateOp(string? label = null)
     {
-        return new Op(CreateWireSet(false, 3, label));
+        return new Op(CreateWireSet<bool>(3, label));
     }
 
-    public IWire<T>[] CreateWireSet<T>(T initialValue, string? label = null) where T : new()
+    public IWire<T>[] CreateWireSet<T>(string? label = null) where T : new()
     {
-        return CreateWireSet(initialValue, _computerSettings.WordSize, label);
+        return CreateWireSet<T>(_computerSettings.WordSize, label);
     }
 
     public IWire<bool> PowerWire => _powerWire;
@@ -79,23 +79,23 @@ public class WireFactory : IWireFactory
 
     public int WordSize => _computerSettings.WordSize;
 
-    public IWireGroup<T> CreateGroup<T>(T initialValue, int size, string? label = null) where T : new()
+    public IWireGroup<T> CreateGroup<T>(int size, string? label = null) where T : new()
     {
-        return new WireGroup<T>(CreateWireSet(initialValue, size, label));
+        return new WireGroup<T>(CreateWireSet<T>(size, label));
     }
 
-    public ISetEnableWire<T> CreateSetEnableWire<T>(T initialValue, string? label = null) where T : new()
+    public ISetEnableWire<T> CreateSetEnableWire<T>(string? label = null) where T : new()
     {
         return new SetEnableWire<T>(
-            CreateWire(initialValue, CreateLabel(label, "set")),
-            CreateWire(initialValue, CreateLabel(label, "enable")));
+            CreateWire<T>(CreateLabel(label, "set")),
+            CreateWire<T>(CreateLabel(label, "enable")));
     }
 
-    public IWire<T>[] CreateWireSet<T>(T initialValue, int size, string? label = null) where T : new()
+    public IWire<T>[] CreateWireSet<T>(int size, string? label = null) where T : new()
     {
         return size
             .InitArray<IWire<T>>()
-            .Fill(i => CreateWire(initialValue, $"{label}-{i}"));
+            .Fill(i => CreateWire<T>($"{label}-{i}"));
     }
     
     private string? CreateLabel(string? label, string suffix)

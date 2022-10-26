@@ -13,7 +13,7 @@ public class XOr2Tests : IntegrationTestBase
     public void GateTest(bool inputA, bool inputB, bool expectedOutput)
     {
         // Arrange
-        var sut = ComponentFactory.CreateXOr2(CreateTestWire(false), CreateTestWire(false), CreateTestWire(false));
+        var sut = ComponentFactory.CreateXOr2(CreateTestWire<bool>(), CreateTestWire<bool>(), CreateTestWire<bool>());
 
         // Act
         sut.InputA.Value = inputA;
