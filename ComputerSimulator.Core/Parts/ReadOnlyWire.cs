@@ -1,6 +1,6 @@
 ﻿namespace ComputerSimulator.Core.Parts;
 
-public class ReadOnlyWire<T> : IWire<T>
+public class ReadOnlyWire<T> : IWire<T> where T : new()
 {
     private readonly T _value;
 

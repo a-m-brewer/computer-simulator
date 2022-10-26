@@ -6,11 +6,11 @@ public interface ISetEnableWireGroup
 {
 }
 
-public interface ISetEnableWireGroup<T> : ISetEnableWireGroup, IReadOnlyList<ISetEnableWire<T>>
+public interface ISetEnableWireGroup<T> : ISetEnableWireGroup, IReadOnlyList<ISetEnableWire<T>> where T : new()
 {
 }
 
-public class SetEnableWireGroup<T> : ISetEnableWireGroup<T>
+public class SetEnableWireGroup<T> : ISetEnableWireGroup<T> where T : new()
 {
     private readonly IList<ISetEnableWire<T>> _wires;
 

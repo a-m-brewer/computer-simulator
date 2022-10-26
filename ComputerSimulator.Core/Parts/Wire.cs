@@ -6,14 +6,18 @@ public interface IWire
 {
 }
 
-public interface IWire<T> : IWire
+public interface IWire<T> : IWire where T : new()
 {
     string Label { get; }
     T Value { get; set; }
 }
 
+public interface IResettableWire<T> : IWire<T>, IResettable where T : new()
+{
+}
+
 [DebuggerDisplay("{Label}: {Value}")]
-public class Wire<T> : IWire<T>
+public class Wire<T> : IWire<T> where T : new()
 {
     private T _value;
     private bool _valueSet;

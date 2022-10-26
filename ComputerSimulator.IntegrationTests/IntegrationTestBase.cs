@@ -27,17 +27,17 @@ public class IntegrationTestBase : HostTestBase
     protected IComponentFactory ComponentFactory { get; private set; } = null!;
     protected IWireFactory WireFactory { get; private set; } = null!;
     
-    protected IWire<T> CreateTestWire<T>(T initialValue, string? label = null)
+    protected IWire<T> CreateTestWire<T>(T initialValue, string? label = null) where T : new()
     {
         return WireFactory.CreateWire(initialValue, label);
     }
 
-    protected IWireGroup<T> CreateTestWireGroup<T>(T initialValue, string? label = null)
+    protected IWireGroup<T> CreateTestWireGroup<T>(T initialValue, string? label = null) where T : new()
     {
         return CreateTestWireGroup(initialValue, ComputerSettings.WordSize, label);
     }
 
-    protected IWireGroup<T> CreateTestWireGroup<T>(T initialValue, int size, string? label = null)
+    protected IWireGroup<T> CreateTestWireGroup<T>(T initialValue, int size, string? label = null) where T : new()
     {
         return WireFactory.CreateGroup(initialValue, size, label);
     }

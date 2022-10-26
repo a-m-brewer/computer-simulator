@@ -7,14 +7,14 @@ public interface IWireGroup
 {
 }
 
-public interface IWireGroup<T> : IWireGroup, IReadOnlyList<IWire<T>>
+public interface IWireGroup<T> : IWireGroup, IReadOnlyList<IWire<T>> where T : new()
 {
     IWire<T> this[OpCode index] { get; }
 
     void SetValue(T[] values);
 }
 
-public class WireGroup<T> : IWireGroup<T>
+public class WireGroup<T> : IWireGroup<T> where T : new()
 {
     protected readonly IList<IWire<T>> Wires;
 

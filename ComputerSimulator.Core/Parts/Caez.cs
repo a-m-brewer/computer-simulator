@@ -1,6 +1,6 @@
 ﻿namespace ComputerSimulator.Core.Parts;
 
-public interface ICaez<T> : IWireGroup<T>
+public interface ICaez<T> : IWireGroup<T> where T : new()
 {
     IWire<T> C { get; }
     IWire<T> A { get; }
@@ -8,7 +8,7 @@ public interface ICaez<T> : IWireGroup<T>
     IWire<T> Z { get; }
 }
 
-public class Caez<T> : WireGroup<T>, ICaez<T>
+public class Caez<T> : WireGroup<T>, ICaez<T> where T : new()
 {
     public Caez(
         IWire<T> c,

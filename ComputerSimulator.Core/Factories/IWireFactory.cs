@@ -4,18 +4,18 @@ namespace ComputerSimulator.Core.Factories;
 
 public interface IWireFactory
 {
-    IWire<T> CreateWire<T>(T initialValue, string? label = null);
+    IWire<T> CreateWire<T>(T initialValue, string? label = null) where T : new();
 
-    IWireGroup<T> CreateGroup<T>(params IWire<T>[] wires);
+    IWireGroup<T> CreateGroup<T>(params IWire<T>[] wires) where T : new();
 
-    IWireGroup<T> CreateGroup<T>(T initialValue, string? label = null);
+    IWireGroup<T> CreateGroup<T>(T initialValue, string? label = null) where T : new();
 
-    IWireGroup<T> CreateGroup<T>(T initialValue, int size, string? label = null);
+    IWireGroup<T> CreateGroup<T>(T initialValue, int size, string? label = null) where T : new();
 
-    ISetEnableWire<T> CreateSetEnableWire<T>(T initialValue, string? label = null);
-    ISetEnableWireGroup<T> CreateSetEnableWireGroup<T>(T initialValue, int size, string? label = null);
+    ISetEnableWire<T> CreateSetEnableWire<T>(T initialValue, string? label = null) where T : new();
+    ISetEnableWireGroup<T> CreateSetEnableWireGroup<T>(T initialValue, int size, string? label = null) where T : new();
 
-    ICaez<T> CreateCaez<T>(T initialValue, string? label = null);
+    ICaez<T> CreateCaez<T>(T initialValue, string? label = null) where T : new();
     
     IIoBus CreateIoBus(string? label = null);
 
@@ -23,8 +23,8 @@ public interface IWireFactory
 
     IOp CreateOp(string? label = null);
 
-    IWire<T>[] CreateWireSet<T>(T initialValue, string? label = null);
-    IWire<T>[] CreateWireSet<T>(T initialValue, int size, string? label = null);
+    IWire<T>[] CreateWireSet<T>(T initialValue, string? label = null) where T : new();
+    IWire<T>[] CreateWireSet<T>(T initialValue, int size, string? label = null) where T : new();
 
     // A wire that is always true
     IWire<bool> PowerWire { get; }
