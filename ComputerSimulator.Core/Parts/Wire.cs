@@ -17,7 +17,7 @@ public interface IResettableWire<T> : IWire<T>, IResettable where T : new()
 }
 
 [DebuggerDisplay("{Label}: {Value}")]
-public class Wire<T> : IWire<T> where T : new()
+public class Wire<T> : IResettableWire<T> where T : new()
 {
     private T _value;
     private bool _valueSet;
@@ -44,5 +44,10 @@ public class Wire<T> : IWire<T> where T : new()
             _valueSet = true;
             _value = value;
         }
+    }
+
+    public void Reset()
+    {
+        _value = new T();
     }
 }

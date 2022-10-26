@@ -86,4 +86,12 @@ public class Op : IOp
         _wires[1].Value = one;
         _wires[2].Value = two;
     }
+
+    public void Reset()
+    {
+        foreach (var resettable in _wires.OfType<IResettable>())
+        {
+            resettable.Reset();
+        }
+    }
 }

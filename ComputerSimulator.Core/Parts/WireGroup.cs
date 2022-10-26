@@ -3,7 +3,7 @@ using ComputerSimulator.Core.Enums;
 
 namespace ComputerSimulator.Core.Parts;
 
-public interface IWireGroup
+public interface IWireGroup : IResettable
 {
 }
 
@@ -43,6 +43,14 @@ public class WireGroup<T> : IWireGroup<T> where T : new()
         for (var i = 0; i < values.Length; i++)
         {
             Wires[i].Value = values[i];
+        }
+    }
+
+    public void Reset()
+    {
+        foreach (var resettable in Wires.OfType<IResettable>())
+        {
+            resettable.Reset();
         }
     }
 }
