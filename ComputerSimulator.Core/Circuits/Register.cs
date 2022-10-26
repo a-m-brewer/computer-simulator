@@ -3,7 +3,7 @@ using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Circuits;
 
-public interface IRegister : ICircuit
+public interface IRegister : ICircuit, IResettable
 {
     IWire<bool> Set { get; }
 
@@ -52,5 +52,10 @@ public class Register : CircuitBase, IRegister
     {
         _word.Update();
         _enabler.Update();
+    }
+
+    public void Reset()
+    {
+        StoredValue.Reset();
     }
 }
