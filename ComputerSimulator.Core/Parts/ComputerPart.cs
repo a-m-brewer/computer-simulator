@@ -140,5 +140,17 @@ public class ComputerPart : PartsBase, IComputerPart
     public void Update()
     {
         Cpu.Update();
+        
+        Iar.Update();
+        
+        Ram.Update();
+        
+        Ir.Update();
+        
+        Cpu.UpdatePins();
+        
+        GeneralPurposeRegisters.Update();
+        
+        Tmp.Update();
     }
 }

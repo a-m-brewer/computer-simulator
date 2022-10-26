@@ -36,4 +36,20 @@ public static class BinaryHelpers
 
         return total;
     }
+    
+    public static int ToInt(this IList<bool> inputs)
+    {
+        var total = 0;
+        for (var i = 0; i < inputs.Count; i++)
+        {
+            if (!inputs[i])
+            {
+                continue;
+            }
+
+            total += (int) Math.Pow(2, i);
+        }
+
+        return total;
+    }
 }

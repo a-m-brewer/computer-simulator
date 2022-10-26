@@ -41,4 +41,11 @@ public static class ComponentExtensions
         register.Update();
         register.Set.Value = false;
     }
+    
+    public static void SetRegisterValue(this ICaezRegister register)
+    {
+        register.Set.Value = true;
+        register.Update();
+        register.Set.Value = false;
+    }
 }
