@@ -159,10 +159,10 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateGroup<bool>(WireConstants.ExpectedNumberOfSteps, "step"));
         
         // CAEZ
-        _cAnd = ComponentFactory.CreateAnd2(Caez.C, InstructionRegister[4], WireFactory.CreateWire<bool>($"{nameof(_cAnd)}-output"));
-        _aAnd = ComponentFactory.CreateAnd2(Caez.A, InstructionRegister[5], WireFactory.CreateWire<bool>($"{nameof(_aAnd)}-output"));
-        _eAnd = ComponentFactory.CreateAnd2(Caez.E, InstructionRegister[6], WireFactory.CreateWire<bool>($"{nameof(_eAnd)}-output"));
-        _zAnd = ComponentFactory.CreateAnd2(Caez.Z, InstructionRegister[7], WireFactory.CreateWire<bool>($"{nameof(_zAnd)}-output"));
+        _cAnd = ComponentFactory.CreateAnd2(Caez.C, InstructionRegister.InstructionWire(4), WireFactory.CreateWire<bool>($"{nameof(_cAnd)}-output"));
+        _aAnd = ComponentFactory.CreateAnd2(Caez.A, InstructionRegister.InstructionWire(5), WireFactory.CreateWire<bool>($"{nameof(_aAnd)}-output"));
+        _eAnd = ComponentFactory.CreateAnd2(Caez.E, InstructionRegister.InstructionWire(6), WireFactory.CreateWire<bool>($"{nameof(_eAnd)}-output"));
+        _zAnd = ComponentFactory.CreateAnd2(Caez.Z, InstructionRegister.InstructionWire(7), WireFactory.CreateWire<bool>($"{nameof(_zAnd)}-output"));
 
         _caezOr = ComponentFactory.CreateOr(
             WireFactory.CreateGroup(_cAnd.Output, _aAnd.Output, _eAnd.Output, _zAnd.Output),
@@ -170,8 +170,8 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
 
         _ir3X8Decoder = ComponentFactory.CreateDecoder(
             WireFactory.CreateGroup(
-                InstructionRegister[3], InstructionRegister[2], InstructionRegister[1]));
-        _irNot = ComponentFactory.CreateNot(InstructionRegister[0],
+                InstructionRegister.InstructionWire(3), InstructionRegister.InstructionWire(2), InstructionRegister.InstructionWire(1)));
+        _irNot = ComponentFactory.CreateNot(InstructionRegister.InstructionWire(0),
             WireFactory.CreateWire<bool>($"{nameof(_irNot)}-output"));
         _ir3X8DecoderAnds = _ir3X8Decoder.OutputSize
             .InitArray<IAnd2>()
@@ -188,7 +188,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
                     ? ComponentFactory.CreateAnd2(StepWire(4), _ir3X8DecoderAnds[i].Output,
                         WireFactory.CreateWire<bool>($"{nameof(_step4AndIr3X8DecoderAnds)}[{i}]-output"))
                     : ComponentFactory.CreateAnd(
-                        WireFactory.CreateGroup(StepWire(4), _ir3X8DecoderAnds[i].Output, InstructionRegister[4]),
+                        WireFactory.CreateGroup(StepWire(4), _ir3X8DecoderAnds[i].Output, InstructionRegister.InstructionWire(4)),
                         WireFactory.CreateWire<bool>($"{nameof(_step4AndIr3X8DecoderAnds)}[{i}]-output")));
 
         _step5AndIr3X8DecoderAnds = new Dictionary<int, ISingleOutput>
@@ -239,10 +239,10 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateGroup(
                 StepWire(4),
                 _ir3X8DecoderAnds[7].Output,
-                InstructionRegister[4]),
+                InstructionRegister.InstructionWire(4)),
             WireFactory.CreateWire<bool>($"{nameof(_step4Ir3X8Decoder7Ir4And)}-output"));
 
-        _notIr4 = ComponentFactory.CreateNot(InstructionRegister[4],
+        _notIr4 = ComponentFactory.CreateNot(InstructionRegister.InstructionWire(4),
             WireFactory.CreateWire<bool>($"{nameof(_notIr4)}-output"));
 
         _step5Ir3X8Decoder7NotIr4And = ComponentFactory.CreateAnd(
@@ -256,22 +256,22 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             .InitArray<IAnd>()
             .Fill(i =>
                 ComponentFactory.CreateAnd(
-                    WireFactory.CreateGroup(InstructionRegister[0], StepWire(5), InstructionRegister[i + 1]),
+                    WireFactory.CreateGroup(InstructionRegister.InstructionWire(0), StepWire(5), InstructionRegister[i + 1]),
                     Op[i]));
 
         _irAnd = ComponentFactory.CreateAnd(
-            WireFactory.CreateGroup(InstructionRegister[1], InstructionRegister[2], InstructionRegister[3]),
+            WireFactory.CreateGroup(InstructionRegister.InstructionWire(1), InstructionRegister.InstructionWire(2), InstructionRegister.InstructionWire(3)),
             WireFactory.CreateWire<bool>($"{_irAnd}-output"));
         _irAndNot = ComponentFactory.CreateNot(
             _irAnd.Output,
             WireFactory.CreateWire<bool>($"{nameof(_irAndNot)}-output"));
 
-        _step4Ir0And = ComponentFactory.CreateAnd2(StepWire(4), InstructionRegister[0],
+        _step4Ir0And = ComponentFactory.CreateAnd2(StepWire(4), InstructionRegister.InstructionWire(0),
             WireFactory.CreateWire<bool>($"{nameof(_step4Ir0And)}-output"));
-        _step5Ir0And = ComponentFactory.CreateAnd2(StepWire(5), InstructionRegister[0],
+        _step5Ir0And = ComponentFactory.CreateAnd2(StepWire(5), InstructionRegister.InstructionWire(0),
             WireFactory.CreateWire<bool>($"{nameof(_step5Ir0And)}-output"));
         _step6Ir0IrNotAnd = ComponentFactory.CreateAnd(
-            WireFactory.CreateGroup(StepWire(6), InstructionRegister[0], _irAndNot.Output),
+            WireFactory.CreateGroup(StepWire(6), InstructionRegister.InstructionWire(0), _irAndNot.Output),
             WireFactory.CreateWire<bool>($"{nameof(_step6Ir0IrNotAnd)}-output"));
 
         _iarEnableOr =
@@ -329,9 +329,9 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateWire<bool>(nameof(_regBSetOr)));
 
         _regAEnable2X4 = ComponentFactory
-            .CreateDecoder(WireFactory.CreateGroup(InstructionRegister[5], InstructionRegister[4]));
+            .CreateDecoder(WireFactory.CreateGroup(InstructionRegister.InstructionWire(5), InstructionRegister.InstructionWire(4)));
 
-        var regBWireGroup = WireFactory.CreateGroup(InstructionRegister[7], InstructionRegister[6]);
+        var regBWireGroup = WireFactory.CreateGroup(InstructionRegister.InstructionWire(7), InstructionRegister.InstructionWire(6));
 
         _regBEnable2X4 = ComponentFactory
             .CreateDecoder(regBWireGroup);
@@ -516,8 +516,8 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _carryInTmpAnd.Update();
         _flagsAnd.Update();
 
-        IoInputOutput.Value = InstructionRegister[4].Value;
-        IoDataAddress.Value = InstructionRegister[5].Value;
+        IoInputOutput.Value = InstructionRegister.InstructionWire(4).Value;
+        IoDataAddress.Value = InstructionRegister.InstructionWire(5).Value;
         _ioClkSAnd.Update();
         _ioClkEAnd.Update();
     }

@@ -28,7 +28,7 @@ public class ComputerPinTests : IntegrationTestBase
         [Test]
         public void IoInputOutputIsIr4()
         {
-            _sut.Ir.Inputs[4].Value = true;
+            _sut.Ir.Inputs.InstructionWire(4).Value = true;
             _sut.Ir.SetRegisterValue();
 
             PerformStep();
@@ -39,7 +39,7 @@ public class ComputerPinTests : IntegrationTestBase
         [Test]
         public void IoDataAddressIsIr5()
         {
-            _sut.Ir.Inputs[5].Value = true;
+            _sut.Ir.Inputs.InstructionWire(5).Value = true;
             _sut.Ir.SetRegisterValue();
 
             PerformStep();
@@ -186,7 +186,7 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(false)]
             public void RegBEnableIsTrue(bool aluFlag)
             {
-                _sut.Ir.Inputs[0].Value = aluFlag;
+                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
                 _sut.Ir.SetRegisterValue();
 
                 const int regBPos = 1;
@@ -204,8 +204,8 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(true, true)]
             public void RegAIsEnabled(bool aluFlag, bool decoder)
             {
-                _sut.Ir.Inputs[0].Value = aluFlag;
-                _sut.Ir.Inputs[3].Value = decoder;
+                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
+                _sut.Ir.Inputs.InstructionWire(3).Value = decoder;
                 _sut.Ir.SetRegisterValue();
 
                 const int regAPos = 0;
@@ -219,7 +219,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableDataInstructionBus1IsSet()
             {
-                _sut.Ir.Inputs[2].Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -230,7 +230,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableDataInstructionIarIsTrue()
             {
-                _sut.Ir.Inputs[2].Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -241,8 +241,8 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableJumpRegisterInstructionRegBIsTrue()
             {
-                _sut.Ir.Inputs[2].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 const int regBPos = 1;
@@ -256,7 +256,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableJumpIarIsTrue()
             {
-                _sut.Ir.Inputs[1].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -267,8 +267,8 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableJumpIfBus1IsTrue()
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -279,8 +279,8 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableJumpIfIarIsTrue()
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -291,8 +291,8 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableClearBus1IsTrue()
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[2].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -305,10 +305,10 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(true)]
             public void AfterStep4EnableIoRegBIsTrue(bool output)
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[2].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
-                _sut.Ir.Inputs[4].Value = output;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
+                _sut.Ir.Inputs.InstructionWire(4).Value = output;
                 _sut.Ir.SetRegisterValue();
 
                 const int regBPos = 1;
@@ -334,7 +334,7 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(false)]
             public void AfterFourSetStepTmpSetIsTrue(bool aluFlag)
             {
-                _sut.Ir.Inputs[0].Value = aluFlag;
+                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -347,7 +347,7 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(false)]
             public void AfterFourSetStepCarryInTmpSetIsTrue(bool aluFlag)
             {
-                _sut.Ir.Inputs[0].Value = aluFlag;
+                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -363,8 +363,8 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(true, true)]
             public void AfterFourSetMarIsSet(bool aluFlag, bool decoder)
             {
-                _sut.Ir.Inputs[0].Value = aluFlag;
-                _sut.Ir.Inputs[3].Value = decoder;
+                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
+                _sut.Ir.Inputs.InstructionWire(3).Value = decoder;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -375,7 +375,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetDataInstructionMarIsTrue()
             {
-                _sut.Ir.Inputs[2].Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -386,7 +386,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetDataInstructionAccIsTrue()
             {
-                _sut.Ir.Inputs[2].Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -397,8 +397,8 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetJumpRegisterInstructionIarIsTrue()
             {
-                _sut.Ir.Inputs[2].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -409,7 +409,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetJumpMarIsTrue()
             {
-                _sut.Ir.Inputs[1].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -420,8 +420,8 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetJumpIfMarIsTrue()
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -432,8 +432,8 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetJumpIfAccIsTrue()
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -444,8 +444,8 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetClearCaezFlagsIsTrue()
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[2].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -458,10 +458,10 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(true)]
             public void AfterStep4IoClkSIsTrue(bool output)
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[2].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
-                _sut.Ir.Inputs[4].Value = output;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
+                _sut.Ir.Inputs.InstructionWire(4).Value = output;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -487,7 +487,7 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(false)]
             public void AfterStep5RegAEnableIsTrue(bool aluFlag)
             {
-                _sut.Ir.Inputs[0].Value = aluFlag;
+                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
                 _sut.Ir.SetRegisterValue();
 
                 const int regAPos = 0;
@@ -505,8 +505,8 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(true, true, false, false)]
             public void AfterStepFiveEnableEitherRamOrRegBIsSet(bool aluFlag, bool decoder, bool ramSet, bool rbSet)
             {
-                _sut.Ir.Inputs[0].Value = aluFlag;
-                _sut.Ir.Inputs[3].Value = decoder;
+                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
+                _sut.Ir.Inputs.InstructionWire(3).Value = decoder;
                 _sut.Ir.SetRegisterValue();
 
                 const int regBPos = 1;
@@ -521,7 +521,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep5EnableDataInstructionRamIsTrue()
             {
-                _sut.Ir.Inputs[2].Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -532,7 +532,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep5EnableJumpRamIsTrue()
             {
-                _sut.Ir.Inputs[1].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -543,8 +543,8 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep5JumpIfEnableAccIsTrue()
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -557,10 +557,10 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(true)]
             public void AfterStep5EnableIoClkEIsTrue(bool output)
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[2].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
-                _sut.Ir.Inputs[4].Value = output;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
+                _sut.Ir.Inputs.InstructionWire(4).Value = output;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -590,10 +590,10 @@ public class ComputerPinTests : IntegrationTestBase
             public void CorrectOpCodeIsSetOnStep5(bool aluFlag, bool ir1, bool ir2, bool ir3, bool expected1,
                 bool expected2, bool expected3)
             {
-                _sut.Ir.Inputs[0].Value = aluFlag;
-                _sut.Ir.Inputs[1].Value = ir1;
-                _sut.Ir.Inputs[2].Value = ir2;
-                _sut.Ir.Inputs[3].Value = ir3;
+                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
+                _sut.Ir.Inputs.InstructionWire(1).Value = ir1;
+                _sut.Ir.Inputs.InstructionWire(2).Value = ir2;
+                _sut.Ir.Inputs.InstructionWire(3).Value = ir3;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -617,7 +617,7 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(false)]
             public void AfterStep5AccSetIsTrue(bool aluFlag)
             {
-                _sut.Ir.Inputs[0].Value = aluFlag;
+                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -632,8 +632,8 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(true, true, false, false)]
             public void AfterStepFiveSetEitherRamOrRegBIsSet(bool aluFlag, bool decoder, bool ramSet, bool rbSet)
             {
-                _sut.Ir.Inputs[0].Value = aluFlag;
-                _sut.Ir.Inputs[3].Value = decoder;
+                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
+                _sut.Ir.Inputs.InstructionWire(3).Value = decoder;
                 _sut.Ir.SetRegisterValue();
 
                 const int regBPos = 1;
@@ -648,7 +648,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep5SetDataInstructionRegBIsTrue()
             {
-                _sut.Ir.Inputs[2].Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 const int regBPos = 1;
@@ -662,7 +662,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep5SetJumpIarIsTrue()
             {
-                _sut.Ir.Inputs[1].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -673,8 +673,8 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep5JumpIfSetIarIsTrue()
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -685,7 +685,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep5IfAluOpFlagsSetIsTrue()
             {
-                _sut.Ir.Inputs[0].Value = true;
+                _sut.Ir.Inputs.InstructionWire(0).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -698,10 +698,10 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(true)]
             public void AfterStep5SetIoRegBSetIsTrue(bool output)
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[2].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
-                _sut.Ir.Inputs[4].Value = output;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
+                _sut.Ir.Inputs.InstructionWire(4).Value = output;
                 _sut.Ir.SetRegisterValue();
 
                 const int regBPos = 1;
@@ -745,10 +745,10 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(true, true, true, true, false)]
             public void AfterStep6EnableAccIsEnabled(bool aluFlag, bool ir1, bool ir2, bool ir3, bool expected)
             {
-                _sut.Ir.Inputs[0].Value = aluFlag;
-                _sut.Ir.Inputs[1].Value = ir1;
-                _sut.Ir.Inputs[2].Value = ir2;
-                _sut.Ir.Inputs[3].Value = ir3;
+                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
+                _sut.Ir.Inputs.InstructionWire(1).Value = ir1;
+                _sut.Ir.Inputs.InstructionWire(2).Value = ir2;
+                _sut.Ir.Inputs.InstructionWire(3).Value = ir3;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -759,7 +759,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep6EnableDataInstructionAccIsTrue()
             {
-                _sut.Ir.Inputs[2].Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -787,13 +787,13 @@ public class ComputerPinTests : IntegrationTestBase
             public void AfterStep6EnableJumpIfRamIsTrue(bool c, bool a, bool e, bool z, bool cCheck, bool aCheck,
                 bool eCheck, bool zCheck, bool expected)
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
 
-                _sut.Ir.Inputs[4].Value = cCheck;
-                _sut.Ir.Inputs[5].Value = aCheck;
-                _sut.Ir.Inputs[6].Value = eCheck;
-                _sut.Ir.Inputs[7].Value = zCheck;
+                _sut.Ir.Inputs.InstructionWire(4).Value = cCheck;
+                _sut.Ir.Inputs.InstructionWire(5).Value = aCheck;
+                _sut.Ir.Inputs.InstructionWire(6).Value = eCheck;
+                _sut.Ir.Inputs.InstructionWire(7).Value = zCheck;
 
                 _sut.Ir.SetRegisterValue();
 
@@ -837,10 +837,10 @@ public class ComputerPinTests : IntegrationTestBase
             [TestCase(true, true, true, true, false)]
             public void AfterStep6SetRegBIsSet(bool aluFlag, bool ir1, bool ir2, bool ir3, bool expected)
             {
-                _sut.Ir.Inputs[0].Value = aluFlag;
-                _sut.Ir.Inputs[1].Value = ir1;
-                _sut.Ir.Inputs[2].Value = ir2;
-                _sut.Ir.Inputs[3].Value = ir3;
+                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
+                _sut.Ir.Inputs.InstructionWire(1).Value = ir1;
+                _sut.Ir.Inputs.InstructionWire(2).Value = ir2;
+                _sut.Ir.Inputs.InstructionWire(3).Value = ir3;
                 _sut.Ir.SetRegisterValue();
 
                 const int regBPos = 1;
@@ -854,7 +854,7 @@ public class ComputerPinTests : IntegrationTestBase
             [Test]
             public void AfterStep6SetDataInstructionIarIsTrue()
             {
-                _sut.Ir.Inputs[2].Value = true;
+                _sut.Ir.Inputs.InstructionWire(2).Value = true;
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
@@ -883,13 +883,13 @@ public class ComputerPinTests : IntegrationTestBase
                 bool eCheck,
                 bool zCheck, bool expected)
             {
-                _sut.Ir.Inputs[1].Value = true;
-                _sut.Ir.Inputs[3].Value = true;
+                _sut.Ir.Inputs.InstructionWire(1).Value = true;
+                _sut.Ir.Inputs.InstructionWire(3).Value = true;
 
-                _sut.Ir.Inputs[4].Value = cCheck;
-                _sut.Ir.Inputs[5].Value = aCheck;
-                _sut.Ir.Inputs[6].Value = eCheck;
-                _sut.Ir.Inputs[7].Value = zCheck;
+                _sut.Ir.Inputs.InstructionWire(4).Value = cCheck;
+                _sut.Ir.Inputs.InstructionWire(5).Value = aCheck;
+                _sut.Ir.Inputs.InstructionWire(6).Value = eCheck;
+                _sut.Ir.Inputs.InstructionWire(7).Value = zCheck;
                 _sut.Ir.SetRegisterValue();
 
                 // TODO: this seems sus as Caez inputs into CPU
@@ -952,8 +952,8 @@ public class ComputerPinTests : IntegrationTestBase
     {
         var aBool = a.ToBinaryBools(2);
 
-        _sut.Ir.Inputs[5].Value = aBool[0];
-        _sut.Ir.Inputs[4].Value = aBool[1];
+        _sut.Ir.Inputs.InstructionWire(5).Value = aBool[0];
+        _sut.Ir.Inputs.InstructionWire(4).Value = aBool[1];
 
         _sut.Ir.SetRegisterValue();
     }
@@ -962,8 +962,8 @@ public class ComputerPinTests : IntegrationTestBase
     {
         var bBool = b.ToBinaryBools(2);
 
-        _sut.Ir.Inputs[7].Value = bBool[0];
-        _sut.Ir.Inputs[6].Value = bBool[1];
+        _sut.Ir.Inputs.InstructionWire(7).Value = bBool[0];
+        _sut.Ir.Inputs.InstructionWire(6).Value = bBool[1];
 
         _sut.Ir.SetRegisterValue();
     }

@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace ComputerSimulator.IntegrationTests.Parts;
 
+[TestFixture]
 public abstract class CentralProcessingUnitTests : IntegrationTestBase
 {
     private ICentralProcessingUnit _sut = null!;
@@ -42,7 +43,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
         [Test]
         public void IoInputOutputIsIr4()
         {
-            _sut.InstructionRegister[4].Value = true;
+            _sut.InstructionRegister.InstructionWire(4).Value = true;
 
             PerformStep();
             
@@ -52,7 +53,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
         [Test]
         public void IoDataAddressIsIr5()
         {
-            _sut.InstructionRegister[5].Value = true;
+            _sut.InstructionRegister.InstructionWire(5).Value = true;
 
             PerformStep();
             
@@ -198,7 +199,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(false)]
             public void RegBEnableIsTrue(bool aluFlag)
             {
-                _sut.InstructionRegister[0].Value = aluFlag;
+                _sut.InstructionRegister.InstructionWire(0).Value = aluFlag;
 
                 const int regBPos = 1;
                 SetupRegPositions(0, regBPos);
@@ -215,8 +216,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(true, true)]
             public void RegAIsEnabled(bool aluFlag, bool decoder)
             {
-                _sut.InstructionRegister[0].Value = aluFlag;
-                _sut.InstructionRegister[3].Value = decoder;
+                _sut.InstructionRegister.InstructionWire(0).Value = aluFlag;
+                _sut.InstructionRegister.InstructionWire(3).Value = decoder;
 
                 const int regAPos = 0;
                 SetupRegPositions(regAPos, 1);
@@ -229,7 +230,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableDataInstructionBus1IsSet()
             {
-                _sut.InstructionRegister[2].Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
 
                 PerformStep();
 
@@ -239,7 +240,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableDataInstructionIarIsTrue()
             {
-                _sut.InstructionRegister[2].Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
 
                 PerformStep();
 
@@ -249,8 +250,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableJumpRegisterInstructionRegBIsTrue()
             {
-                _sut.InstructionRegister[2].Value = true;
-                _sut.InstructionRegister[3].Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
 
                 const int regBPos = 1;
                 SetupRegPositions(0, regBPos);
@@ -263,7 +264,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableJumpIarIsTrue()
             {
-                _sut.InstructionRegister[1].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
 
                 PerformStep();
 
@@ -273,8 +274,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableJumpIfBus1IsTrue()
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[3].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
 
                 PerformStep();
 
@@ -284,8 +285,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableJumpIfIarIsTrue()
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[3].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
 
                 PerformStep();
 
@@ -295,8 +296,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4EnableClearBus1IsTrue()
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[2].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
 
                 PerformStep();
 
@@ -308,10 +309,10 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(true)]
             public void AfterStep4EnableIoRegBIsTrue(bool output)
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[2].Value = true;
-                _sut.InstructionRegister[3].Value = true;
-                _sut.InstructionRegister[4].Value = output;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
+                _sut.InstructionRegister.InstructionWire(4).Value = output;
 
                 const int regBPos = 1;
                 
@@ -336,7 +337,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(false)]
             public void AfterFourSetStepTmpSetIsTrue(bool aluFlag)
             {
-                _sut.InstructionRegister[0].Value = aluFlag;
+                _sut.InstructionRegister.InstructionWire(0).Value = aluFlag;
 
                 PerformStep();
 
@@ -348,7 +349,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(false)]
             public void AfterFourSetStepCarryInTmpSetIsTrue(bool aluFlag)
             {
-                _sut.InstructionRegister[0].Value = aluFlag;
+                _sut.InstructionRegister.InstructionWire(0).Value = aluFlag;
 
                 PerformStep();
 
@@ -362,8 +363,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(true, true)]
             public void AfterFourSetMarIsSet(bool aluFlag, bool decoder)
             {
-                _sut.InstructionRegister[0].Value = aluFlag;
-                _sut.InstructionRegister[3].Value = decoder;
+                _sut.InstructionRegister.InstructionWire(0).Value = aluFlag;
+                _sut.InstructionRegister.InstructionWire(3).Value = decoder;
 
                 PerformStep();
 
@@ -373,7 +374,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetDataInstructionMarIsTrue()
             {
-                _sut.InstructionRegister[2].Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
 
                 PerformStep();
 
@@ -383,7 +384,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetDataInstructionAccIsTrue()
             {
-                _sut.InstructionRegister[2].Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
 
                 PerformStep();
 
@@ -393,8 +394,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetJumpRegisterInstructionIarIsTrue()
             {
-                _sut.InstructionRegister[2].Value = true;
-                _sut.InstructionRegister[3].Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
 
                 PerformStep();
 
@@ -404,7 +405,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetJumpMarIsTrue()
             {
-                _sut.InstructionRegister[1].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
 
                 PerformStep();
 
@@ -414,8 +415,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetJumpIfMarIsTrue()
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[3].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
 
                 PerformStep();
 
@@ -425,8 +426,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetJumpIfAccIsTrue()
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[3].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
 
                 PerformStep();
 
@@ -436,8 +437,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep4SetClearCaezFlagsIsTrue()
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[2].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
 
                 PerformStep();
 
@@ -449,10 +450,10 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(true)]
             public void AfterStep4IoClkSIsTrue(bool output)
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[2].Value = true;
-                _sut.InstructionRegister[3].Value = true;
-                _sut.InstructionRegister[4].Value = output;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
+                _sut.InstructionRegister.InstructionWire(4).Value = output;
 
                 PerformStep();
 
@@ -477,7 +478,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(false)]
             public void AfterStep5RegAEnableIsTrue(bool aluFlag)
             {
-                _sut.InstructionRegister[0].Value = aluFlag;
+                _sut.InstructionRegister.InstructionWire(0).Value = aluFlag;
 
                 const int regAPos = 0;
                 SetupRegPositions(regAPos, 1);
@@ -494,8 +495,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(true, true, false, false)]
             public void AfterStepFiveEnableEitherRamOrRegBIsSet(bool aluFlag, bool decoder, bool ramSet, bool rbSet)
             {
-                _sut.InstructionRegister[0].Value = aluFlag;
-                _sut.InstructionRegister[3].Value = decoder;
+                _sut.InstructionRegister.InstructionWire(0).Value = aluFlag;
+                _sut.InstructionRegister.InstructionWire(3).Value = decoder;
 
                 const int regBPos = 1;
                 SetupRegPositions(0, regBPos);
@@ -509,7 +510,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep5EnableDataInstructionRamIsTrue()
             {
-                _sut.InstructionRegister[2].Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
 
                 PerformStep();
 
@@ -519,7 +520,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep5EnableJumpRamIsTrue()
             {
-                _sut.InstructionRegister[1].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
 
                 PerformStep();
 
@@ -529,8 +530,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep5JumpIfEnableAccIsTrue()
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[3].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
 
                 PerformStep();
 
@@ -542,10 +543,10 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(true)]
             public void AfterStep5EnableIoClkEIsTrue(bool output)
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[2].Value = true;
-                _sut.InstructionRegister[3].Value = true;
-                _sut.InstructionRegister[4].Value = output;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
+                _sut.InstructionRegister.InstructionWire(4).Value = output;
 
                 PerformStep();
 
@@ -574,10 +575,10 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             public void CorrectOpCodeIsSetOnStep5(bool aluFlag, bool ir1, bool ir2, bool ir3, bool expected1,
                 bool expected2, bool expected3)
             {
-                _sut.InstructionRegister[0].Value = aluFlag;
-                _sut.InstructionRegister[1].Value = ir1;
-                _sut.InstructionRegister[2].Value = ir2;
-                _sut.InstructionRegister[3].Value = ir3;
+                _sut.InstructionRegister.InstructionWire(0).Value = aluFlag;
+                _sut.InstructionRegister.InstructionWire(1).Value = ir1;
+                _sut.InstructionRegister.InstructionWire(2).Value = ir2;
+                _sut.InstructionRegister.InstructionWire(3).Value = ir3;
 
                 PerformStep();
 
@@ -590,7 +591,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             public void AddOperationOnlyRegAEnabled()
             {
                 // TODO: this should be failing
-                var instruction = 0b10001101.ToBinaryBools(8);
+                var instruction = 0b10000001.ToBinaryBools(8);
 
                 _sut.InstructionRegister.SetValue(instruction);
                 
@@ -616,7 +617,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(false)]
             public void AfterStep5AccSetIsTrue(bool aluFlag)
             {
-                _sut.InstructionRegister[0].Value = aluFlag;
+                _sut.InstructionRegister.InstructionWire(0).Value = aluFlag;
 
                 PerformStep();
 
@@ -630,8 +631,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(true, true, false, false)]
             public void AfterStepFiveSetEitherRamOrRegBIsSet(bool aluFlag, bool decoder, bool ramSet, bool rbSet)
             {
-                _sut.InstructionRegister[0].Value = aluFlag;
-                _sut.InstructionRegister[3].Value = decoder;
+                _sut.InstructionRegister.InstructionWire(0).Value = aluFlag;
+                _sut.InstructionRegister.InstructionWire(3).Value = decoder;
 
                 const int regBPos = 1;
                 SetupRegPositions(0, regBPos);
@@ -645,7 +646,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep5SetDataInstructionRegBIsTrue()
             {
-                _sut.InstructionRegister[2].Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
 
                 const int regBPos = 1;
                 SetupRegPositions(0, regBPos);
@@ -658,7 +659,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep5SetJumpIarIsTrue()
             {
-                _sut.InstructionRegister[1].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
 
                 PerformStep();
 
@@ -668,8 +669,8 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep5JumpIfSetIarIsTrue()
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[3].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
 
                 PerformStep();
 
@@ -679,7 +680,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep5IfAluOpFlagsSetIsTrue()
             {
-                _sut.InstructionRegister[0].Value = true;
+                _sut.InstructionRegister.InstructionWire(0).Value = true;
 
                 PerformStep();
 
@@ -691,10 +692,10 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(true)]
             public void AfterStep5SetIoRegBSetIsTrue(bool output)
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[2].Value = true;
-                _sut.InstructionRegister[3].Value = true;
-                _sut.InstructionRegister[4].Value = output;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
+                _sut.InstructionRegister.InstructionWire(4).Value = output;
 
                 const int regBPos = 1;
                 SetupRegBPositions(regBPos);
@@ -737,10 +738,10 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(true, true, true, true, false)]
             public void AfterStep6EnableAccIsEnabled(bool aluFlag, bool ir1, bool ir2, bool ir3, bool expected)
             {
-                _sut.InstructionRegister[0].Value = aluFlag;
-                _sut.InstructionRegister[1].Value = ir1;
-                _sut.InstructionRegister[2].Value = ir2;
-                _sut.InstructionRegister[3].Value = ir3;
+                _sut.InstructionRegister.InstructionWire(0).Value = aluFlag;
+                _sut.InstructionRegister.InstructionWire(1).Value = ir1;
+                _sut.InstructionRegister.InstructionWire(2).Value = ir2;
+                _sut.InstructionRegister.InstructionWire(3).Value = ir3;
 
                 PerformStep();
 
@@ -750,7 +751,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep6EnableDataInstructionAccIsTrue()
             {
-                _sut.InstructionRegister[2].Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
 
                 PerformStep();
 
@@ -777,13 +778,13 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             public void AfterStep6EnableJumpIfRamIsTrue(bool c, bool a, bool e, bool z, bool cCheck, bool aCheck,
                 bool eCheck, bool zCheck, bool expected)
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[3].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
 
-                _sut.InstructionRegister[4].Value = cCheck;
-                _sut.InstructionRegister[5].Value = aCheck;
-                _sut.InstructionRegister[6].Value = eCheck;
-                _sut.InstructionRegister[7].Value = zCheck;
+                _sut.InstructionRegister.InstructionWire(4).Value = cCheck;
+                _sut.InstructionRegister.InstructionWire(5).Value = aCheck;
+                _sut.InstructionRegister.InstructionWire(6).Value = eCheck;
+                _sut.InstructionRegister.InstructionWire(7).Value = zCheck;
 
                 _sut.Caez.C.Value = c;
                 _sut.Caez.A.Value = a;
@@ -823,10 +824,10 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [TestCase(true, true, true, true, false)]
             public void AfterStep6SetRegBIsSet(bool aluFlag, bool ir1, bool ir2, bool ir3, bool expected)
             {
-                _sut.InstructionRegister[0].Value = aluFlag;
-                _sut.InstructionRegister[1].Value = ir1;
-                _sut.InstructionRegister[2].Value = ir2;
-                _sut.InstructionRegister[3].Value = ir3;
+                _sut.InstructionRegister.InstructionWire(0).Value = aluFlag;
+                _sut.InstructionRegister.InstructionWire(1).Value = ir1;
+                _sut.InstructionRegister.InstructionWire(2).Value = ir2;
+                _sut.InstructionRegister.InstructionWire(3).Value = ir3;
 
                 const int regBPos = 1;
                 SetupRegPositions(0, regBPos);
@@ -839,7 +840,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             [Test]
             public void AfterStep6SetDataInstructionIarIsTrue()
             {
-                _sut.InstructionRegister[2].Value = true;
+                _sut.InstructionRegister.InstructionWire(2).Value = true;
 
                 PerformStep();
 
@@ -867,13 +868,13 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
                 bool eCheck,
                 bool zCheck, bool expected)
             {
-                _sut.InstructionRegister[1].Value = true;
-                _sut.InstructionRegister[3].Value = true;
+                _sut.InstructionRegister.InstructionWire(1).Value = true;
+                _sut.InstructionRegister.InstructionWire(3).Value = true;
 
-                _sut.InstructionRegister[4].Value = cCheck;
-                _sut.InstructionRegister[5].Value = aCheck;
-                _sut.InstructionRegister[6].Value = eCheck;
-                _sut.InstructionRegister[7].Value = zCheck;
+                _sut.InstructionRegister.InstructionWire(4).Value = cCheck;
+                _sut.InstructionRegister.InstructionWire(5).Value = aCheck;
+                _sut.InstructionRegister.InstructionWire(6).Value = eCheck;
+                _sut.InstructionRegister.InstructionWire(7).Value = zCheck;
 
                 _sut.Caez.C.Value = c;
                 _sut.Caez.A.Value = a;
@@ -927,16 +928,16 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
     {
         var aBool = a.ToBinaryBools(2);
 
-        _sut.InstructionRegister[5].Value = aBool[0];
-        _sut.InstructionRegister[4].Value = aBool[1];
+        _sut.InstructionRegister.InstructionWire(5).Value = aBool[0];
+        _sut.InstructionRegister.InstructionWire(4).Value = aBool[1];
     }
     
     private void SetupRegBPositions(int b)
     {
         var bBool = b.ToBinaryBools(2);
 
-        _sut.InstructionRegister[7].Value = bBool[0];
-        _sut.InstructionRegister[6].Value = bBool[1];
+        _sut.InstructionRegister.InstructionWire(7).Value = bBool[0];
+        _sut.InstructionRegister.InstructionWire(6).Value = bBool[1];
     }
 
     private void VerifyRegEnable(bool expected, int position)
