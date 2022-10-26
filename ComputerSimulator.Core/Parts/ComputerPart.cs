@@ -140,34 +140,5 @@ public class ComputerPart : PartsBase, IComputerPart
     public void Update()
     {
         Cpu.Update();
-        
-        UpdateNonCpuComponents();
-        
-        Cpu.UpdatePins();
-        
-        UpdateNonCpuComponents();
-    }
-
-    private void UpdateNonCpuComponents()
-    {
-        Iar.Update();
-        
-        Ram.Mar.Update();
-        
-        Ir.Update();
-        
-        Ram.UpdateMemory();
-        
-        Tmp.Update();
-        
-        Caez.Update();
-        
-        Bus1.Update();
-        
-        Alu.Update();
-        
-        Acc.Update();
-
-        GeneralPurposeRegisters.Update();
     }
 }
