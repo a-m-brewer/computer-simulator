@@ -14,9 +14,9 @@ public interface IRam : ICircuit
     IWire<bool> Set { get; }
 
     IWire<bool> Enable { get; }
-    
-    IRamSlot[][] Slots { get; }
 
+    IRamSlot GetSlot(int x, int y);
+    
     void UpdateMemory();
 }
 
@@ -28,6 +28,7 @@ public class Ram : PartsBase, IRam
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private readonly IDecoder _decoderX;
     private readonly IDecoder _decoderY;
+    private readonly LazyRamSlotGroup _slots;
 
     public Ram(
         IWire<bool> marSet,
@@ -57,15 +58,7 @@ public class Ram : PartsBase, IRam
             .InitArray<IWire<bool>>()
             .Fill(i => Mar.Outputs[i + decoderInputSize])));
 
-        Slots = new IRamSlot[_decoderY.OutputSize][];
-        for (var y = 0; y < _decoderY.OutputSize; y++)
-        {
-            Slots[y] = new IRamSlot[_decoderX.OutputSize];
-            for (var x = 0; x < _decoderX.OutputSize; x++)
-            {
-                Slots[y][x] = ComponentFactory.CreateRamSlot(_decoderX.Outputs[x], _decoderY.Outputs[y], Set, Enable, Io);
-            }
-        }
+        _slots = new LazyRamSlotGroup(_decoderX, _decoderY, Set, Enable, Io, ComponentFactory);
     }
 
     public IRegister Mar { get; }
@@ -75,7 +68,6 @@ public class Ram : PartsBase, IRam
     public IWire<bool> Set { get; }
 
     public IWire<bool> Enable { get; }
-    public IRamSlot[][] Slots { get; }
 
     public void Update()
     {
@@ -83,13 +75,18 @@ public class Ram : PartsBase, IRam
 
         UpdateMemory();
     }
-    
+
+    public IRamSlot GetSlot(int x, int y)
+    {
+        return _slots.GetSlot(y, x);
+    }
+
     public void UpdateMemory()
     {
         _decoderX.Update();
         _decoderY.Update();
         
-        var currSlot = Slots[_decoderY.EnabledIndex][_decoderX.EnabledIndex];
+        var currSlot = _slots.GetSlot(_decoderY.EnabledIndex, _decoderX.EnabledIndex);
         
         currSlot.Update();
     }

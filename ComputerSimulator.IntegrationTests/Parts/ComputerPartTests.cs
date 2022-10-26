@@ -58,7 +58,7 @@ public class ComputerPartTests : IntegrationTestBase
     public void AfterStep2ByteInRamIsInIr()
     {
         _sut.Iar.SetRegisterValue(_min);
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(_max);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(_max);
 
         PerformFullStep(2);
 
@@ -86,7 +86,7 @@ public class ComputerPartTests : IntegrationTestBase
     public void AfterStep3IrIsInstructionStoredInRam()
     {
         _sut.Iar.SetRegisterValue(_min);
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(_max);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(_max);
 
         PerformFullStep(3);
 
@@ -105,7 +105,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { true, false, false, false, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(50));
         _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(25));
@@ -126,7 +126,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { true, false, false, false, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         const int regBValue = 25;
 
@@ -148,7 +148,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { true, false, false, false, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         const int regBValue = 25;
 
@@ -169,7 +169,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { true, false, false, false, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         const int regBValue = 25;
 
@@ -192,7 +192,7 @@ public class ComputerPartTests : IntegrationTestBase
 
         var instruction = new[] { true, false, false, false, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(50));
         _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(25));
@@ -213,7 +213,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { true, false, false, true, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(128));
 
         PerformFullStep(6);
@@ -232,7 +232,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { true, false, true, false, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(1));
 
         PerformFullStep(6);
@@ -249,7 +249,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { true, false, true, true, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_min);
 
         PerformFullStep(6);
@@ -266,7 +266,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { true, true, false, false, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_min);
         _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(255));
 
@@ -284,7 +284,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { true, true, false, true, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_min);
         _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(255));
 
@@ -303,7 +303,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { true, true, true, false, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(255));
         _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(255));
 
@@ -320,7 +320,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { true, true, true, true, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(255));
         _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(255));
 
@@ -343,9 +343,9 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { false, false, false, false, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(1));
-        _sut.Ram.Slots[0][1].Memory.SetRegisterValue(CreateNumber(255));
+        _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(CreateNumber(255));
 
         PerformFullStep(6);
 
@@ -363,14 +363,14 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var instruction = new[] { false, false, false, true, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(1));
         _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(255));
 
         PerformFullStep(6);
 
-        var result = _sut.Ram.Slots[0][1].Memory.StoredValue;
+        var result = _sut.Ram.GetSlot(1, 0).Memory.StoredValue;
 
         result
             .Should()
@@ -383,9 +383,9 @@ public class ComputerPartTests : IntegrationTestBase
     public void CanPerformDataInstruction()
     {
         var instruction = new[] { false, false, true, false, false, false, false, false };
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
-        _sut.Ram.Slots[0][1].Memory.SetRegisterValue(CreateNumber(255));
+        _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(CreateNumber(255));
 
         PerformFullStep(6);
 
@@ -402,7 +402,7 @@ public class ComputerPartTests : IntegrationTestBase
     public void CanPerformJumpRegisterInstruction()
     {
         var instruction = new[] { false, false, true, true, false, false, false, false };
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
 
@@ -421,9 +421,9 @@ public class ComputerPartTests : IntegrationTestBase
     public void CanPerformJumpInstruction()
     {
         var instruction = new[] { false, true, false, false, false, false, false, false };
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
-        _sut.Ram.Slots[0][1].Memory.SetRegisterValue(_max);
+        _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(_max);
 
         PerformFullStep(6);
 
@@ -441,10 +441,10 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var addInstruction = new[] { true, false, false, false, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(addInstruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(addInstruction);
         var instruction = new[] { false, true, false, true, false, false, true, false };
-        _sut.Ram.Slots[0][1].Memory.SetRegisterValue(instruction);
-        _sut.Ram.Slots[0][2].Memory.SetRegisterValue(_max);
+        _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(2, 0).Memory.SetRegisterValue(_max);
 
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(200));
         _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(200));
@@ -469,10 +469,10 @@ public class ComputerPartTests : IntegrationTestBase
     {
         var addInstruction = new[] { true, false, false, false, false, false, false, true };
 
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(addInstruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(addInstruction);
         var instruction = new[] { false, true, false, true, true, false, false, false };
-        _sut.Ram.Slots[0][1].Memory.SetRegisterValue(instruction);
-        _sut.Ram.Slots[0][2].Memory.SetRegisterValue(_max);
+        _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(2, 0).Memory.SetRegisterValue(_max);
 
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(200));
         _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(200));
@@ -496,10 +496,10 @@ public class ComputerPartTests : IntegrationTestBase
     public void CanClearFlags()
     {
         var addInstruction = new[] { true, false, false, false, false, false, false, true };
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(addInstruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(addInstruction);
 
         var clearInstruction = new[] { false, true, true, false, false, false, false, false };
-        _sut.Ram.Slots[0][1].Memory.SetRegisterValue(clearInstruction);
+        _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(clearInstruction);
 
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(200));
         _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(200));
@@ -538,7 +538,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         _sut.IoBus.CpuBus.SetValue(_max);
         var instruction = new[] { false, true, true, true, false, false, false, false };
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         PerformFullStep(6);
 
@@ -554,7 +554,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         _sut.IoBus.CpuBus.SetValue(_max);
         var instruction = new[] { false, true, true, true, false, true, false, false };
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         PerformFullStep(6);
 
@@ -570,7 +570,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
         var instruction = new[] { false, true, true, true, true, false, false, false };
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         PerformFullStep(6);
 
@@ -586,7 +586,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
         var instruction = new[] { false, true, true, true, true, true, false, false };
-        _sut.Ram.Slots[0][0].Memory.SetRegisterValue(instruction);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         PerformFullStep(6);
 
