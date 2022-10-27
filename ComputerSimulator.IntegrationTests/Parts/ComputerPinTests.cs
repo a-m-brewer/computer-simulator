@@ -1,4 +1,5 @@
 ﻿using System;
+using ComputerSimulator.Core.Enums;
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
@@ -571,36 +572,25 @@ public class ComputerPinTests : IntegrationTestBase
             // ALU Op
 
             [Test]
-            [TestCase(false, false, false, false, false, false, false)]
-            [TestCase(false, false, false, true, false, false, false)]
-            [TestCase(false, false, true, false, false, false, false)]
-            [TestCase(false, false, true, true, false, false, false)]
-            [TestCase(false, true, false, false, false, false, false)]
-            [TestCase(false, true, false, true, false, false, false)]
-            [TestCase(false, true, true, false, false, false, false)]
-            [TestCase(false, true, true, true, false, false, false)]
-            [TestCase(true, false, false, false, false, false, false)]
-            [TestCase(true, false, false, true, false, false, true)]
-            [TestCase(true, false, true, false, false, true, false)]
-            [TestCase(true, false, true, true, false, true, true)]
-            [TestCase(true, true, false, false, true, false, false)]
-            [TestCase(true, true, false, true, true, false, true)]
-            [TestCase(true, true, true, false, true, true, false)]
-            [TestCase(true, true, true, true, true, true, true)]
-            public void CorrectOpCodeIsSetOnStep5(bool aluFlag, bool ir1, bool ir2, bool ir3, bool expected1,
-                bool expected2, bool expected3)
+            // Not ALU operation no op code should be set (Add is 0 therefore default)
+            [TestCase(0b01110000, OpCode.Add)]
+            // Actual ALU operations
+            [TestCase(0b10000000, OpCode.Add)]
+            [TestCase(0b10010000, OpCode.Shr)]
+            [TestCase(0b10100000, OpCode.Shl)]
+            [TestCase(0b10110000, OpCode.Not)]
+            [TestCase(0b11000000, OpCode.And)]
+            [TestCase(0b11010000, OpCode.Or)]
+            [TestCase(0b11100000, OpCode.XOr)]
+            [TestCase(0b11110000, OpCode.Cmp)]
+            public void CorrectOpCodeIsSetOnStep5(int instruction, OpCode expectedOpCode)
             {
-                _sut.Ir.Inputs.InstructionWire(0).Value = aluFlag;
-                _sut.Ir.Inputs.InstructionWire(1).Value = ir1;
-                _sut.Ir.Inputs.InstructionWire(2).Value = ir2;
-                _sut.Ir.Inputs.InstructionWire(3).Value = ir3;
+                _sut.Ir.Inputs.SetValue(instruction.ToBinaryBools(8));
                 _sut.Ir.SetRegisterValue();
 
                 PerformStep();
 
-                VerifyWireShouldBe(v => v.Alu.Op[0], expected1);
-                VerifyWireShouldBe(v => v.Alu.Op[1], expected2);
-                VerifyWireShouldBe(v => v.Alu.Op[2], expected3);
+                ((OpCode)_sut.Alu.Op.ToInt()).Should().Be(expectedOpCode);
             }
         }
 
