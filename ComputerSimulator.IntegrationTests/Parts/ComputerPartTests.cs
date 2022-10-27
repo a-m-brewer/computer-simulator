@@ -256,18 +256,60 @@ public class ComputerPartTests : IntegrationTestBase
             .Should()
             .Be(regAValue);
     }
+    
+    [Test]
+    public void CanAddTwoNumbersTogetherStep5AccSet()
+    {
+        var instruction = 0b10000001.ToBinaryBools(8);
+
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
+
+        const int regAValue = 50;
+
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(regAValue));
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(25));
+
+        PerformFullStep(4);
+        PerformStep(2);
+
+        _sut.Acc.Set
+            .Value
+            .Should()
+            .BeTrue();
+    }
+    
+    [Test]
+    public void CanAddTwoNumbersTogetherStep5ResultInAcc()
+    {
+        var instruction = 0b10000001.ToBinaryBools(8);
+
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
+
+        const int regAValue = 50;
+
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(regAValue));
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(30));
+
+        PerformFullStep(4);
+        PerformStep(2);
+
+        _sut.Acc.StoredValue
+            .ToInt()
+            .Should()
+            .Be(80);
+    }
 
     [Test]
     public void CanAddTwoNumbersTogether()
     {
-        const int expected = 75;
+        const int expected = 80;
 
-        var instruction = new[] { true, false, false, false, false, false, false, true };
+        var instruction = 0b10000001.ToBinaryBools(8);
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(50));
-        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(25));
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(30));
 
         PerformFullStep(6);
 
