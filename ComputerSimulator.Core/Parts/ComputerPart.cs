@@ -145,6 +145,8 @@ public class ComputerPart : PartsBase, IComputerPart
         
         Ram.Update();
         
+        Iar.Update();
+        
         Ir.Update();
         
         Cpu.UpdatePins();

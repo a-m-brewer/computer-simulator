@@ -587,7 +587,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformJumpInstruction()
     {
-        var instruction = new[] { false, true, false, false, false, false, false, false };
+        var instruction = 0b01000000.ToBinaryBools(8);
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(_max);
