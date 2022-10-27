@@ -157,6 +157,13 @@ public class ComputerPart : PartsBase, IComputerPart
         
         Alu.Update();
         
+        Caez.Update();
+        
         Acc.Update();
+
+        if (Cpu.Clock.AllOff)
+        {
+            IoBus.CpuBus.Reset();
+        }
     }
 }

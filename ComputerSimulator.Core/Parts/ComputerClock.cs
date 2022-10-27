@@ -19,6 +19,8 @@ public interface IComputerClock : IPart
     /// Clock Set Output
     /// </summary>
     IWire<bool> ClkS { get; }
+    
+    bool AllOff { get; }
 }
 
 public class ComputerClock : PartsBase, IComputerClock
@@ -52,6 +54,8 @@ public class ComputerClock : PartsBase, IComputerClock
     public IWire<bool> Clk { get; }
     public IWire<bool> ClkE { get; }
     public IWire<bool> ClkS { get; }
+    
+    public bool AllOff => !Clk.Value && !_clkDClock.Clk.Value && !ClkS.Value && !ClkE.Value;
 
     public void Update()
     {

@@ -78,7 +78,7 @@ public class Ram : PartsBase, IRam
 
     public IRamSlot GetSlot(int x, int y)
     {
-        return _slots.GetSlot(y, x);
+        return _slots.GetSlot(x, y);
     }
 
     public void UpdateMemory()
@@ -86,7 +86,7 @@ public class Ram : PartsBase, IRam
         _decoderX.Update();
         _decoderY.Update();
         
-        var currSlot = _slots.GetSlot(_decoderY.EnabledIndex, _decoderX.EnabledIndex);
+        var currSlot = _slots.GetSlot(_decoderX.EnabledIndex, _decoderY.EnabledIndex);
         
         currSlot.Update();
     }

@@ -154,6 +154,8 @@ public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
     {
         _decoder3X8.Update();
 
+        _wordComparator.Update();
+        
         switch ((OpCode)_decoder3X8.EnabledIndex)
         {
             case OpCode.Add:
@@ -188,7 +190,6 @@ public class ArithmeticLogicUnit : PartsBase, IArithmeticLogicUnit
                 _xorerEnabler.Update();
                 break;
             case OpCode.Cmp:
-                _wordComparator.Update();
                 _wordComparatorEnabler.Update();
                 break;
             default:
