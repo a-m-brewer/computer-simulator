@@ -549,18 +549,20 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformDataInstruction()
     {
-        var instruction = new[] { false, false, true, false, false, false, false, false };
+        var instruction = 0b00100001.ToBinaryBools(8);
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
-        _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(CreateNumber(255));
+        const int expectedNumber = 255;
+        _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(CreateNumber(expectedNumber));
 
         PerformFullStep(6);
 
-        var result = _sut.GeneralPurposeRegisters[0].StoredValue;
+        var result = _sut.GeneralPurposeRegisters[1].StoredValue;
 
         result
+            .ToInt()
             .Should()
-            .AllSatisfy(w => w.Value.Should().BeTrue());
+            .Be(expectedNumber);
     }
 
     // JMPR RB
@@ -568,18 +570,20 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformJumpRegisterInstruction()
     {
-        var instruction = new[] { false, false, true, true, false, false, false, false };
+        var instruction = 0b00110001.ToBinaryBools(8);
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
-        _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
+        const int expectedValue = 255;
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(expectedValue));
 
         PerformFullStep(6);
 
         var result = _sut.Iar.StoredValue;
 
         result
+            .ToInt()
             .Should()
-            .AllSatisfy(w => w.Value.Should().BeTrue());
+            .Be(expectedValue);
     }
 
     // JMP Addr
@@ -634,29 +638,20 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformJumpIfCarryIsOn()
     {
-        var addInstruction = new[] { true, false, false, false, false, false, false, true };
+        var instruction = 0b01011000.ToBinaryBools(8);
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
-        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(addInstruction);
-        var instruction = new[] { false, true, false, true, true, false, false, false };
-        _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(instruction);
-        _sut.Ram.GetSlot(2, 0).Memory.SetRegisterValue(_max);
+        _sut.Caez.Inputs.C.Value = true;
+        _sut.Caez.SetRegisterValue();
 
-        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(200));
-        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(200));
-
+        const int expectedAddress = 10;
+        _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(CreateNumber(expectedAddress));
+        
         PerformFullStep(6);
 
-        _sut.Caez.StoredValue.C.Value.Should().BeTrue();
-
-        PerformStep();
-
-        PerformFullStep(6);
-
-        var result = _sut.Iar.StoredValue;
-
-        result
+        _sut.Iar.StoredValue.ToInt()
             .Should()
-            .AllSatisfy(w => w.Value.Should().BeTrue());
+            .Be(expectedAddress);
     }
 
     [Test]

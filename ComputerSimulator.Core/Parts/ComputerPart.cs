@@ -153,6 +153,8 @@ public class ComputerPart : PartsBase, IComputerPart
         
         GeneralPurposeRegisters.Update();
         
+        Iar.Update();
+        
         Tmp.Update();
         
         Bus1.Update();
