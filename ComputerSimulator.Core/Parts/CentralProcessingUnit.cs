@@ -330,9 +330,9 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateWire<bool>(nameof(_regBSetOr)));
 
         _regAEnable2X4 = ComponentFactory
-            .CreateDecoder(WireFactory.CreateGroup( InstructionRegister.InstructionWire(4), InstructionRegister.InstructionWire(5)));
+            .CreateDecoder(WireFactory.CreateGroup( InstructionRegister.InstructionWire(5), InstructionRegister.InstructionWire(4)));
 
-        var regBWireGroup = WireFactory.CreateGroup(InstructionRegister.InstructionWire(6), InstructionRegister.InstructionWire(7));
+        var regBWireGroup = WireFactory.CreateGroup(InstructionRegister.InstructionWire(7), InstructionRegister.InstructionWire(6));
 
         _regBEnable2X4 = ComponentFactory
             .CreateDecoder(regBWireGroup);
