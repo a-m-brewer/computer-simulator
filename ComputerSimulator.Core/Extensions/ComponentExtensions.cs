@@ -1,5 +1,4 @@
 ﻿using ComputerSimulator.Core.Circuits;
-using ComputerSimulator.Core.Exceptions;
 
 namespace ComputerSimulator.Core.Extensions;
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
