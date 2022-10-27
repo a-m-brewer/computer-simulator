@@ -13,6 +13,8 @@ public interface IStepper : IPart
     IWire<bool> Reset { get; }
 
     IWireGroup<bool> Steps { get; }
+    
+    int CurrentStep { get; }
 }
 
 public class Stepper : PartsBase, IStepper
@@ -100,7 +102,9 @@ public class Stepper : PartsBase, IStepper
 
     public IWire<bool> Reset { get; }
     public IWireGroup<bool> Steps { get; }
-    
+
+    public int CurrentStep => Steps.FindIndex(f => f.Value);
+
     public void Update()
     {
         _resetNot.Update();

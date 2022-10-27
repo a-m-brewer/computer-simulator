@@ -46,6 +46,19 @@ public class Op : IOp
         }
     }
 
+    public int FindIndex(Predicate<IWire<bool>> predicate)
+    {
+        for (var i = 0; i < _wires.Count; i++)
+        {
+            if (predicate.Invoke(_wires[i]))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     public void SetOpCode(OpCode opCode)
     {
         switch (opCode)

@@ -50,6 +50,8 @@ public interface ICentralProcessingUnit : IPart
 
     #region Parts
 
+    IComputerClock Clock { get; }
+    
     IStepper Stepper { get; }
 
     #endregion
@@ -61,7 +63,6 @@ public interface ICentralProcessingUnit : IPart
 
 public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
 {
-    private readonly IComputerClock _clock;
     private readonly IAnd2 _tmpSetAnd;
     private readonly IAnd2 _accSetAnd;
     private readonly IAnd2 _accEnableAnd;
@@ -150,12 +151,12 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         IoInputOutput = ioInputOutput;
         IoDataAddress = ioDataAddress;
 
-        _clock = ComponentFactory.CreateComputerClock(
+        Clock = ComponentFactory.CreateComputerClock(
             WireFactory.CreateWire<bool>("clk"),
             WireFactory.CreateWire<bool>("clk-enable"),
             WireFactory.CreateWire<bool>("clk-set"));
 
-        Stepper = ComponentFactory.CreateStepper(_clock.Clk,
+        Stepper = ComponentFactory.CreateStepper(Clock.Clk,
             WireFactory.CreateGroup<bool>(WireConstants.ExpectedNumberOfSteps, "step"));
         
         // CAEZ
@@ -261,7 +262,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
 
         _irAnd = ComponentFactory.CreateAnd(
             WireFactory.CreateGroup(InstructionRegister.InstructionWire(1), InstructionRegister.InstructionWire(2), InstructionRegister.InstructionWire(3)),
-            WireFactory.CreateWire<bool>($"{_irAnd}-output"));
+            WireFactory.CreateWire<bool>($"{nameof(_irAnd)}-output"));
         _irAndNot = ComponentFactory.CreateNot(
             _irAnd.Output,
             WireFactory.CreateWire<bool>($"{nameof(_irAndNot)}-output"));
@@ -305,9 +306,9 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
                 _step4AndIr3X8DecoderAnds[5].Output,
                 _step4AndIr3X8DecoderAnds[6].Output),
             Bus1);
-        _iarEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, _iarEnableOr.Output, Iar.Enable);
-        _ramEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, _ramEnableOr.Output, Ram.Enable);
-        _accEnableAnd = ComponentFactory.CreateAnd2(_clock.ClkE, _accEnableOr.Output, Acc.Enable);
+        _iarEnableAnd = ComponentFactory.CreateAnd2(Clock.ClkE, _iarEnableOr.Output, Iar.Enable);
+        _ramEnableAnd = ComponentFactory.CreateAnd2(Clock.ClkE, _ramEnableOr.Output, Ram.Enable);
+        _accEnableAnd = ComponentFactory.CreateAnd2(Clock.ClkE, _accEnableOr.Output, Acc.Enable);
 
         _regAEnableOr = ComponentFactory.CreateOr(
             WireFactory.CreateGroup(_step5Ir0And.Output, _step4AndIr3X8DecoderAnds[0].Output,
@@ -329,9 +330,9 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             WireFactory.CreateWire<bool>(nameof(_regBSetOr)));
 
         _regAEnable2X4 = ComponentFactory
-            .CreateDecoder(WireFactory.CreateGroup(InstructionRegister.InstructionWire(5), InstructionRegister.InstructionWire(4)));
+            .CreateDecoder(WireFactory.CreateGroup( InstructionRegister.InstructionWire(4), InstructionRegister.InstructionWire(5)));
 
-        var regBWireGroup = WireFactory.CreateGroup(InstructionRegister.InstructionWire(7), InstructionRegister.InstructionWire(6));
+        var regBWireGroup = WireFactory.CreateGroup(InstructionRegister.InstructionWire(6), InstructionRegister.InstructionWire(7));
 
         _regBEnable2X4 = ComponentFactory
             .CreateDecoder(regBWireGroup);
@@ -341,19 +342,19 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
         _gprAEnableDecoderAnd = _regAEnable2X4.OutputSize
             .InitArray<IAnd>()
             .Fill(i => ComponentFactory.CreateAnd(
-                WireFactory.CreateGroup(_clock.ClkE, _regAEnableOr.Output, _regAEnable2X4.Outputs[i]),
+                WireFactory.CreateGroup(Clock.ClkE, _regAEnableOr.Output, _regAEnable2X4.Outputs[i]),
                 WireFactory.CreateWire<bool>($"{nameof(_gprAEnableDecoderAnd)}[{i}]")));
 
         _gprBEnableDecoderAnd = _regBEnable2X4.OutputSize
             .InitArray<IAnd>()
             .Fill(i => ComponentFactory.CreateAnd(
-                WireFactory.CreateGroup(_clock.ClkE, _regBEnableOr.Output, _regBEnable2X4.Outputs[i]),
+                WireFactory.CreateGroup(Clock.ClkE, _regBEnableOr.Output, _regBEnable2X4.Outputs[i]),
                 WireFactory.CreateWire<bool>($"{nameof(_gprBEnableDecoderAnd)}[{i}]")));
 
         _gprBSetDecoderAnd = _regBSet2X4.OutputSize
             .InitArray<IAnd>()
             .Fill(i => ComponentFactory.CreateAnd(
-                WireFactory.CreateGroup(_clock.ClkS, _regBSetOr.Output, _regBSet2X4.Outputs[i]),
+                WireFactory.CreateGroup(Clock.ClkS, _regBSetOr.Output, _regBSet2X4.Outputs[i]),
                 GeneralPurposeRegisters[i].Set));
 
         _gprEnableOr = 4
@@ -395,21 +396,21 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             _step5Ir0And.Output,
             WireFactory.CreateWire<bool>($"{nameof(_flagsOr)}-output"));
 
-        _irSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, StepWire(2), IrSet);
-        _marSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _marSetOr.Output, MarSet);
-        _iarSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _iarSetOr.Output, Iar.Set);
-        _accSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _accSetOr.Output, Acc.Set);
-        _ramSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _step5AndIr3X8DecoderAnds[1].Output, Ram.Set);
-        _tmpSetAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _step4Ir0And.Output, TmpSet);
-        _carryInTmpAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _step4Ir0And.Output, CarryInTmp);
-        _flagsAnd = ComponentFactory.CreateAnd2(_clock.ClkS, _flagsOr.Output, FlagsSet);
+        _irSetAnd = ComponentFactory.CreateAnd2(Clock.ClkS, StepWire(2), IrSet);
+        _marSetAnd = ComponentFactory.CreateAnd2(Clock.ClkS, _marSetOr.Output, MarSet);
+        _iarSetAnd = ComponentFactory.CreateAnd2(Clock.ClkS, _iarSetOr.Output, Iar.Set);
+        _accSetAnd = ComponentFactory.CreateAnd2(Clock.ClkS, _accSetOr.Output, Acc.Set);
+        _ramSetAnd = ComponentFactory.CreateAnd2(Clock.ClkS, _step5AndIr3X8DecoderAnds[1].Output, Ram.Set);
+        _tmpSetAnd = ComponentFactory.CreateAnd2(Clock.ClkS, _step4Ir0And.Output, TmpSet);
+        _carryInTmpAnd = ComponentFactory.CreateAnd2(Clock.ClkS, _step4Ir0And.Output, CarryInTmp);
+        _flagsAnd = ComponentFactory.CreateAnd2(Clock.ClkS, _flagsOr.Output, FlagsSet);
 
         _ioClkSAnd = ComponentFactory.CreateAnd2(
-            _clock.ClkS,
+            Clock.ClkS,
             _step4Ir3X8Decoder7Ir4And.Output,
             IoClk.Set);
         _ioClkEAnd = ComponentFactory.CreateAnd2(
-            _clock.ClkE,
+            Clock.ClkE,
             _step5Ir3X8Decoder7NotIr4And.Output,
             IoClk.Enable);
     }
@@ -438,6 +439,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
     public IWireGroup<bool> InstructionRegister { get; }
 
     public ICaez<bool> Caez { get; }
+    public IComputerClock Clock { get; }
     public IStepper Stepper { get; }
 
     public void Update()
@@ -448,7 +450,7 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
     
     public void Step()
     {
-        _clock.Update();
+        Clock.Update();
         Stepper.Update();
     }
 

@@ -47,7 +47,7 @@ public class ComputerPart : PartsBase, IComputerPart
             irSet,
             WireFactory.PowerWire,
             IoBus.CpuBus,
-            IoBus.CpuBus);
+            WireFactory.CreateGroup<bool>($"{nameof(Ir)}.{nameof(Ir.Outputs)}"));
 
         Cpu = ComponentFactory.CreateCentralProcessingUnit(
             WireFactory.CreateWire<bool>("bus1"),
