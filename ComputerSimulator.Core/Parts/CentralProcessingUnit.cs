@@ -257,8 +257,8 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
             .InitArray<IAnd>()
             .Fill(i =>
                 ComponentFactory.CreateAnd(
-                    WireFactory.CreateGroup(InstructionRegister.InstructionWire(0), StepWire(5), InstructionRegister[i + 1]),
-                    Op[i]));
+                    WireFactory.CreateGroup(InstructionRegister.InstructionWire(0), StepWire(5), InstructionRegister.InstructionWire(i + 1)),
+                    Op[2 - i]));
 
         _irAnd = ComponentFactory.CreateAnd(
             WireFactory.CreateGroup(InstructionRegister.InstructionWire(1), InstructionRegister.InstructionWire(2), InstructionRegister.InstructionWire(3)),

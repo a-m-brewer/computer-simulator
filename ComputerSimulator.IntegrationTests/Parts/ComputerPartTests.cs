@@ -325,36 +325,41 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanShiftLeft()
     {
-        var instruction = new[] { true, false, false, true, false, false, false, true };
+        var instruction = 0b10100001.ToBinaryBools(8);
+
+        const int regAInput = 0b00000010;
+        const int expectedRegBOutput = 0b00000100;
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
-        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(128));
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(regAInput));
 
         PerformFullStep(6);
 
         var result = _sut.GeneralPurposeRegisters[1].StoredValue;
 
-        result[6]
-            .Value
+        result.ToInt()
             .Should()
-            .BeTrue();
+            .Be(expectedRegBOutput);
     }
 
     // SHR R0 R1
     [Test]
     public void CanShiftRight()
     {
-        var instruction = new[] { true, false, true, false, false, false, false, true };
+        var instruction = 0b10010001.ToBinaryBools(8);
+
+        const int regAInput = 0b00000010;
+        const int expectedRegBOutput = 0b00000001;
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
-        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(1));
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(regAInput));
 
         PerformFullStep(6);
 
-        _sut.GeneralPurposeRegisters[1].StoredValue[1]
-            .Value
+        _sut.GeneralPurposeRegisters[1].StoredValue
+            .ToInt()
             .Should()
-            .BeTrue();
+            .Be(expectedRegBOutput);
     }
 
     // NOT R0 R1
