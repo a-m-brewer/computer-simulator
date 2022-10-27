@@ -366,7 +366,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanNotAByte()
     {
-        var instruction = new[] { true, false, true, true, false, false, false, true };
+        var instruction = 0b10110001.ToBinaryBools(8);
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_min);
@@ -383,11 +383,11 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanAndByte()
     {
-        var instruction = new[] { true, true, false, false, false, false, false, true };
+        var instruction = 0b11000001.ToBinaryBools(8);
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_min);
-        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(255));
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(_max);
 
         PerformFullStep(6);
 
@@ -401,11 +401,11 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanOrByte()
     {
-        var instruction = new[] { true, true, false, true, false, false, false, true };
+        var instruction = 0b11010001.ToBinaryBools(8);
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_min);
-        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(255));
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(_max);
 
         PerformFullStep(6);
 
@@ -420,11 +420,11 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanXorByte()
     {
-        var instruction = new[] { true, true, true, false, false, false, false, true };
+        var instruction = 0b11100001.ToBinaryBools(8);
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
-        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(255));
-        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(255));
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(_max);
 
         PerformFullStep(6);
 
@@ -437,19 +437,19 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanCmpEqualBytes()
     {
-        var instruction = new[] { true, true, true, true, false, false, false, true };
+        var instruction = 0b11110001.ToBinaryBools(8);
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
-        _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(255));
-        _sut.GeneralPurposeRegisters[1].SetRegisterValue(CreateNumber(255));
+        _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
+        _sut.GeneralPurposeRegisters[1].SetRegisterValue(_max);
 
         PerformFullStep(6);
 
         var result = _sut.Caez.StoredValue;
 
         result.C.Value.Should().BeFalse();
-        result.A.Value.Should().BeTrue();
-        result.E.Value.Should().BeFalse();
+        result.A.Value.Should().BeFalse();
+        result.E.Value.Should().BeTrue();
         // Tried to figure this out but I don't see how following the design this would correctly output false
         // with cmp operation.
         result.Z.Value.Should().BeFalse();
