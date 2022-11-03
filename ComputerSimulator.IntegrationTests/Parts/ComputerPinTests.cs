@@ -11,16 +11,10 @@ namespace ComputerSimulator.IntegrationTests.Parts;
 public class ComputerPinTests : IntegrationTestBase
 {
     private IComputerPart _sut = null!;
-    private bool[] _max = null!;
-    private bool[] _min = null!;
 
     [SetUp]
     public void SetUp()
     {
-        var computerSettings = GetRequiredService<ComputerSettings>();
-
-        _max = computerSettings.WordSize.InitArray<bool>().Fill(true);
-        _min = computerSettings.WordSize.InitArray<bool>().Fill(false);
         _sut = ComponentFactory.CreateComputerPart();
     }
 
