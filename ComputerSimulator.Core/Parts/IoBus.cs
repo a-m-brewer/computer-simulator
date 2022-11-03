@@ -9,6 +9,8 @@ public interface IIoBus
     IWire<bool> DataAddress { get; }
     
     ISetEnableWire<bool> Clk { get; }
+    
+    List<IComponent> ConnectedComponents { get; }
 }
 
 public class IoBus : IIoBus
@@ -25,4 +27,6 @@ public class IoBus : IIoBus
     public IWire<bool> InputOutput { get; }
     public IWire<bool> DataAddress { get; }
     public ISetEnableWire<bool> Clk { get; }
+
+    public List<IComponent> ConnectedComponents { get; } = new();
 }

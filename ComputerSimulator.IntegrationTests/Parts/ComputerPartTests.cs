@@ -775,8 +775,16 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanInputIoDataToRb()
     {
-        _sut.IoBus.CpuBus.SetValue(_max);
-        var instruction = new[] { false, true, true, true, false, false, false, false };
+        var register = ComponentFactory.CreateRegister(
+            _sut.IoBus.Clk.Set,
+            _sut.IoBus.Clk.Enable,
+            _sut.IoBus.CpuBus,
+            _sut.IoBus.CpuBus);
+        register.SetRegisterValue(_max);
+        
+        _sut.IoBus.ConnectedComponents.Add(register);
+        
+        var instruction = 0b01110000.ToBinaryBools(8);
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         PerformFullStep(6);
@@ -784,15 +792,24 @@ public class ComputerPartTests : IntegrationTestBase
         var result = _sut.GeneralPurposeRegisters[0].StoredValue;
 
         result
+            .ToInt()
             .Should()
-            .AllSatisfy(w => w.Value.Should().BeTrue());
+            .Be(_maxInt);
     }
-
+    
     [Test]
     public void CanInputIoAddressToRb()
     {
-        _sut.IoBus.CpuBus.SetValue(_max);
-        var instruction = new[] { false, true, true, true, false, true, false, false };
+        var register = ComponentFactory.CreateRegister(
+            _sut.IoBus.Clk.Set,
+            _sut.IoBus.Clk.Enable,
+            _sut.IoBus.CpuBus,
+            _sut.IoBus.CpuBus);
+        register.SetRegisterValue(_max);
+        
+        _sut.IoBus.ConnectedComponents.Add(register);
+        
+        var instruction = 0b01110100.ToBinaryBools(8);
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         PerformFullStep(6);
@@ -800,40 +817,57 @@ public class ComputerPartTests : IntegrationTestBase
         var result = _sut.GeneralPurposeRegisters[0].StoredValue;
 
         result
+            .ToInt()
             .Should()
-            .AllSatisfy(w => w.Value.Should().BeTrue());
+            .Be(_maxInt);
     }
 
     [Test]
-    public void CanOutputToIoAsData()
+    public void CanOutputDataInRbToIo()
     {
+        var register = ComponentFactory.CreateRegister(
+            _sut.IoBus.Clk.Set,
+            _sut.IoBus.Clk.Enable,
+            _sut.IoBus.CpuBus,
+            _sut.IoBus.CpuBus);
+
+        _sut.IoBus.ConnectedComponents.Add(register);
+        
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
-        var instruction = new[] { false, true, true, true, true, false, false, false };
+        
+        var instruction = 0b01111000.ToBinaryBools(8);
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         PerformFullStep(6);
 
-        var result = _sut.IoBus.CpuBus;
-
-        result
+        register.StoredValue
+            .ToInt()
             .Should()
-            .AllSatisfy(w => w.Value.Should().BeTrue());
+            .Be(_maxInt);
     }
 
     [Test]
-    public void CanOutputToIoAsAddress()
+    public void CanOutputAddressInRbToIo()
     {
+        var register = ComponentFactory.CreateRegister(
+            _sut.IoBus.Clk.Set,
+            _sut.IoBus.Clk.Enable,
+            _sut.IoBus.CpuBus,
+            _sut.IoBus.CpuBus);
+
+        _sut.IoBus.ConnectedComponents.Add(register);
+        
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
-        var instruction = new[] { false, true, true, true, true, true, false, false };
+        
+        var instruction = 0b01111100.ToBinaryBools(8);
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         PerformFullStep(6);
 
-        var result = _sut.IoBus.CpuBus;
-
-        result
+        register.StoredValue
+            .ToInt()
             .Should()
-            .AllSatisfy(w => w.Value.Should().BeTrue());
+            .Be(_maxInt);
     }
 
     private void PerformStep(int steps = 1)

@@ -151,7 +151,11 @@ public class ComputerPart : PartsBase, IComputerPart
         
         Cpu.UpdatePins();
         
+        IoBus.ConnectedComponents.Update();
+        
         GeneralPurposeRegisters.Update();
+        
+        IoBus.ConnectedComponents.Update();
         
         Iar.Update();
         
