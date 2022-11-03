@@ -3,6 +3,7 @@ using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Gates;
 using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
+using ComputerSimulator.Core.Peripherals.Keyboard;
 
 namespace ComputerSimulator.Core.Factories;
 
@@ -97,6 +98,10 @@ public interface IComponentFactory
         ICaez<bool> caez);
 
     IComputerPart CreateComputerPart();
+
+    IKeyboardAdapter CreateKeyboardAdapter(
+        IIoBus ioBus,
+        IWireGroup<bool> input);
 }
 
 public class ComponentFactory : IComponentFactory
@@ -340,6 +345,16 @@ public class ComponentFactory : IComponentFactory
     public IComputerPart CreateComputerPart()
     {
         return new ComputerPart(this, _wireFactory);
+    }
+
+    public IKeyboardAdapter CreateKeyboardAdapter(
+        IIoBus ioBus,
+        IWireGroup<bool> input)
+    {
+        return new KeyboardAdapter(
+            ioBus,
+            input,
+            this, _wireFactory);
     }
 
     public IMemoryBit CreateMemoryBit(

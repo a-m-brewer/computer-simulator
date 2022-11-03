@@ -1,9 +1,28 @@
-﻿using ComputerSimulator.Core.Parts;
+﻿using System.Text;
+using ComputerSimulator.Core.Exceptions;
+using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Extensions;
 
 public static class BinaryHelpers
 {
+    public static bool[] ToBinaryBools(this char quotient)
+    {
+        var i = (int)quotient;
+
+        if (i > 127)
+        {
+            throw new ComputerSimulatorException($"NON ASCII: {quotient}");
+        }
+
+        return i.ToBinaryBools(8);
+    }
+    
+    public static bool[] ToBinaryBools(this Enum quotient, int padding)
+    {
+        return Convert.ToInt32(quotient).ToBinaryBools(padding);
+    }
+    
     public static bool[] ToBinaryBools(this int quotient, int padding)
     {
         var result = new bool[padding];
