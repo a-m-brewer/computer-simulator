@@ -10,9 +10,13 @@ public interface IRamSlot : ICircuit
 
     IWire<bool> Enable { get; }
 
-    IWire<bool> X { get; }
+    IWire<bool> SetX { get; }
 
-    IWire<bool> Y { get; }
+    IWire<bool> SetY { get; }
+    
+    IWire<bool> EnableX { get; }
+
+    IWire<bool> EnableY { get; }
 
     IBus InputBus { get; }
 
@@ -27,9 +31,11 @@ public interface IRamSlot : ICircuit
 public class RamSlot : PartsBase, IRamSlot
 {
     // Gates
-    private readonly IAnd _xAnd;
+
     private readonly IAnd _setAnd;
     private readonly IAnd _enableAnd;
+    private readonly IAnd2 _setSelectorAnd;
+    private readonly IAnd2 _enableSelectorAnd;
 
     public RamSlot(
         IWire<bool> x,
@@ -38,13 +44,15 @@ public class RamSlot : PartsBase, IRamSlot
         IWire<bool> enable,
         IBus bus,
         IComponentFactory componentFactory,
-        IWireFactory wireFactory) : this(x, y, set, enable, bus, bus, componentFactory, wireFactory)
+        IWireFactory wireFactory) : this(x, y, x, y ,set, enable, bus, bus, componentFactory, wireFactory)
     {
     }
     
     public RamSlot(
-        IWire<bool> x,
-        IWire<bool> y,
+        IWire<bool> setX,
+        IWire<bool> setY,
+        IWire<bool> enableX,
+        IWire<bool> enableY,
         IWire<bool> set,
         IWire<bool> enable,
         IBus inputBus,
@@ -54,9 +62,12 @@ public class RamSlot : PartsBase, IRamSlot
     {
         InputBus = inputBus;
         OutputBus = outputBus;
-        _xAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(x, y), WireFactory.CreateWire<bool>());
-        _setAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_xAnd.Output, set), WireFactory.CreateWire<bool>());
-        _enableAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_xAnd.Output, enable), WireFactory.CreateWire<bool>());
+
+        _setSelectorAnd = ComponentFactory.CreateAnd2(setX, setY, WireFactory.CreateWire<bool>());
+        _enableSelectorAnd = ComponentFactory.CreateAnd2(enableX,  enableY, WireFactory.CreateWire<bool>());
+
+        _setAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_setSelectorAnd.Output, set), WireFactory.CreateWire<bool>());
+        _enableAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_enableSelectorAnd.Output, enable), WireFactory.CreateWire<bool>());
         
         Memory = ComponentFactory.CreateRegister(_setAnd.Output, _enableAnd.Output, InputBus, OutputBus);
     }
@@ -65,9 +76,13 @@ public class RamSlot : PartsBase, IRamSlot
 
     public IWire<bool> Enable => _enableAnd.Inputs[1];
 
-    public IWire<bool> X => _xAnd.Inputs[0];
+    public IWire<bool> SetX => _setSelectorAnd.InputA;
 
-    public IWire<bool> Y => _xAnd.Inputs[1];
+    public IWire<bool> SetY => _setSelectorAnd.InputB;
+
+    public IWire<bool> EnableX => _enableSelectorAnd.InputA;
+
+    public IWire<bool> EnableY => _enableSelectorAnd.InputB;
 
     public IBus InputBus { get; }
 
@@ -77,7 +92,9 @@ public class RamSlot : PartsBase, IRamSlot
 
     public void Update()
     {
-        _xAnd.Update();
+        _enableSelectorAnd.Update();
+        _setSelectorAnd.Update();
+        
         _setAnd.Update();
         _enableAnd.Update();
         

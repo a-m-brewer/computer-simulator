@@ -32,8 +32,8 @@ public class RamSlotTests : IntegrationTestBase
             CreateTestBus());
 
         // Act
-        sut.X.Value = x;
-        sut.Y.Value = y;
+        sut.SetX.Value = x;
+        sut.SetY.Value = y;
         sut.Set.Value = set;
 
         for (var i = 0; i < sut.InputBus.Count; i++)
@@ -66,8 +66,8 @@ public class RamSlotTests : IntegrationTestBase
             CreateTestBus());
 
         // Act
-        sut.X.Value = true;
-        sut.Y.Value = true;
+        sut.EnableX.Value = true;
+        sut.EnableY.Value = true;
         sut.Set.Value = true;
 
         for (var i = 0; i < sut.InputBus.Count; i++)
