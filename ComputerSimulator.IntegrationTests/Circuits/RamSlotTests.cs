@@ -36,9 +36,9 @@ public class RamSlotTests : IntegrationTestBase
         sut.Y.Value = y;
         sut.Set.Value = set;
 
-        for (var i = 0; i < sut.Io.Count; i++)
+        for (var i = 0; i < sut.InputBus.Count; i++)
         {
-            sut.Io[i].Value = true;
+            sut.InputBus[i].Value = true;
         }
         
         sut.Update();
@@ -70,9 +70,9 @@ public class RamSlotTests : IntegrationTestBase
         sut.Y.Value = true;
         sut.Set.Value = true;
 
-        for (var i = 0; i < sut.Io.Count; i++)
+        for (var i = 0; i < sut.InputBus.Count; i++)
         {
-            sut.Io[i].Value = true;
+            sut.InputBus[i].Value = true;
         }
         
         sut.Update();
@@ -81,9 +81,9 @@ public class RamSlotTests : IntegrationTestBase
         
         sut.Update();
 
-        for (var i = 0; i < sut.Io.Count; i++)
+        for (var i = 0; i < sut.InputBus.Count; i++)
         {
-            sut.Io[i].Value = false;
+            sut.InputBus[i].Value = false;
         }
         
         sut.Update();
@@ -95,9 +95,9 @@ public class RamSlotTests : IntegrationTestBase
 
         using (new AssertionScope())
         {
-            for (var i = 0; i < sut.Io.Count; i++)
+            for (var i = 0; i < sut.OutputBus.Count; i++)
             {
-                sut.Io[i].Value.Should().BeFalse();
+                sut.OutputBus[i].Value.Should().BeFalse();
             }
         }
 
@@ -107,9 +107,9 @@ public class RamSlotTests : IntegrationTestBase
 
         using (new AssertionScope())
         {
-            for (var i = 0; i < sut.Io.Count; i++)
+            for (var i = 0; i < sut.OutputBus.Count; i++)
             {
-                sut.Io[i].Value.Should().BeTrue();
+                sut.OutputBus[i].Value.Should().BeTrue();
             }
         }
     }

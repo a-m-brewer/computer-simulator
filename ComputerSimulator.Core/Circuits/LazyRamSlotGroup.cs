@@ -12,7 +12,18 @@ public class LazyRamSlotGroup
         IDecoder decoderY,
         IWire<bool> set,
         IWire<bool> enable,
-        IBus io,
+        IBus bus,
+        IComponentFactory componentFactory) : this(decoderX, decoderY, set, enable, bus, bus, componentFactory)
+    {
+    }
+
+    public LazyRamSlotGroup(
+        IDecoder decoderX,
+        IDecoder decoderY,
+        IWire<bool> set,
+        IWire<bool> enable,
+        IBus inputBus,
+        IBus outputBus,
         IComponentFactory componentFactory)
     {
         _lazySlots = new Lazy<IRamSlot>[decoderY.OutputSize][];
@@ -24,7 +35,7 @@ public class LazyRamSlotGroup
                 var x1 = x;
                 var y1 = y;
                 _lazySlots[y][x] = new Lazy<IRamSlot>(() =>
-                    componentFactory.CreateRamSlot(decoderX.Outputs[x1], decoderY.Outputs[y1], set, enable, io));
+                    componentFactory.CreateRamSlot(decoderX.Outputs[x1], decoderY.Outputs[y1], set, enable, inputBus, outputBus));
             }
         }
     }

@@ -14,7 +14,9 @@ public interface IRamSlot : ICircuit
 
     IWire<bool> Y { get; }
 
-    IBus Io { get; }
+    IBus InputBus { get; }
+
+    IBus OutputBus { get; }
     
     /// <summary>
     /// Purely for debug/testing purposes only. Do not use for any actual code
@@ -34,16 +36,29 @@ public class RamSlot : PartsBase, IRamSlot
         IWire<bool> y,
         IWire<bool> set,
         IWire<bool> enable,
-        IBus io,
+        IBus bus,
+        IComponentFactory componentFactory,
+        IWireFactory wireFactory) : this(x, y, set, enable, bus, bus, componentFactory, wireFactory)
+    {
+    }
+    
+    public RamSlot(
+        IWire<bool> x,
+        IWire<bool> y,
+        IWire<bool> set,
+        IWire<bool> enable,
+        IBus inputBus,
+        IBus outputBus,
         IComponentFactory componentFactory,
         IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
-        Io = io;
+        InputBus = inputBus;
+        OutputBus = outputBus;
         _xAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(x, y), WireFactory.CreateWire<bool>());
         _setAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_xAnd.Output, set), WireFactory.CreateWire<bool>());
         _enableAnd = ComponentFactory.CreateAnd(WireFactory.CreateGroup(_xAnd.Output, enable), WireFactory.CreateWire<bool>());
         
-        Memory = ComponentFactory.CreateRegister(_setAnd.Output, _enableAnd.Output, Io, Io);
+        Memory = ComponentFactory.CreateRegister(_setAnd.Output, _enableAnd.Output, InputBus, OutputBus);
     }
 
     public IWire<bool> Set => _setAnd.Inputs[1];
@@ -54,8 +69,10 @@ public class RamSlot : PartsBase, IRamSlot
 
     public IWire<bool> Y => _xAnd.Inputs[1];
 
-    public IBus Io { get; }
+    public IBus InputBus { get; }
 
+    public IBus OutputBus { get; }
+    
     public IRegister Memory { get; }
 
     public void Update()

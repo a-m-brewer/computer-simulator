@@ -40,6 +40,7 @@ public interface IComponentFactory
     IShifter CreateLeftShifter(IWire<bool> shiftIn, IWire<bool> shiftOut, IWireGroup<bool> input, IWireGroup<bool> output);
 
     IRamSlot CreateRamSlot(IWire<bool> x, IWire<bool> y, IWire<bool> set, IWire<bool> enable, IBus io);
+    IRamSlot CreateRamSlot(IWire<bool> x, IWire<bool> y, IWire<bool> set, IWire<bool> enable, IBus inputBus, IBus outputBus);
 
     IMemoryBit CreateMemoryBit(
         IWire<bool> input,
@@ -225,6 +226,11 @@ public class ComponentFactory : IComponentFactory
     public IRamSlot CreateRamSlot(IWire<bool> x, IWire<bool> y, IWire<bool> set, IWire<bool> enable, IBus io)
     {
         return new RamSlot(x, y, set, enable, io, this, _wireFactory);
+    }
+
+    public IRamSlot CreateRamSlot(IWire<bool> x, IWire<bool> y, IWire<bool> set, IWire<bool> enable, IBus inputBus, IBus outputBus)
+    {
+        return new RamSlot(x, y, set, enable, inputBus, outputBus, this, _wireFactory);
     }
 
     public IMemoryBit[] CreateMemoryBitSet(IWireGroup<bool> inputs, IWireGroup<bool> outputs, IWire<bool> set)
