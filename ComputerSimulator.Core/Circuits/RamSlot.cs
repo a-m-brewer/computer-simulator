@@ -18,9 +18,9 @@ public interface IRamSlot : ICircuit
 
     IWire<bool> EnableY { get; }
 
-    IBus InputBus { get; }
+    IWireGroup<bool> InputBus { get; }
 
-    IBus OutputBus { get; }
+    IWireGroup<bool> OutputBus { get; }
     
     /// <summary>
     /// Purely for debug/testing purposes only. Do not use for any actual code
@@ -55,8 +55,8 @@ public class RamSlot : PartsBase, IRamSlot
         IWire<bool> enableY,
         IWire<bool> set,
         IWire<bool> enable,
-        IBus inputBus,
-        IBus outputBus,
+        IWireGroup<bool> inputBus,
+        IWireGroup<bool> outputBus,
         IComponentFactory componentFactory,
         IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
@@ -84,9 +84,9 @@ public class RamSlot : PartsBase, IRamSlot
 
     public IWire<bool> EnableY => _enableSelectorAnd.InputB;
 
-    public IBus InputBus { get; }
+    public IWireGroup<bool> InputBus { get; }
 
-    public IBus OutputBus { get; }
+    public IWireGroup<bool> OutputBus { get; }
     
     public IRegister Memory { get; }
 

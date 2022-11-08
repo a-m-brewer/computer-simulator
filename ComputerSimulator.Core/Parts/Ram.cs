@@ -16,8 +16,6 @@ public interface IRam : ICircuit
     IWire<bool> Enable { get; }
 
     IRamSlot GetSlot(int x, int y);
-    
-    void UpdateMemory();
 }
 
 public class Ram : PartsBase, IRam

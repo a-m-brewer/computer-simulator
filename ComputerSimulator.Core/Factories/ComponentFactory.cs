@@ -46,8 +46,8 @@ public interface IComponentFactory
         IWire<bool> enableY,
         IWire<bool> set,
         IWire<bool> enable,
-        IBus inputBus,
-        IBus outputBus);
+        IWireGroup<bool> inputBus,
+        IWireGroup<bool> outputBus);
 
     IMemoryBit CreateMemoryBit(
         IWire<bool> input,
@@ -57,6 +57,16 @@ public interface IComponentFactory
     IMemoryBit[] CreateMemoryBitSet(IWireGroup<bool> inputs, IWireGroup<bool> outputs, IWire<bool> set);
 
     IRam CreateRam(IWire<bool> marSet, IBus marInputBus, IWire<bool> set, IWire<bool> enable, IBus io);
+
+    IDisplayRam CreateDisplayRam(
+        IWire<bool> setMarSet,
+        IWire<bool> enableMarSet,
+        IWireGroup<bool> setMarInputBus,
+        IWireGroup<bool> enableMarInputBus,
+        IWire<bool> set,
+        IWire<bool> enable,
+        IWireGroup<bool> inputBus,
+        IWireGroup<bool> outputBus);
 
     IBitAdder CreateBitAdder(IWire<bool> inputA, IWire<bool> inputB, IWire<bool> carryIn, IWire<bool> carryOut, IWire<bool> sum);
 
@@ -242,8 +252,8 @@ public class ComponentFactory : IComponentFactory
         IWire<bool> enableY,
         IWire<bool> set,
         IWire<bool> enable,
-        IBus inputBus,
-        IBus outputBus)
+        IWireGroup<bool> inputBus,
+        IWireGroup<bool> outputBus)
     {
         return new RamSlot(setX, setY, enableX, enableY, set, enable, inputBus, outputBus, this, _wireFactory);
     }
@@ -266,6 +276,20 @@ public class ComponentFactory : IComponentFactory
         return new Ram(marSet, marInputBus, set, enable, io, _computerSettings, this, _wireFactory);
     }
 
+    public IDisplayRam CreateDisplayRam(
+        IWire<bool> setMarSet,
+        IWire<bool> enableMarSet,
+        IWireGroup<bool> setMarInputBus,
+        IWireGroup<bool> enableMarInputBus,
+        IWire<bool> set,
+        IWire<bool> enable,
+        IWireGroup<bool> inputBus,
+        IWireGroup<bool> outputBus)
+    {
+        return new DisplayRam(setMarSet, enableMarSet, setMarInputBus, enableMarInputBus, set, enable, inputBus,
+            outputBus, this, _wireFactory);
+    }
+    
     public IBitAdder CreateBitAdder(IWire<bool> inputA, IWire<bool> inputB, IWire<bool> carryIn, IWire<bool> carryOut, IWire<bool> sum)
     {
         return new BitAdder(inputA, inputB, carryIn, carryOut, sum, this, _wireFactory);

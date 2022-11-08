@@ -25,8 +25,8 @@ public class LazyRamSlotGroup
         IDecoder enableDecoderY,
         IWire<bool> set,
         IWire<bool> enable,
-        IBus inputBus,
-        IBus outputBus,
+        IWireGroup<bool> inputBus,
+        IWireGroup<bool> outputBus,
         IComponentFactory componentFactory)
     {
         _lazySlots = new Lazy<IRamSlot>[setDecoderY.OutputSize][];
