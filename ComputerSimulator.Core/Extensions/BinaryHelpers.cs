@@ -23,7 +23,7 @@ public static class BinaryHelpers
         return Convert.ToInt32(quotient).ToBinaryBools(padding);
     }
     
-    public static bool[] ToBinaryBools(this int quotient, int padding)
+    public static bool[] ToBinaryBools(this int quotient, int padding = 1)
     {
         var result = new bool[padding];
         var i = 0;

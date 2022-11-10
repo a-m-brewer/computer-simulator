@@ -86,6 +86,7 @@ public class DisplayRam : PartsBase, IDisplayRam
     public IRegister SetMar { get; }
 
     public IRegister EnableMar { get; }
+
     public IWire<bool> Set { get; }
 
     public IWire<bool> Enable { get; }
