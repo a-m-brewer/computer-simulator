@@ -1,8 +1,9 @@
 ﻿using ComputerSimulator.Core.Circuits;
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Factories;
+using ComputerSimulator.Core.Parts;
 
-namespace ComputerSimulator.Core.Parts;
+namespace ComputerSimulator.Core.Peripherals.Display;
 
 public interface IDisplayRam : IPart
 {

@@ -1,10 +1,10 @@
 ﻿using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Models;
-using ComputerSimulator.Core.Parts;
+using ComputerSimulator.Core.Peripherals.Display;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace ComputerSimulator.IntegrationTests.Parts;
+namespace ComputerSimulator.IntegrationTests.Peripherals.Display;
 
 [TestFixture]
 public class DisplayRamTests : IntegrationTestBase

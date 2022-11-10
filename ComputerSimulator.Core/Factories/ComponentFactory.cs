@@ -3,6 +3,7 @@ using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Gates;
 using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
+using ComputerSimulator.Core.Peripherals.Display;
 using ComputerSimulator.Core.Peripherals.Keyboard;
 
 namespace ComputerSimulator.Core.Factories;
