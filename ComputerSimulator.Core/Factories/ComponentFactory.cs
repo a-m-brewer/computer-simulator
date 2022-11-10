@@ -121,6 +121,24 @@ public interface IComponentFactory
     IKeyboardAdapter CreateKeyboardAdapter(
         IIoBus ioBus,
         IWireGroup<bool> input);
+
+    IIoBusControl CreateIoBusControl(
+        IIoBus ioBus,
+        IWireGroup<bool> displayRamSetMarBus,
+        IWire<bool> displayRamSetMarSet,
+        IWireGroup<bool> displayRamInputBus,
+        IWire<bool> displayRamSet);
+
+    IScreenControl CreateScreenControl(
+        IWireGroup<bool> displayRamEnableMarBus,
+        IWire<bool> displayRamEnableMarSet,
+        IWireGroup<bool> displayRamOutputBus, 
+        IWire<bool> displayRamEnable,
+        IWire<bool> clock,
+        IWire<bool> horizontalPosition,
+        IWire<bool> verticalPosition, 
+        IWire<bool> brightness
+    );
 }
 
 public class ComponentFactory : IComponentFactory
@@ -401,6 +419,47 @@ public class ComponentFactory : IComponentFactory
             ioBus,
             input,
             this, _wireFactory);
+    }
+
+    public IIoBusControl CreateIoBusControl(
+        IIoBus ioBus,
+        IWireGroup<bool> displayRamSetMarBus,
+        IWire<bool> displayRamSetMarSet,
+        IWireGroup<bool> displayRamInputBus,
+        IWire<bool> displayRamSet)
+    {
+        return new IoBusControl(
+            ioBus,
+            displayRamSetMarBus,
+            displayRamSetMarSet,
+            displayRamInputBus,
+            displayRamSet,
+            this,
+            _wireFactory
+        );
+    }
+
+    public IScreenControl CreateScreenControl(
+        IWireGroup<bool> displayRamEnableMarBus,
+        IWire<bool> displayRamEnableMarSet,
+        IWireGroup<bool> displayRamOutputBus,
+        IWire<bool> displayRamEnable,
+        IWire<bool> clock,
+        IWire<bool> horizontalPosition,
+        IWire<bool> verticalPosition,
+        IWire<bool> brightness)
+    {
+        return new ScreenControl(
+            displayRamEnableMarBus,
+            displayRamEnableMarSet,
+            displayRamOutputBus,
+            displayRamEnable,
+            clock,
+            horizontalPosition,
+            verticalPosition,
+            brightness,
+            this,
+            _wireFactory);
     }
 
     public IMemoryBit CreateMemoryBit(
