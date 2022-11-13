@@ -1,5 +1,7 @@
 using System.Linq;
+using ComputerSimulator.Core.Enums;
 using ComputerSimulator.Core.Extensions;
+using ComputerSimulator.Core.Instructions;
 using ComputerSimulator.Core.Peripherals;
 using ComputerSimulator.Core.Peripherals.Display;
 using FluentAssertions;
@@ -66,5 +68,18 @@ public class IoBusControlTests : IntegrationTestBase
         _sut.IsAddressOutput.Output.Value
             .Should()
             .Be(i == 7);
+    }
+
+    [Test]
+    public void CanSendDataToDisplayRam()
+    {
+        var instruction = new IoInstruction
+        {
+            Mode = IoMode.Input,
+            DataAddress = DataAddress.Address,
+            RegisterB = 1
+        };
+
+        var binary = instruction.ToString();
     }
 }
