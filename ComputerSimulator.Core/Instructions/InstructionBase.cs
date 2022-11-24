@@ -11,7 +11,7 @@ public abstract class InstructionBase
 
     public abstract int AsInt();
 
-    public bool[] ToBools()
+    public bool[] AsBools()
     {
         return AsInt().ToBinaryBools(8);
     }

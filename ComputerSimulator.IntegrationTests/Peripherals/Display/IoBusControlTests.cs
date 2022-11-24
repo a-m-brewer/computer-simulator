@@ -80,6 +80,29 @@ public class IoBusControlTests : IntegrationTestBase
             RegisterB = 1
         };
 
-        var binary = instruction.ToString();
+        _sut.IoBus.CpuBus.SetValue(instruction.AsBools());
+        
+        _sut.Update();
+
+        var ramAddress = 1;
+        _sut.IoBus.CpuBus.SetValue(ramAddress.ToBinaryBools(8));
+
+        _sut.DisplayRamSetMarBus
+            .ToInt()
+            .Should()
+            .Be(ramAddress);
+        
+        _sut.Update();
+
+        var data = 55;
+        _sut.IoBus.CpuBus.SetValue(data.ToBinaryBools(8));
+        
+        _sut.Update();
+        
+        // Assert
+        _sut.DisplayRamInputBus
+            .ToInt()
+            .Should()
+            .Be(data);
     }
 }
