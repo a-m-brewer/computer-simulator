@@ -21,11 +21,21 @@ public class ConsoleAbstraction : IConsole
 
     public void SetCursorPosition(int left, int top)
     {
+        if (Console.IsOutputRedirected)
+        {
+            return;
+        }
+
         Console.SetCursorPosition(left, top);
     }
-    
+
     public void Clear()
     {
+        if (Console.IsOutputRedirected)
+        {
+            return;
+        }
+
         Console.Clear();
     }
 

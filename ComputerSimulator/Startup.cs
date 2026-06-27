@@ -1,6 +1,8 @@
 using ComputerSimulator.Core;
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Models;
+using ComputerSimulator.Core.Peripherals.Display;
+using ComputerSimulator.Graphics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,7 +19,12 @@ public class Startup
     
     public void ConfigureServices(IServiceCollection services)
     {
-        services.RegisterCoreServices(Configuration.GetSection("Computer").Get<ComputerSettings>());
+        services.RegisterCoreServices(
+            Configuration.GetSection("Computer").Get<ComputerSettings>() ?? new ComputerSettings());
+
+        services.AddSingleton<IConsole, ConsoleAbstraction>();
+        services.AddSingleton<Screen>();
+        services.AddSingleton<IDisplayOutput, TerminalDisplayOutput>();
 
         services.AddTransient<IComputer, Computer>();
         services.AddHostedService<ComputerService>();

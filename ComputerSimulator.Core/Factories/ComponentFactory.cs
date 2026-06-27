@@ -132,13 +132,17 @@ public interface IComponentFactory
     IScreenControl CreateScreenControl(
         IWireGroup<bool> displayRamEnableMarBus,
         IWire<bool> displayRamEnableMarSet,
-        IWireGroup<bool> displayRamOutputBus, 
+        IWireGroup<bool> displayRamOutputBus,
         IWire<bool> displayRamEnable,
         IWire<bool> clock,
-        IWire<bool> horizontalPosition,
-        IWire<bool> verticalPosition, 
-        IWire<bool> brightness
+        IWireGroup<bool> horizontalPosition,
+        IWireGroup<bool> verticalPosition,
+        IWire<bool> brightness,
+        int width,
+        int height
     );
+
+    IDisplayAdapter CreateDisplayAdapter(IIoBus ioBus);
 }
 
 public class ComponentFactory : IComponentFactory
@@ -445,9 +449,11 @@ public class ComponentFactory : IComponentFactory
         IWireGroup<bool> displayRamOutputBus,
         IWire<bool> displayRamEnable,
         IWire<bool> clock,
-        IWire<bool> horizontalPosition,
-        IWire<bool> verticalPosition,
-        IWire<bool> brightness)
+        IWireGroup<bool> horizontalPosition,
+        IWireGroup<bool> verticalPosition,
+        IWire<bool> brightness,
+        int width,
+        int height)
     {
         return new ScreenControl(
             displayRamEnableMarBus,
@@ -458,7 +464,15 @@ public class ComponentFactory : IComponentFactory
             horizontalPosition,
             verticalPosition,
             brightness,
+            width,
+            height,
             this,
+            _wireFactory);
+    }
+
+    public IDisplayAdapter CreateDisplayAdapter(IIoBus ioBus)
+    {
+        return new DisplayAdapter(ioBus, _computerSettings.ScreenWidth, _computerSettings.ScreenHeight, this,
             _wireFactory);
     }
 

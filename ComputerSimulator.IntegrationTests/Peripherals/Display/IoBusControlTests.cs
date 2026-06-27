@@ -1,7 +1,5 @@
 using System.Linq;
-using ComputerSimulator.Core.Enums;
 using ComputerSimulator.Core.Extensions;
-using ComputerSimulator.Core.Instructions;
 using ComputerSimulator.Core.Peripherals;
 using ComputerSimulator.Core.Peripherals.Display;
 using FluentAssertions;
@@ -35,19 +33,18 @@ public class IoBusControlTests : IntegrationTestBase
 
         // Act
         _sut.Update();
-        
+
         // Assert
         _sut.IoSelect
             .Output
             .Value
             .Should()
             .Be(selected);
-
     }
 
     private static int[] _canCheckIfAddressOutputModeTestCases =
         Enumerable.Range(0, 8).ToArray();
-    
+
     [Test]
     [TestCaseSource(nameof(_canCheckIfAddressOutputModeTestCases))]
     public void CanCheckIfAddressOutputMode(int i)
@@ -58,10 +55,10 @@ public class IoBusControlTests : IntegrationTestBase
         _sut.IoBus.DataAddress.Value = testCase[0];
         _sut.IoBus.InputOutput.Value = testCase[1];
         _sut.IoBus.Clk.Set.Value = testCase[2];
-        
+
         // Act
         _sut.Update();
-        
+
         // Assert
         _sut.IsAddressOutput.Output.Value
             .Should()
@@ -69,38 +66,75 @@ public class IoBusControlTests : IntegrationTestBase
     }
 
     [Test]
+    public void OutAddrWithDisplayAddressSelectsTheDisplay()
+    {
+        SelectDisplay();
+
+        _sut.DisplayAdapterActiveBit.Output.Value
+            .Should()
+            .BeTrue();
+    }
+
+    [Test]
+    public void SelectionIsStickyAcrossSubsequentInstructions()
+    {
+        SelectDisplay();
+
+        // A later OUT Addr carrying a non-display address must not deselect the display.
+        OutAddress(42);
+
+        _sut.DisplayAdapterActiveBit.Output.Value
+            .Should()
+            .BeTrue();
+    }
+
+    [Test]
+    public void CanSendAddressToDisplayRam()
+    {
+        SelectDisplay();
+
+        const int ramAddress = 42;
+        OutAddress(ramAddress);
+
+        _sut.DisplayRamSetMarBus.ToInt().Should().Be(ramAddress);
+        _sut.DisplayRamSetMarSet.Value.Should().BeTrue();
+        _sut.DisplayRamSet.Value.Should().BeFalse();
+    }
+
+    [Test]
     public void CanSendDataToDisplayRam()
     {
-        var instruction = new IoInstruction
-        {
-            Mode = IoMode.Input,
-            DataAddress = DataAddress.Address,
-            RegisterB = 1
-        };
+        SelectDisplay();
+        OutAddress(1);
 
-        _sut.IoBus.CpuBus.SetValue(instruction.AsBools());
-        
+        const int data = 55;
+        OutData(data);
+
+        _sut.DisplayRamInputBus.ToInt().Should().Be(data);
+        _sut.DisplayRamSet.Value.Should().BeTrue();
+        _sut.DisplayRamSetMarSet.Value.Should().BeFalse();
+    }
+
+    private void SelectDisplay()
+    {
+        OutAddress((int)IoAddress.Display);
+    }
+
+    private void OutAddress(int value)
+    {
+        _sut.IoBus.CpuBus.SetValue(value.ToBinaryBools(8));
+        _sut.IoBus.DataAddress.Value = true;
+        _sut.IoBus.InputOutput.Value = true;
+        _sut.IoBus.Clk.Set.Value = true;
         _sut.Update();
+    }
 
-        var ramAddress = 1;
-        _sut.IoBus.CpuBus.SetValue(ramAddress.ToBinaryBools(8));
-
-        _sut.DisplayRamSetMarBus
-            .ToInt()
-            .Should()
-            .Be(ramAddress);
-        
+    private void OutData(int value)
+    {
+        _sut.IoBus.CpuBus.SetValue(value.ToBinaryBools(8));
+        _sut.IoBus.DataAddress.Value = false;
+        _sut.IoBus.InputOutput.Value = true;
+        _sut.IoBus.Clk.Set.Value = true;
         _sut.Update();
-
-        var data = 55;
-        _sut.IoBus.CpuBus.SetValue(data.ToBinaryBools(8));
-        
-        _sut.Update();
-        
-        // Assert
-        _sut.DisplayRamInputBus
-            .ToInt()
-            .Should()
-            .Be(data);
     }
 }

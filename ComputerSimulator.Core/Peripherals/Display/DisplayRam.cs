@@ -18,7 +18,17 @@ public interface IDisplayRam : IPart
     IWireGroup<bool> InputBus { get; }
 
     IWireGroup<bool> OutputBus { get; }
-    
+
+    /// <summary>
+    /// Updates the write (input) port only: latches the input MAR and writes the input bus to the addressed slot.
+    /// </summary>
+    void UpdateWrite();
+
+    /// <summary>
+    /// Updates the read (output) port only: latches the output MAR and drives the addressed slot onto the output bus.
+    /// </summary>
+    void UpdateRead();
+
     IRamSlot GetSlot(int x, int y);
 }
 
@@ -103,17 +113,27 @@ public class DisplayRam : PartsBase, IDisplayRam
 
     public void Update()
     {
+        UpdateWrite();
+        UpdateRead();
+    }
+
+    public void UpdateWrite()
+    {
         SetMar.Update();
-        EnableMar.Update();
-        
+
         _setDecoderX.Update();
         _setDecoderY.Update();
-        
-        _enableDecoderX.Update();
-        _enableDecoderY.Update();
-        
+
         GetSlot(_setDecoderX.EnabledIndex, _setDecoderY.EnabledIndex)
             .Update();
+    }
+
+    public void UpdateRead()
+    {
+        EnableMar.Update();
+
+        _enableDecoderX.Update();
+        _enableDecoderY.Update();
 
         GetSlot(_enableDecoderX.EnabledIndex, _enableDecoderY.EnabledIndex)
             .Update();

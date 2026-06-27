@@ -47,24 +47,27 @@ public class Decoder : CircuitBase, IDecoder
 
     public void Update()
     {
+        // Every output must be driven each update. Breaking out as soon as the matching row is found
+        // would leave higher-index outputs holding stale values from a previous decode, which causes
+        // spurious register enables/sets across consecutive instructions.
         for (var row = 0; row < OutputSize; row++)
         {
             var rowOutput = true;
-                
+
             for (var col = 0; col < Inputs.Count; col++)
             {
                 if (_truthTable[row][col] ? Inputs[col].Value : !Inputs[col].Value) continue;
-                    
+
                 rowOutput = false;
                 break;
             }
 
             Outputs[row].Value = rowOutput;
 
-            if (!Outputs[row].Value) continue;
-                
-            EnabledIndex = row;
-            break;
+            if (rowOutput)
+            {
+                EnabledIndex = row;
+            }
         }
     }
 
