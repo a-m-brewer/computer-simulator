@@ -22,6 +22,10 @@ dotnet test ComputerSimulator.IntegrationTests
 dotnet run --project ComputerSimulator
 ```
 
+## Roadmap
+
+See [ROADMAP.md](docs/ROADMAP.md) for a list of planned features and improvements.
+
 ## Architecture
 
 This is a bottom-up hardware computer simulation in C# (.NET 10). Every logical component is modelled as software, from individual gates up to a full CPU.
