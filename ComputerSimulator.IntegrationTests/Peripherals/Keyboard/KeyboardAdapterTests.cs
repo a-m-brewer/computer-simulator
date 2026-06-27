@@ -9,10 +9,8 @@ namespace ComputerSimulator.IntegrationTests.Peripherals.Keyboard;
 
 public class KeyboardAdapterTests : IntegrationTestBase
 {
-    private static object[] _keyboardInputs =
-        Enumerable.Range(0, 128)
-            .Select(s => new[] { s })
-            .ToArray();
+    private static int[] _keyboardInputs =
+        Enumerable.Range(0, 128).ToArray();
     
     private IKeyboardAdapter _sut;
     

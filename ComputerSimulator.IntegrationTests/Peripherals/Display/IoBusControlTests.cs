@@ -45,10 +45,8 @@ public class IoBusControlTests : IntegrationTestBase
 
     }
 
-    private static object[] _canCheckIfAddressOutputModeTestCases =
-        Enumerable.Range(0, 8)
-            .Select(s => new[] { s })
-            .ToArray();
+    private static int[] _canCheckIfAddressOutputModeTestCases =
+        Enumerable.Range(0, 8).ToArray();
     
     [Test]
     [TestCaseSource(nameof(_canCheckIfAddressOutputModeTestCases))]
