@@ -6,7 +6,7 @@ namespace ComputerSimulator;
 /// <summary>
 /// Bridges the Core display adapter to the terminal renderer in ComputerSimulator.Graphics.
 /// </summary>
-public class TerminalDisplayOutput : IDisplayOutput
+public class TerminalDisplayOutput : IDisplayByteOutput
 {
     private readonly Screen _screen;
 
@@ -23,6 +23,11 @@ public class TerminalDisplayOutput : IDisplayOutput
     public void SetPixel(int x, int y, bool on)
     {
         _screen.SetPixel(x, y, on);
+    }
+
+    public void SetPixelByte(int x, int y, int value)
+    {
+        _screen.SetPixelByte(x, y, value);
     }
 
     public void Present()

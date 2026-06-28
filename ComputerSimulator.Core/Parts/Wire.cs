@@ -20,7 +20,6 @@ public interface IResettableWire<T> : IWire<T>, IResettable where T : new()
 public class Wire<T> : IResettableWire<T> where T : new()
 {
     private T _value;
-    private bool _valueSet;
     private readonly string? _label;
 
     public Wire(string? label = null)
@@ -34,16 +33,7 @@ public class Wire<T> : IResettableWire<T> where T : new()
     public T Value
     {
         get => _value;
-        set
-        {
-            if (_valueSet && EqualityComparer<T>.Default.Equals(_value, value))
-            {
-                return;
-            }
-
-            _valueSet = true;
-            _value = value;
-        }
+        set => _value = value;
     }
 
     public void Reset()

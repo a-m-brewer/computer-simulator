@@ -10,6 +10,10 @@ public class ComputerSettings
 
     public int DisplayFrameDelayMs { get; set; } = 16;
 
+    public bool EnablePerformanceStats { get; set; }
+
+    public int PerformanceStatsIntervalSeconds { get; set; } = 2;
+
     public DisplayScanMode DisplayScanMode { get; set; } = DisplayScanMode.GateLevel;
 
     /// <summary>
@@ -54,6 +58,11 @@ public class ComputerSettings
             throw new ArgumentException("DisplayFrameDelayMs cannot be negative.", nameof(DisplayFrameDelayMs));
         }
 
+        if (PerformanceStatsIntervalSeconds <= 0)
+        {
+            throw new ArgumentException("PerformanceStatsIntervalSeconds must be positive.", nameof(PerformanceStatsIntervalSeconds));
+        }
+
         var addressBitsPerAxis = WordSize / 2;
         var addressableBytes = 1L << WordSize;
         var addressableRows = 1L << addressBitsPerAxis;
@@ -67,6 +76,6 @@ public class ComputerSettings
 
     public override string ToString()
     {
-        return $"WordSize: {WordSize}, CpuUpdatesPerFrame: {CpuUpdatesPerFrame}, DisplayFrameDelayMs: {DisplayFrameDelayMs}, DisplayScanMode: {DisplayScanMode}, ScreenWidth: {ScreenWidth}, ScreenHeight: {ScreenHeight}";
+        return $"WordSize: {WordSize}, CpuUpdatesPerFrame: {CpuUpdatesPerFrame}, DisplayFrameDelayMs: {DisplayFrameDelayMs}, DisplayScanMode: {DisplayScanMode}, ScreenWidth: {ScreenWidth}, ScreenHeight: {ScreenHeight}, EnablePerformanceStats: {EnablePerformanceStats}, PerformanceStatsIntervalSeconds: {PerformanceStatsIntervalSeconds}";
     }
 }

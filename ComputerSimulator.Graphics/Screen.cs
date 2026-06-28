@@ -11,13 +11,8 @@ public class Screen
     private const char On = '█';
     private const char Off = ' ';
     private const char BrailleBlank = ' ';
-    private static readonly int[,] BrailleDots =
-    {
-        { 0x01, 0x08 },
-        { 0x02, 0x10 },
-        { 0x04, 0x20 },
-        { 0x40, 0x80 }
-    };
+    private static readonly int[] LeftBrailleDots = [0x01, 0x02, 0x04, 0x40];
+    private static readonly int[] RightBrailleDots = [0x08, 0x10, 0x20, 0x80];
 
     private readonly IConsole _console;
     private readonly TerminalSettings _settings;
@@ -62,6 +57,26 @@ public class Screen
         }
 
         _pixels[(y * _width) + x] = on;
+    }
+
+    public void SetPixelByte(int x, int y, int value)
+    {
+        if (y < 0 || y >= _height || x >= _width || x + 7 < 0)
+        {
+            return;
+        }
+
+        var pixelIndex = (y * _width) + x;
+        for (var bit = 0; bit < 8; bit++)
+        {
+            var pixelX = x + bit;
+            if (pixelX < 0 || pixelX >= _width)
+            {
+                continue;
+            }
+
+            _pixels[pixelIndex + bit] = (value & (1 << bit)) != 0;
+        }
     }
 
     public void Flush()
@@ -129,23 +144,26 @@ public class Screen
 
         for (var y = 0; y < 4; y++)
         {
-            for (var x = 0; x < 2; x++)
+            var pixelY = pixelTop + y;
+            if (pixelY >= _height)
             {
-                if (!IsPixelLit(pixelLeft + x, pixelTop + y))
-                {
-                    continue;
-                }
+                break;
+            }
 
-                dots |= BrailleDots[y, x];
+            var rowIndex = pixelY * _width;
+            if (pixelLeft < _width && _pixels[rowIndex + pixelLeft])
+            {
+                dots |= LeftBrailleDots[y];
+            }
+
+            var right = pixelLeft + 1;
+            if (right < _width && _pixels[rowIndex + right])
+            {
+                dots |= RightBrailleDots[y];
             }
         }
 
         return dots == 0 ? BrailleBlank : (char)(0x2800 + dots);
-    }
-
-    private bool IsPixelLit(int x, int y)
-    {
-        return x >= 0 && x < _width && y >= 0 && y < _height && _pixels[(y * _width) + x];
     }
 
     private static int GetVisibleSize(int consoleSize, int renderSize)

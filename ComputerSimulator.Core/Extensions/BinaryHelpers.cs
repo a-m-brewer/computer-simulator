@@ -1,5 +1,4 @@
-﻿using System.Text;
-using ComputerSimulator.Core.Exceptions;
+﻿using ComputerSimulator.Core.Exceptions;
 using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Extensions;
@@ -26,18 +25,20 @@ public static class BinaryHelpers
     public static bool[] ToBinaryBools(this int quotient, int padding = 1)
     {
         var result = new bool[padding];
-        var i = 0;
-
-        while (quotient != 0)
+        for (var i = 0; i < padding; i++)
         {
-            quotient = Math.DivRem(quotient, 2, out var remainder);
-            var state = remainder == 1;
-
-            result[i] = state;
-            i++;
+            result[i] = (quotient & (1 << i)) != 0;
         }
 
         return result;
+    }
+
+    public static void SetValue(this IWireGroup<bool> wireGroup, int value)
+    {
+        for (var i = 0; i < wireGroup.Count; i++)
+        {
+            wireGroup[i].Value = (value & (1 << i)) != 0;
+        }
     }
 
     public static int ToInt(this IWireGroup<bool> wireGroup)
@@ -50,7 +51,7 @@ public static class BinaryHelpers
                 continue;
             }
 
-            total += (int) Math.Pow(2, i);
+            total |= 1 << i;
         }
 
         return total;
@@ -66,7 +67,7 @@ public static class BinaryHelpers
                 continue;
             }
 
-            total += (int) Math.Pow(2, i);
+            total |= 1 << i;
         }
 
         return total;

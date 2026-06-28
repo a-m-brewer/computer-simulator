@@ -18,6 +18,8 @@ public class TerminalGuiApplication : ITerminalGuiApplication
     private readonly object _sync = new();
     private IApplication? _application;
     private ComputerSimulatorWindow? _window;
+    private bool _displayRefreshPending;
+    private bool _logRefreshPending;
 
     public void Attach(IApplication application, ComputerSimulatorWindow window)
     {
@@ -39,22 +41,29 @@ public class TerminalGuiApplication : ITerminalGuiApplication
 
     public void RefreshDisplay()
     {
-        Invoke(window => window.RefreshDisplay());
+        InvokeCoalesced(true, window => window.RefreshDisplay());
     }
 
     public void RefreshLogs()
     {
-        Invoke(window => window.RefreshLogs());
+        InvokeCoalesced(false, window => window.RefreshLogs());
     }
 
-    private void Invoke(Action<ComputerSimulatorWindow> action)
+    private void InvokeCoalesced(bool displayRefresh, Action<ComputerSimulatorWindow> action)
     {
         IApplication? application;
         ComputerSimulatorWindow? window;
         lock (_sync)
         {
+            ref var pending = ref displayRefresh ? ref _displayRefreshPending : ref _logRefreshPending;
+            if (pending)
+            {
+                return;
+            }
+
             application = _application;
             window = _window;
+            pending = application is not null && window is not null;
         }
 
         if (application is null || window is null)
@@ -62,6 +71,21 @@ public class TerminalGuiApplication : ITerminalGuiApplication
             return;
         }
 
-        application.Invoke(() => action(window));
+        application.Invoke(() =>
+        {
+            lock (_sync)
+            {
+                if (displayRefresh)
+                {
+                    _displayRefreshPending = false;
+                }
+                else
+                {
+                    _logRefreshPending = false;
+                }
+            }
+
+            action(window);
+        });
     }
 }

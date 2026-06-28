@@ -42,6 +42,8 @@ original territory: assembler, more peripherals, an OS, higher-level languages.
 - **Configuration:** runtime settings are bound through options from the appsettings file beside the executable.
   This matters when using `dotnet run --project ComputerSimulator`, because the process content root is the repo
   root while the copied config lives under the app output directory.
+- **CLI overrides:** common runtime settings can be passed as short flags, e.g.
+  `dotnet run --project ComputerSimulator -- --scan-mode buffer` or `--scan-mode gate`.
 - **Perf:** everything is modelled gate-by-gate, so it is slow. Keep an eye on this; it bounds resolution
   and frame rate. The display now has a faster scan-buffer path, but the CPU and gate-level scanner are still
   intentionally faithful and slow.

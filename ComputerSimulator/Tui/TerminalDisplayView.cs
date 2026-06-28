@@ -7,6 +7,11 @@ public class TerminalDisplayView : View
 {
     private readonly TerminalDisplayBuffer _displayBuffer;
     private readonly TerminalSettings _settings;
+    private IReadOnlyList<string> _lines = Array.Empty<string>();
+    private long _renderedVersion = -1;
+    private int _renderedWidth = -1;
+    private int _renderedHeight = -1;
+    private TerminalPixelMode _renderedPixelMode;
 
     public TerminalDisplayView(TerminalDisplayBuffer displayBuffer, TerminalSettings settings)
     {
@@ -24,16 +29,26 @@ public class TerminalDisplayView : View
     {
         base.OnDrawingContent(context);
 
-        var lines = TerminalFrameRenderer.Render(
-            _displayBuffer.GetSnapshot(),
-            _settings.PixelMode,
-            Viewport.Width,
-            Viewport.Height);
+        var width = Viewport.Width;
+        var height = Viewport.Height;
+        var version = _displayBuffer.Version;
+        if (version != _renderedVersion || width != _renderedWidth || height != _renderedHeight || _settings.PixelMode != _renderedPixelMode)
+        {
+            _lines = TerminalFrameRenderer.Render(
+                _displayBuffer.GetSnapshot(),
+                _settings.PixelMode,
+                width,
+                height);
+            _renderedVersion = version;
+            _renderedWidth = width;
+            _renderedHeight = height;
+            _renderedPixelMode = _settings.PixelMode;
+        }
 
-        for (var y = 0; y < lines.Count; y++)
+        for (var y = 0; y < _lines.Count; y++)
         {
             Move(0, y);
-            AddStr(lines[y]);
+            AddStr(_lines[y]);
         }
 
         return true;

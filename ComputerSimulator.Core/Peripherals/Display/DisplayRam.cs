@@ -31,6 +31,8 @@ public interface IDisplayRam : IPart
 
     IRamSlot GetSlot(int x, int y);
 
+    bool TryGetSlot(int x, int y, out IRamSlot slot);
+
     IReadOnlySet<int> DirtyAddresses { get; }
 
     void ClearDirtyAddresses();
@@ -114,6 +116,11 @@ public class DisplayRam : PartsBase, IDisplayRam
     public IRamSlot GetSlot(int x, int y)
     {
         return _slots.GetSlot(x, y);
+    }
+
+    public bool TryGetSlot(int x, int y, out IRamSlot slot)
+    {
+        return _slots.TryGetSlot(x, y, out slot);
     }
 
     public IReadOnlySet<int> DirtyAddresses => _dirtyAddresses;

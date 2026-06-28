@@ -17,7 +17,7 @@ public class ComputerService : IHostedService
     public Task StartAsync(CancellationToken cancellationToken)
     {
         // The simulation loop is blocking, so run it on a background thread.
-        _runTask = _computer.RunAsync(_cts.Token);
+        _runTask = Task.Run(() => _computer.RunAsync(_cts.Token), CancellationToken.None);
 
         return Task.CompletedTask;
     }
@@ -28,7 +28,17 @@ public class ComputerService : IHostedService
 
         if (_runTask is not null)
         {
-            await Task.WhenAny(_runTask, Task.Delay(Timeout.Infinite, cancellationToken));
+            var completed = await Task.WhenAny(_runTask, Task.Delay(Timeout.Infinite, cancellationToken));
+            if (completed == _runTask)
+            {
+                try
+                {
+                    await _runTask;
+                }
+                catch (OperationCanceledException) when (_cts.IsCancellationRequested)
+                {
+                }
+            }
         }
 
         _computer.Dispose();

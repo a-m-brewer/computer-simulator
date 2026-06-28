@@ -12,16 +12,16 @@ public interface ISetEnableWireGroup<T> : ISetEnableWireGroup, IReadOnlyList<ISe
 
 public class SetEnableWireGroup<T> : ISetEnableWireGroup<T> where T : new()
 {
-    private readonly IList<ISetEnableWire<T>> _wires;
+    private readonly ISetEnableWire<T>[] _wires;
 
-    public SetEnableWireGroup(IList<ISetEnableWire<T>> wires)
+    public SetEnableWireGroup(ISetEnableWire<T>[] wires)
     {
         _wires = wires;
     }
     
     public IEnumerator<ISetEnableWire<T>> GetEnumerator()
     {
-        return _wires.GetEnumerator();
+        return ((IEnumerable<ISetEnableWire<T>>)_wires).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -29,7 +29,7 @@ public class SetEnableWireGroup<T> : ISetEnableWireGroup<T> where T : new()
         return GetEnumerator();
     }
 
-    public int Count => _wires.Count;
+    public int Count => _wires.Length;
 
     public ISetEnableWire<T> this[int index] => _wires[index];
 }

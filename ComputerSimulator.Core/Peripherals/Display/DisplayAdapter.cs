@@ -1,4 +1,5 @@
-﻿using ComputerSimulator.Core.Factories;
+﻿using ComputerSimulator.Core.Extensions;
+using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Parts;
 
 namespace ComputerSimulator.Core.Peripherals.Display;
@@ -25,6 +26,10 @@ public class DisplayAdapter : AdapterBase, IDisplayAdapter
     private readonly IClock _clock;
     private readonly IDisplayRam _displayRam;
     private readonly DisplayScanMode _scanMode;
+    private readonly int _bytesPerRow;
+    private readonly int _displayByteCount;
+    private readonly int _addressBitsPerAxis;
+    private readonly int _addressMask;
     private bool _needsFullScan = true;
 
     public DisplayAdapter(
@@ -47,6 +52,10 @@ public class DisplayAdapter : AdapterBase, IDisplayAdapter
         Width = width;
         Height = height;
         _scanMode = scanMode;
+        _bytesPerRow = width / 8;
+        _displayByteCount = _bytesPerRow * height;
+        _addressBitsPerAxis = WireFactory.WordSize / 2;
+        _addressMask = (1 << _addressBitsPerAxis) - 1;
 
         _clock = ComponentFactory.CreateClock(WireFactory.CreateWire<bool>("display-clock"));
 
@@ -157,9 +166,7 @@ public class DisplayAdapter : AdapterBase, IDisplayAdapter
 
     private void RenderAllDisplayBytes(IDisplayOutput output)
     {
-        var bytesPerRow = Width / 8;
-        var byteCount = bytesPerRow * Height;
-        for (var byteAddress = 0; byteAddress < byteCount; byteAddress++)
+        for (var byteAddress = 0; byteAddress < _displayByteCount; byteAddress++)
         {
             RenderDisplayByte(output, byteAddress);
         }
@@ -167,22 +174,26 @@ public class DisplayAdapter : AdapterBase, IDisplayAdapter
 
     private void RenderDisplayByte(IDisplayOutput output, int byteAddress)
     {
-        var bytesPerRow = Width / 8;
-        var row = byteAddress / bytesPerRow;
+        var row = byteAddress / _bytesPerRow;
         if (row < 0 || row >= Height)
         {
             return;
         }
 
-        var byteColumn = byteAddress % bytesPerRow;
-        var addressBitsPerAxis = WireFactory.WordSize / 2;
-        var slot = _displayRam.GetSlot(byteAddress & ((1 << addressBitsPerAxis) - 1), byteAddress >> addressBitsPerAxis);
-        var value = slot.Memory.StoredValue;
+        var byteColumn = byteAddress % _bytesPerRow;
+        var slotExists = _displayRam.TryGetSlot(byteAddress & _addressMask, byteAddress >> _addressBitsPerAxis, out var slot);
+        var value = slotExists ? slot.Memory.StoredValue.ToInt() : 0;
+
+        if (output is IDisplayByteOutput byteOutput)
+        {
+            byteOutput.SetPixelByte(byteColumn * 8, row, value);
+            return;
+        }
 
         for (var bit = 0; bit < 8; bit++)
         {
             var x = (byteColumn * 8) + bit;
-            var on = value[bit].Value;
+            var on = (value & (1 << bit)) != 0;
             output.SetPixel(x, row, on);
         }
     }

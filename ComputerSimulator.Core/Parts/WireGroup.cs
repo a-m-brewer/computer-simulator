@@ -18,18 +18,18 @@ public interface IWireGroup<T> : IWireGroup, IReadOnlyList<IWire<T>> where T : n
 
 public class WireGroup<T> : IWireGroup<T> where T : new()
 {
-    protected readonly IList<IWire<T>> Wires;
+    protected readonly IWire<T>[] Wires;
 
-    public WireGroup(IList<IWire<T>> wires)
+    public WireGroup(IWire<T>[] wires)
     {
         Wires = wires;
     }
 
-    public int Count => Wires.Count;
-    
+    public int Count => Wires.Length;
+     
     public IEnumerator<IWire<T>> GetEnumerator()
     {
-        return Wires.GetEnumerator();
+        return ((IEnumerable<IWire<T>>)Wires).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -51,7 +51,7 @@ public class WireGroup<T> : IWireGroup<T> where T : new()
 
     public int FindIndex(Predicate<IWire<T>> predicate)
     {
-        for (var i = 0; i < Wires.Count; i++)
+        for (var i = 0; i < Wires.Length; i++)
         {
             if (predicate.Invoke(Wires[i]))
             {
@@ -64,9 +64,12 @@ public class WireGroup<T> : IWireGroup<T> where T : new()
 
     public void Reset()
     {
-        foreach (var resettable in Wires.OfType<IResettable>())
+        for (var i = 0; i < Wires.Length; i++)
         {
-            resettable.Reset();
+            if (Wires[i] is IResettable resettable)
+            {
+                resettable.Reset();
+            }
         }
     }
 }

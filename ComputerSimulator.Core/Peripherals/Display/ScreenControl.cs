@@ -71,6 +71,8 @@ public class ScreenControl : PartsBase, IScreenControl
     private readonly IWire<bool> _verticalSet;
     private readonly IWireGroup<bool> _verticalInput;
     private readonly IWireGroup<bool> _verticalNext;
+    private int _x;
+    private int _y;
 
     public ScreenControl(
         IWireGroup<bool> displayRamEnableMarBus,
@@ -98,7 +100,7 @@ public class ScreenControl : PartsBase, IScreenControl
         _bytesPerRow = width / 8;
 
         _one = WireFactory.CreateGroup<bool>("screen-one");
-        _one.SetValue(1.ToBinaryBools(WireFactory.WordSize));
+        _one.SetValue(1);
 
         // Horizontal position counter: register holding X, incremented by a word adder.
         _horizontalSet = WireFactory.CreateWire<bool>("horizontal-set");
@@ -133,16 +135,16 @@ public class ScreenControl : PartsBase, IScreenControl
     public int Width { get; }
     public int Height { get; }
 
-    public int X => HorizontalPosition.ToInt();
-    public int Y => VerticalPosition.ToInt();
+    public int X => _x;
+    public int Y => _y;
 
-    public bool AtByteBoundary => X % 8 == 0;
+    public bool AtByteBoundary => (_x & 7) == 0;
 
     public void AddressCurrentByte()
     {
-        var byteAddress = (Y * _bytesPerRow) + (X / 8);
+        var byteAddress = (_y * _bytesPerRow) + (_x / 8);
 
-        DisplayRamEnableMarBus.SetValue(byteAddress.ToBinaryBools(WireFactory.WordSize));
+        DisplayRamEnableMarBus.SetValue(byteAddress);
         DisplayRamEnableMarSet.Value = true;
         DisplayRamEnable.Value = true;
     }
@@ -156,7 +158,7 @@ public class ScreenControl : PartsBase, IScreenControl
     public void Update()
     {
         // Expose the lit/unlit state of the current pixel from the byte on the output bus.
-        Brightness.Value = DisplayRamOutputBus[X % 8].Value;
+        Brightness.Value = DisplayRamOutputBus[_x & 7].Value;
 
         Advance();
     }
@@ -166,7 +168,7 @@ public class ScreenControl : PartsBase, IScreenControl
         _horizontalAdder.Update();
 
         var nextX = _horizontalNext.ToInt();
-        if (X + 1 >= Width)
+        if (_x + 1 >= Width)
         {
             nextX = 0;
             AdvanceVertical();
@@ -180,7 +182,7 @@ public class ScreenControl : PartsBase, IScreenControl
         _verticalAdder.Update();
 
         var nextY = _verticalNext.ToInt();
-        if (Y + 1 >= Height)
+        if (_y + 1 >= Height)
         {
             nextY = 0;
         }
@@ -190,9 +192,18 @@ public class ScreenControl : PartsBase, IScreenControl
 
     private void LoadCounter(IWire<bool> set, IWireGroup<bool> input, IRegister register, int value)
     {
-        input.SetValue(value.ToBinaryBools(WireFactory.WordSize));
+        input.SetValue(value);
         set.Value = true;
         register.Update();
         set.Value = false;
+
+        if (ReferenceEquals(register, _horizontal))
+        {
+            _x = value;
+        }
+        else if (ReferenceEquals(register, _vertical))
+        {
+            _y = value;
+        }
     }
 }

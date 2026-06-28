@@ -11,7 +11,7 @@ public class TerminalFrameRendererTests
     public void RenderPacksPixelsIntoBrailleCells()
     {
         var pixels = new[] { true, true, true, true, true, true, true, true };
-        var snapshot = new TerminalDisplaySnapshot(2, 4, pixels);
+        var snapshot = new TerminalDisplaySnapshot(2, 4, 0, pixels);
 
         var lines = TerminalFrameRenderer.Render(snapshot, TerminalPixelMode.Braille, 80, 24);
 
@@ -24,7 +24,7 @@ public class TerminalFrameRendererTests
         var pixels = new bool[4 * 8];
         pixels[0] = true;
         pixels[(4 * 4) + 2] = true;
-        var snapshot = new TerminalDisplaySnapshot(4, 8, pixels);
+        var snapshot = new TerminalDisplaySnapshot(4, 8, 0, pixels);
 
         var lines = TerminalFrameRenderer.Render(snapshot, TerminalPixelMode.Braille, 1, 1);
 
@@ -34,7 +34,7 @@ public class TerminalFrameRendererTests
     [Test]
     public void RenderCanUseBlockPixels()
     {
-        var snapshot = new TerminalDisplaySnapshot(3, 1, new[] { true, false, true });
+        var snapshot = new TerminalDisplaySnapshot(3, 1, 0, new[] { true, false, true });
 
         var lines = TerminalFrameRenderer.Render(snapshot, TerminalPixelMode.Block, 80, 24);
 

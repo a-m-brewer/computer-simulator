@@ -22,6 +22,17 @@ public class Or : IOr
     
     public void Update()
     {
-        Output.Value = Inputs.Any(a => a.Value);
+        for (var i = 0; i < Inputs.Count; i++)
+        {
+            if (!Inputs[i].Value)
+            {
+                continue;
+            }
+
+            Output.Value = true;
+            return;
+        }
+
+        Output.Value = false;
     }
 }

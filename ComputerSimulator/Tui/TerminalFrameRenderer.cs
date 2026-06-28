@@ -7,13 +7,8 @@ public static class TerminalFrameRenderer
     private const char On = '█';
     private const char Off = ' ';
     private const char BrailleBlank = ' ';
-    private static readonly int[,] BrailleDots =
-    {
-        { 0x01, 0x08 },
-        { 0x02, 0x10 },
-        { 0x04, 0x20 },
-        { 0x40, 0x80 }
-    };
+    private static readonly int[] LeftBrailleDots = [0x01, 0x02, 0x04, 0x40];
+    private static readonly int[] RightBrailleDots = [0x08, 0x10, 0x20, 0x80];
 
     public static IReadOnlyList<string> Render(TerminalDisplaySnapshot snapshot, TerminalPixelMode pixelMode, int maxWidth, int maxHeight)
     {
@@ -74,25 +69,31 @@ public static class TerminalFrameRenderer
         var dots = 0;
         var pixelLeft = cellX * 2;
         var pixelTop = cellY * 4;
+        var pixels = snapshot.Pixels;
+        var width = snapshot.Width;
+        var height = snapshot.Height;
 
         for (var y = 0; y < 4; y++)
         {
-            for (var x = 0; x < 2; x++)
+            var pixelY = pixelTop + y;
+            if (pixelY >= height)
             {
-                if (!IsPixelLit(snapshot, pixelLeft + x, pixelTop + y))
-                {
-                    continue;
-                }
+                break;
+            }
 
-                dots |= BrailleDots[y, x];
+            var rowIndex = pixelY * width;
+            if (pixelLeft < width && pixels[rowIndex + pixelLeft])
+            {
+                dots |= LeftBrailleDots[y];
+            }
+
+            var right = pixelLeft + 1;
+            if (right < width && pixels[rowIndex + right])
+            {
+                dots |= RightBrailleDots[y];
             }
         }
 
         return dots == 0 ? BrailleBlank : (char)(0x2800 + dots);
-    }
-
-    private static bool IsPixelLit(TerminalDisplaySnapshot snapshot, int x, int y)
-    {
-        return x >= 0 && x < snapshot.Width && y >= 0 && y < snapshot.Height && snapshot.Pixels[(y * snapshot.Width) + x];
     }
 }
