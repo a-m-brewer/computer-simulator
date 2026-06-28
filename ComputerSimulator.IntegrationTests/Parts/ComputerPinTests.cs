@@ -1,7 +1,6 @@
 ﻿using System;
 using ComputerSimulator.Core.Enums;
 using ComputerSimulator.Core.Extensions;
-using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
 using FluentAssertions;
 using NUnit.Framework;

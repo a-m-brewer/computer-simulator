@@ -138,12 +138,15 @@ dual scan modes, which both the terminal and the eventual GUI will reuse.
   through the existing display IO protocol, with gate-level and scan-buffer tests asserting glyph pixels.
   Remaining work: CPU subroutine version.
 - [ ] **M2.3 Draw-string routine.** Iterate characters, advance `cx`, handle newline/wrap. *Done when*
-  a string renders correctly across line wraps.
+  a string renders correctly across line wraps. *Status:* `GlyphRenderer.DrawString` validates the C# helper
+  path through the existing display IO protocol, with gate-level and scan-buffer tests covering adjacent
+  characters, newline handling, wrapping, and overflow. Remaining work: CPU subroutine version.
 - [ ] **M2.4 "HELLO WORLD" demo.** A program that prints text via the CPU. *Done when* readable text
   shows on screen (replace or sit alongside `DemoProgram`).
 - [ ] **M2.5 Tests.** Glyph blit + string render assertions using `FakeDisplayOutput`.
   *Notes:* much easier after M4 (assembler); until then generate the program in C# like `DemoProgram`.
-  *Status:* glyph blit assertions exist for both display scan modes; string render assertions remain open.
+  *Status:* glyph blit and C# string render assertions exist for both display scan modes; CPU-driven string
+  render assertions remain open.
 
 ---
 
