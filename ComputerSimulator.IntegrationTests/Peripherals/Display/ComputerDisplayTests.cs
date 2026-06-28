@@ -1,6 +1,6 @@
 using ComputerSimulator.Core.Extensions;
-using ComputerSimulator.Core.Parts;
-using ComputerSimulator.Core.Peripherals.Display;
+using ComputerSimulator.Core.Enums;
+using ComputerSimulator.Core.Instructions;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -26,13 +26,13 @@ public class ComputerDisplayTests : IntegrationTestBase
         // JMP self                      (halt)
         var program = new[]
         {
-            0x21, 0x07,
-            0x7D,
-            0x21, 0x00,
-            0x7D,
-            0x21, 0xFF,
-            0x79,
-            0x40, 0x09,
+            InstructionSet.Data(1), 0x07,
+            InstructionSet.Out(DataAddress.Address, 1),
+            InstructionSet.Data(1), 0x00,
+            InstructionSet.Out(DataAddress.Address, 1),
+            InstructionSet.Data(1), 0xFF,
+            InstructionSet.Out(DataAddress.Data, 1),
+            InstructionSet.Jmp(), 0x09,
         };
 
         for (var address = 0; address < program.Length; address++)

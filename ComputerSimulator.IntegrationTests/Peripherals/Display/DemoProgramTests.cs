@@ -1,3 +1,4 @@
+using System.Linq;
 using ComputerSimulator.Core;
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Peripherals.Display;
@@ -8,6 +9,32 @@ namespace ComputerSimulator.IntegrationTests.Peripherals.Display;
 
 public class DemoProgramTests : IntegrationTestBase
 {
+    [Test]
+    public void DemoProgramEmitsTheSameInstructionBytes()
+    {
+        DemoProgram.Build(width: 16, height: 8)
+            .Select(bits => bits.ToInt())
+            .Should()
+            .Equal(
+                0x22, 0x10,
+                0x21, 0x00,
+                0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
+                0x86,
+                0x20, 0x01,
+                0x21, 0x07,
+                0x7D,
+                0x23, 0x00,
+                0x7F,
+                0x7B,
+                0x83,
+                0x60,
+                0xFE,
+                0x52,
+                0x1D,
+                0x40, 0x14,
+                0x40, 0x1D);
+    }
+
     [Test]
     public void DemoProgramFillsTheDisplayWithItsAddressPattern()
     {

@@ -55,7 +55,10 @@ original territory: assembler, more peripherals, an OS, higher-level languages.
 - [ ] **F1. Centralize the instruction set.** Extract the encodings/mnemonics scattered in `DemoProgram`
   and the tests into one `Core/Instructions/InstructionSet.cs` (or similar): an enum/table mapping
   mnemonic + operands → bytes, plus a tiny encoder. *Done when* `DemoProgram` and tests use it and the
-  byte output is unchanged. *Enables M4 (assembler).*
+  byte output is unchanged. *Enables M4 (assembler).* *Status:* `InstructionSet` and `JumpCondition` now
+  encode the current instruction families, `DemoProgram` and focused display tests use it, and a regression
+  test pins the demo byte output. Remaining work: migrate the broader CPU/pin tests away from scattered
+  literal instruction bytes where that improves clarity.
 - [ ] **F2. Program loader (`.bin` images).** Let the simulator load a raw binary image into RAM and run
   it, instead of baking programs into `DemoProgram`. Accept a file path on the command line (e.g.
   `dotnet run --project ComputerSimulator -- run demo.bin`); the loader reads the bytes into RAM starting at
@@ -125,17 +128,22 @@ dual scan modes, which both the terminal and the eventual GUI will reuse.
 
 - [ ] **M2.1 Font data.** An 8×8 bitmap font for printable ASCII (32–126), as 8 bytes/glyph. Store as a
   C# resource and as a RAM-loadable "font ROM" image. *Touches* `Core` (font resource), F2 loader.
-  *Done when* the font is addressable as `font[ascii*8 + row]`.
+  *Done when* the font is addressable as `font[ascii*8 + row]`. *Status:* `AsciiFont8x8` provides an
+  addressable `font[ascii*8 + row]` API with tests for the printable range. It is currently a C# table with
+  a fallback glyph; the embedded resource / RAM-loadable ROM image remains open until F2.
 - [ ] **M2.2 Draw-character routine.** Blit a glyph to display RAM at character cell `(cx, cy)`. Validate
   first as a C# helper, then as a CPU subroutine. Address math: `displayByteAddr = ((cy*8 + r) *
   bytesPerRow) + cx` for glyph row `r` (cx is a byte column). *Done when* a known glyph appears at a known
-  cell and a test asserts the pixels.
+  cell and a test asserts the pixels. *Status:* `GlyphRenderer.DrawCharacter` validates the C# helper path
+  through the existing display IO protocol, with gate-level and scan-buffer tests asserting glyph pixels.
+  Remaining work: CPU subroutine version.
 - [ ] **M2.3 Draw-string routine.** Iterate characters, advance `cx`, handle newline/wrap. *Done when*
   a string renders correctly across line wraps.
 - [ ] **M2.4 "HELLO WORLD" demo.** A program that prints text via the CPU. *Done when* readable text
   shows on screen (replace or sit alongside `DemoProgram`).
 - [ ] **M2.5 Tests.** Glyph blit + string render assertions using `FakeDisplayOutput`.
   *Notes:* much easier after M4 (assembler); until then generate the program in C# like `DemoProgram`.
+  *Status:* glyph blit assertions exist for both display scan modes; string render assertions remain open.
 
 ---
 
@@ -246,9 +254,8 @@ Roughly increasing ambition. Several of these unlock the others.
 
 ## Suggested next step
 
-**M2 (fonts/text)** is now the highest-leverage move: M1's terminal-first display work is largely in place,
-so text rendering finishes the book and makes the display meaningful. M2 is also a prerequisite for the
-keyboard echo loop (M3) and any OS prompt (M6.4). Doing **F1** (centralized encoder) and a thin slice of
-**M4** (even a minimal assembler) first will make writing the font/echo/OS programs dramatically easier than
-hand-assembling byte arrays. The GUI (M5) remains deliberately parked until after M4; grayscale/color is also
-deferred until GUI work makes it worth designing the protocol change.
+Continue **M2 (fonts/text)** from the current C# glyph slice: add `DrawString`, then decide whether to build
+the CPU `print_char`/`print_string` routines directly with `InstructionSet` or first take a thin **M4**
+assembler slice. **F1** has a usable encoder now, but the wider literal-byte cleanup is still useful before
+assembler work. The GUI (M5) remains deliberately parked until after M4; grayscale/color is also deferred
+until GUI work makes it worth designing the protocol change.
