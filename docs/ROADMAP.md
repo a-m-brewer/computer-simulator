@@ -52,13 +52,13 @@ original territory: assembler, more peripherals, an OS, higher-level languages.
 
 ## Foundations (enablers — do these as the milestones that need them come up)
 
-- [ ] **F1. Centralize the instruction set.** Extract the encodings/mnemonics scattered in `DemoProgram`
+- [x] **F1. Centralize the instruction set.** Extract the encodings/mnemonics scattered in `DemoProgram`
   and the tests into one `Core/Instructions/InstructionSet.cs` (or similar): an enum/table mapping
   mnemonic + operands → bytes, plus a tiny encoder. *Done when* `DemoProgram` and tests use it and the
   byte output is unchanged. *Enables M4 (assembler).* *Status:* `InstructionSet` and `JumpCondition` now
-  encode the current instruction families, `DemoProgram` and focused display tests use it, and a regression
-  test pins the demo byte output. Remaining work: migrate the broader CPU/pin tests away from scattered
-  literal instruction bytes where that improves clarity.
+  encode the current instruction families. `DemoProgram`, display tests, CPU sequencing tests, and full-instruction
+  CPU/pin integration tests use it where that improves clarity. Remaining raw bytes are intentional encoding-contract
+  assertions, instruction operands, bit-level decoder assertions, or non-instruction test data.
 - [ ] **F2. Program loader (`.bin` images).** Let the simulator load a raw binary image into RAM and run
   it, instead of baking programs into `DemoProgram`. Accept a file path on the command line (e.g.
   `dotnet run --project ComputerSimulator -- run demo.bin`); the loader reads the bytes into RAM starting at

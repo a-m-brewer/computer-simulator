@@ -2,6 +2,7 @@ using System;
 using ComputerSimulator.Core.Constants;
 using ComputerSimulator.Core.Enums;
 using ComputerSimulator.Core.Extensions;
+using ComputerSimulator.Core.Instructions;
 using ComputerSimulator.Core.Parts;
 using FluentAssertions;
 using NUnit.Framework;
@@ -556,18 +557,21 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
 
             // ALU Op
 
+            private static readonly object[] OpCodeCases =
+            {
+                new object[] { InstructionSet.In(DataAddress.Data, 0), OpCode.Add },
+                new object[] { InstructionSet.Add(0, 0), OpCode.Add },
+                new object[] { InstructionSet.Shr(0, 0), OpCode.Shr },
+                new object[] { InstructionSet.Shl(0, 0), OpCode.Shl },
+                new object[] { InstructionSet.Not(0, 0), OpCode.Not },
+                new object[] { InstructionSet.And(0, 0), OpCode.And },
+                new object[] { InstructionSet.Or(0, 0), OpCode.Or },
+                new object[] { InstructionSet.XOr(0, 0), OpCode.XOr },
+                new object[] { InstructionSet.Cmp(0, 0), OpCode.Cmp }
+            };
+
             [Test]
-            // Not ALU operation no op code should be set (Add is 0 therefore default)
-            [TestCase(0b01110000, OpCode.Add)]
-            // Actual ALU operations
-            [TestCase(0b10000000, OpCode.Add)]
-            [TestCase(0b10010000, OpCode.Shr)]
-            [TestCase(0b10100000, OpCode.Shl)]
-            [TestCase(0b10110000, OpCode.Not)]
-            [TestCase(0b11000000, OpCode.And)]
-            [TestCase(0b11010000, OpCode.Or)]
-            [TestCase(0b11100000, OpCode.XOr)]
-            [TestCase(0b11110000, OpCode.Cmp)]
+            [TestCaseSource(nameof(OpCodeCases))]
             public void CorrectOpCodeIsSetOnStep5(int instruction, OpCode expectedOpCode)
             {
                 _sut.InstructionRegister.SetValue(instruction.ToBinaryBools(8));
@@ -581,7 +585,7 @@ public abstract class CentralProcessingUnitTests : IntegrationTestBase
             public void AddOperationOnlyRegAEnabled()
             {
                 // TODO: this should be failing
-                var instruction = 0b10000001.ToBinaryBools(8);
+                var instruction = InstructionSet.Add(0, 1).ToBinaryBools(8);
 
                 _sut.InstructionRegister.SetValue(instruction);
                 

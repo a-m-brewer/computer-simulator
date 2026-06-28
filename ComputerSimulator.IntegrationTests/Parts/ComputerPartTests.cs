@@ -1,5 +1,7 @@
 ﻿using System;
+using ComputerSimulator.Core.Enums;
 using ComputerSimulator.Core.Extensions;
+using ComputerSimulator.Core.Instructions;
 using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
 using FluentAssertions;
@@ -110,7 +112,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanAddTwoNumbersTogetherStep3()
     {
-        var instruction = new[] { true, false, false, false, false, false, false, true };
+        var instruction = InstructionBits(InstructionSet.Add(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -131,7 +133,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanAddTwoNumbersTogetherStep4EnableRegBEnabled()
     {
-        var instruction = 0b10000001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Add(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -153,7 +155,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanAddTwoNumbersTogetherStep4EnableRegBValueOnBus()
     {
-        var instruction = 0b10000001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Add(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -174,7 +176,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanAddTwoNumbersTogetherStep4TmpSetShouldBeTrue()
     {
-        var instruction = 0b10000001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Add(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -196,7 +198,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanAddTwoNumbersTogetherStep4TmpShouldBeRegB()
     {
-        var instruction = new[] { true, false, false, false, false, false, false, true };
+        var instruction = InstructionBits(InstructionSet.Add(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -217,7 +219,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanAddTwoNumbersTogetherStep5RegAEnabled()
     {
-        var instruction = 0b10000001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Add(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -239,7 +241,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanAddTwoNumbersTogetherStep5RegAValueOnBus()
     {
-        var instruction = 0b10000001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Add(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -260,7 +262,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanAddTwoNumbersTogetherStep5AccSet()
     {
-        var instruction = 0b10000001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Add(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -281,7 +283,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanAddTwoNumbersTogetherStep5ResultInAcc()
     {
-        var instruction = 0b10000001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Add(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -304,7 +306,7 @@ public class ComputerPartTests : IntegrationTestBase
     {
         const int expected = 80;
 
-        var instruction = 0b10000001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Add(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -325,7 +327,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanShiftLeft()
     {
-        var instruction = 0b10100001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Shl(0, 1));
 
         const int regAInput = 0b00000010;
         const int expectedRegBOutput = 0b00000100;
@@ -346,7 +348,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanShiftRight()
     {
-        var instruction = 0b10010001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Shr(0, 1));
 
         const int regAInput = 0b00000010;
         const int expectedRegBOutput = 0b00000001;
@@ -366,7 +368,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanNotAByte()
     {
-        var instruction = 0b10110001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Not(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_min);
@@ -383,7 +385,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanAndByte()
     {
-        var instruction = 0b11000001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.And(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_min);
@@ -401,7 +403,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanOrByte()
     {
-        var instruction = 0b11010001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Or(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_min);
@@ -420,7 +422,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanXorByte()
     {
-        var instruction = 0b11100001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.XOr(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
@@ -437,7 +439,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanCmpEqualBytes()
     {
-        var instruction = 0b11110001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Cmp(0, 1));
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(CreateNumber(200));
@@ -460,7 +462,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanLoadFromRam()
     {
-        var instruction = 0b00000001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Ld(0, 1));
 
         const int ramValue = 255;
         
@@ -483,7 +485,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanStoreDataInRam()
     {
-        var instruction = 0b00010001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.St(0, 1));
         
         const int storedNumber = 255;
 
@@ -505,7 +507,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanStoreDataInRamStep4RegAValueStoredInMar()
     {
-        var instruction = 0b00010001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.St(0, 1));
         
         const int storedNumber = 255;
 
@@ -526,7 +528,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanStoreDataInRamStep5RegBValueStoredInRam()
     {
-        var instruction = 0b00010001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.St(0, 1));
         
         const int storedNumber = 255;
 
@@ -549,7 +551,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformDataInstruction()
     {
-        var instruction = 0b00100001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Data(1));
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         const int expectedNumber = 255;
@@ -570,7 +572,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformJumpRegisterInstruction()
     {
-        var instruction = 0b00110001.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Jmpr(1));
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         const int expectedValue = 255;
@@ -591,7 +593,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformJumpInstruction()
     {
-        var instruction = 0b01000000.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Jmp());
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(_max);
@@ -610,10 +612,10 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformJumpIfEqualIsOn()
     {
-        var addInstruction = new[] { true, false, false, false, false, false, false, true };
+        var compareInstruction = InstructionBits(InstructionSet.Cmp(0, 1));
 
-        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(addInstruction);
-        var instruction = new[] { false, true, false, true, false, false, true, false };
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(compareInstruction);
+        var instruction = InstructionBits(InstructionSet.JumpIf(JumpCondition.Equal));
         _sut.Ram.GetSlot(1, 0).Memory.SetRegisterValue(instruction);
         _sut.Ram.GetSlot(2, 0).Memory.SetRegisterValue(_max);
 
@@ -638,7 +640,7 @@ public class ComputerPartTests : IntegrationTestBase
     [Test]
     public void CanPerformJumpIfCarryIsOn()
     {
-        var instruction = 0b01011000.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.JumpIf(JumpCondition.Carry));
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         _sut.Caez.Inputs.C.Value = true;
@@ -663,7 +665,7 @@ public class ComputerPartTests : IntegrationTestBase
         _sut.Caez.Inputs.Z.Value = true;
         _sut.Caez.SetRegisterValue();
         
-        var instruction = 0b01100000.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Clf);
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -686,7 +688,7 @@ public class ComputerPartTests : IntegrationTestBase
         _sut.Caez.Inputs.Z.Value = true;
         _sut.Caez.SetRegisterValue();
         
-        var instruction = 0b01100000.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Clf);
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -709,7 +711,7 @@ public class ComputerPartTests : IntegrationTestBase
         _sut.Caez.Inputs.Z.Value = true;
         _sut.Caez.SetRegisterValue();
         
-        var instruction = 0b01100000.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Clf);
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -732,7 +734,7 @@ public class ComputerPartTests : IntegrationTestBase
         _sut.Caez.Inputs.Z.Value = true;
         _sut.Caez.SetRegisterValue();
         
-        var instruction = 0b01100000.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Clf);
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
@@ -755,7 +757,7 @@ public class ComputerPartTests : IntegrationTestBase
         _sut.Caez.Inputs.Z.Value = true;
         _sut.Caez.SetRegisterValue();
         
-        var instruction = 0b01100000.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Clf);
 
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
         
@@ -784,7 +786,7 @@ public class ComputerPartTests : IntegrationTestBase
         
         _sut.IoBus.ConnectedComponents.Add(register);
         
-        var instruction = 0b01110000.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.In(DataAddress.Data, 0));
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         PerformFullStep(6);
@@ -809,7 +811,7 @@ public class ComputerPartTests : IntegrationTestBase
         
         _sut.IoBus.ConnectedComponents.Add(register);
         
-        var instruction = 0b01110100.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.In(DataAddress.Address, 0));
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         PerformFullStep(6);
@@ -835,7 +837,7 @@ public class ComputerPartTests : IntegrationTestBase
         
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
         
-        var instruction = 0b01111000.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Out(DataAddress.Data, 0));
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         PerformFullStep(6);
@@ -859,7 +861,7 @@ public class ComputerPartTests : IntegrationTestBase
         
         _sut.GeneralPurposeRegisters[0].SetRegisterValue(_max);
         
-        var instruction = 0b01111100.ToBinaryBools(8);
+        var instruction = InstructionBits(InstructionSet.Out(DataAddress.Address, 0));
         _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
 
         PerformFullStep(6);
@@ -886,6 +888,11 @@ public class ComputerPartTests : IntegrationTestBase
     private bool[] CreateNumber(int number)
     {
         return number.ToBinaryBools(ComputerSettings.WordSize);
+    }
+
+    private static bool[] InstructionBits(int instruction)
+    {
+        return instruction.ToBinaryBools(8);
     }
 
     private void VerifyWireShouldBeTrue(Func<IComputerPart, IWire<bool>> selector)

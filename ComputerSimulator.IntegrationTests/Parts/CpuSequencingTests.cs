@@ -1,4 +1,6 @@
+using ComputerSimulator.Core.Enums;
 using ComputerSimulator.Core.Extensions;
+using ComputerSimulator.Core.Instructions;
 using ComputerSimulator.Core.Parts;
 using FluentAssertions;
 using NUnit.Framework;
@@ -32,7 +34,11 @@ public class CpuSequencingTests : IntegrationTestBase
     public void AddAfterOutStillIncrements()
     {
         // DATA R0,1 ; DATA R3,5 ; OUT Data R3 ; ADD R0 R3   -> R3 should be 6
-        Load(0x20, 0x01, 0x23, 0x05, 0x7B, 0x83);
+        Load(
+            InstructionSet.Data(0), 0x01,
+            InstructionSet.Data(3), 0x05,
+            InstructionSet.Out(DataAddress.Data, 3),
+            InstructionSet.Add(0, 3));
         RunInstructions(4);
         Reg(3).Should().Be(6);
     }
@@ -41,7 +47,11 @@ public class CpuSequencingTests : IntegrationTestBase
     public void AddAfterStoreStillIncrements()
     {
         // DATA R0,1 ; DATA R3,5 ; ST R0 R1 ; ADD R0 R3   -> R3 should be 6
-        Load(0x20, 0x01, 0x23, 0x05, 0x11, 0x83);
+        Load(
+            InstructionSet.Data(0), 0x01,
+            InstructionSet.Data(3), 0x05,
+            InstructionSet.St(0, 1),
+            InstructionSet.Add(0, 3));
         RunInstructions(4);
         Reg(3).Should().Be(6);
     }
@@ -51,7 +61,13 @@ public class CpuSequencingTests : IntegrationTestBase
     {
         // DATA R0,7 ; DATA R3,9 ; JMP 8 ; (halt at 8: JMP 8)
         // After the jump, R0/R3 must be unchanged (7 and 9).
-        Load(0x20, 0x07, 0x23, 0x09, 0x40, 0x08, 0x00, 0x00, 0x40, 0x08);
+        Load(
+            InstructionSet.Data(0), 0x07,
+            InstructionSet.Data(3), 0x09,
+            InstructionSet.Jmp(), 0x08,
+            InstructionSet.Ld(0, 0),
+            InstructionSet.Ld(0, 0),
+            InstructionSet.Jmp(), 0x08);
         RunInstructions(6);
         Reg(0).Should().Be(7);
         Reg(3).Should().Be(9);
@@ -69,7 +85,15 @@ public class CpuSequencingTests : IntegrationTestBase
         //  8: JE 12          (jump-if Equal, prefix 0101 + Equal select = 0x52)
         // 10: JMP 6
         // 12: JMP 12         (halt)
-        Load(0x20, 0x01, 0x22, 0x04, 0x23, 0x00, 0x83, 0xFE, 0x52, 0x0C, 0x40, 0x06, 0x40, 0x0C);
+        Load(
+            InstructionSet.Data(0), 0x01,
+            InstructionSet.Data(2), 0x04,
+            InstructionSet.Data(3), 0x00,
+            InstructionSet.Add(0, 3),
+            InstructionSet.Cmp(3, 2),
+            InstructionSet.JumpIf(JumpCondition.Equal), 0x0C,
+            InstructionSet.Jmp(), 0x06,
+            InstructionSet.Jmp(), 0x0C);
         RunInstructions(40); // generous; loop is short
         Reg(3).Should().Be(4);
         _sut.Iar.StoredValue.ToInt().Should().Be(12); // parked on the halt
