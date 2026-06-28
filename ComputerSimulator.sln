@@ -10,6 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionF
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		ComputerSimulator.sln = ComputerSimulator.sln
+		docs\ROADMAP.md = docs\ROADMAP.md
+		AGENTS.md = AGENTS.md
+		CLAUDE.md = CLAUDE.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AC3A0E54-B85A-4B76-93C1-0E59708C3480}"

@@ -32,9 +32,19 @@ original territory: assembler, more peripherals, an OS, higher-level languages.
   `0x0F`, then `IN Data Rn` reads the ASCII keycode (`0` if no key); the keycode register auto-clears
   after a read.
 - **Render abstraction:** Core defines `IDisplayOutput`; the host implements it (`TerminalDisplayOutput`
-  → `Graphics.Screen`). `DisplayAdapter.RenderFrame` scans display RAM. `Computer.RunAsync` drives the loop.
+  → `Graphics.Screen`). `DisplayAdapter.RenderFrame` scans display RAM using a config-selected scan mode.
+  `Computer.RunAsync` drives the loop.
+- **Display scan modes:** `ComputerSettings.DisplayScanMode` selects `GateLevel` (default/reference) or
+  `ScanBuffer` (fast path). Gate-level uses `ScreenControl`; scan-buffer walks display RAM bytes directly.
+- **Terminal renderer:** `Terminal.PixelMode` selects `Braille` (2×4 px per terminal cell, default) or
+  `Block` (old 1 px per cell style). `Terminal.LogLines` reserves rows below the display for recent logs,
+  so app settings and runtime messages stay visible without corrupting the screen.
+- **Configuration:** runtime settings are bound through options from the appsettings file beside the executable.
+  This matters when using `dotnet run --project ComputerSimulator`, because the process content root is the repo
+  root while the copied config lives under the app output directory.
 - **Perf:** everything is modelled gate-by-gate, so it is slow. Keep an eye on this; it bounds resolution
-  and frame rate.
+  and frame rate. The display now has a faster scan-buffer path, but the CPU and gate-level scanner are still
+  intentionally faithful and slow.
 
 ---
 
@@ -68,7 +78,7 @@ The display has two **independent** axes; keep them decoupled:
 A GUI is **not** a priority while the terminal renderer works well — focus M1 on the terminal and on the
 dual scan modes, which both the terminal and the eventual GUI will reuse.
 
-- [ ] **M1.1 Dual scan modes (gate-level + scan-buffer).** Keep the current **gate-level** `ScreenControl`
+- [x] **M1.1 Dual scan modes (gate-level + scan-buffer).** Keep the current **gate-level** `ScreenControl`
   (real horizontal/vertical counter registers, one pixel per clock — faithful to the book, but slow and
   unlikely to sustain higher resolutions in real time). Add a faster **scan-buffer** mode, like
   [djhworld/simple-computer](https://github.com/djhworld/simple-computer): a routine walks display RAM by
@@ -78,26 +88,34 @@ dual scan modes, which both the terminal and the eventual GUI will reuse.
   `DisplayAdapter.RenderFrame`, `ComputerSettings`. *Done when* both modes render the same image, the buffer
   mode is much faster, and both are tested. *Notes:* `DisplayRam` already exposes `UpdateRead()` and
   `GetSlot(x, y)`; byte→pixel mapping is `bytesPerRow = width/8`, bit 0 = leftmost. Gate-level stays the
-  default/reference; scan-buffer is the opt-in fast path, not a replacement.
-- [ ] **M1.2 Improve the terminal renderer.** Get more out of the terminal before reaching for a GUI:
+  default/reference; scan-buffer is the opt-in fast path, not a replacement. *Status:* implemented via
+  `DisplayScanMode`; scan-buffer and gate-level parity are covered by integration tests.
+- [x] **M1.2 Improve the terminal renderer.** Get more out of the terminal before reaching for a GUI:
   - Higher pixel density per character cell — half-blocks (`▀`/`▄`, 1×2 px), quadrants (2×2 px), or
     **braille** (`⠿`, 2×4 px). Braille fits 320×200 in ~160×50 cells — a large but real terminal window.
   - ANSI color / grayscale output (pairs with M1.4).
   - Terminal resize handling, cursor hidden, minimal flicker (already buffer + single flush).
   *Touches* `Graphics/Screen.cs`, `TerminalDisplayOutput`. *Done when* the terminal shows noticeably higher
-  effective resolution and (optionally) color, and degrades gracefully on small windows.
-- [ ] **M1.3 Dirty-region / decoupled refresh.** Only re-scan/redraw changed display-RAM bytes; decouple
+  effective resolution and (optionally) color, and degrades gracefully on small windows. *Status:* braille and
+  block modes are config-selectable via `Terminal.PixelMode`; terminal-safe log rows are rendered below the
+  display via `Terminal.LogLines`. Color remains deferred with M1.5.
+- [x] **M1.3 Dirty-region / decoupled refresh.** Only re-scan/redraw changed display-RAM bytes; decouple
   the display refresh rate from the CPU loop. *Touches* `DisplayAdapter.RenderFrame`, `ScreenControl`,
   `Computer.RunAsync`. *Done when* a static screen costs ~0 per frame. (Most relevant to the gate-level mode.)
-- [ ] **M1.4 Fully data-driven sizing.** Make width/height (and `bytesPerRow`, DisplayRam capacity) flow
+  *Status:* display RAM tracks dirty byte addresses; scan-buffer mode skips `Present()` when unchanged and
+  re-renders changed bytes only. Gate-level still performs full reference scans.
+- [x] **M1.4 Fully data-driven sizing.** Make width/height (and `bytesPerRow`, DisplayRam capacity) flow
   cleanly from `ComputerSettings`; document the constraints. *Done when* changing the config resizes the
-  display with no code edits and tests cover a couple of sizes.
-- [ ] **M1.5 (stretch) Grayscale/color.** Extend DisplayRam to >1 bit/pixel or add a palette. Diverges
+  display with no code edits and tests cover a couple of sizes. *Status:* `ScreenWidth`, `ScreenHeight`,
+  `CpuUpdatesPerFrame`, `DisplayFrameDelayMs`, and `DisplayScanMode` are options-bound and validated.
+- [ ] **M1.5 (deferred until after GUI) Grayscale/color.** Extend DisplayRam to >1 bit/pixel or add a palette. Diverges
   from the book's monochrome; design the IO protocol for it. Feeds the terminal color work (M1.2) and the
-  later GUI. *Done when* the demo can draw shades/colors.
-- [ ] **M1.6 Performance pass.** Profile the gate simulation (`EventBus`, register/word updates, the
+  later GUI. *Done when* the demo can draw shades/colors. *Notes:* intentionally not a near-term priority.
+- [ ] **M1.6 Performance pass (partial).** Profile the gate simulation (`EventBus`, register/word updates, the
   per-tick `ComputerPart.Update`). Land targeted optimizations without changing behavior. *Done when*
-  there is a benchmark and a measured speedup; all tests still green.
+  there is a benchmark and a measured speedup; all tests still green. *Status:* an explicit render benchmark
+  exists for gate-level, scan-buffer, and static scan-buffer frames. A broader CPU/gate simulation profile is
+  still open.
 
 ---
 
@@ -226,8 +244,9 @@ Roughly increasing ambition. Several of these unlock the others.
 
 ## Suggested next step
 
-**M2 (fonts/text)** is the highest-leverage move: it finishes the book, makes the display meaningful, and
-is a prerequisite for the keyboard echo loop (M3) and any OS prompt (M6.4). Doing **F1** (centralized
-encoder) and a thin slice of **M4** (even a minimal assembler) first will make writing the font/echo/OS
-programs dramatically easier than hand-assembling byte arrays. The GUI (M5) is deliberately parked until
-after M4 — keep improving the terminal display (M1.2) until then.
+**M2 (fonts/text)** is now the highest-leverage move: M1's terminal-first display work is largely in place,
+so text rendering finishes the book and makes the display meaningful. M2 is also a prerequisite for the
+keyboard echo loop (M3) and any OS prompt (M6.4). Doing **F1** (centralized encoder) and a thin slice of
+**M4** (even a minimal assembler) first will make writing the font/echo/OS programs dramatically easier than
+hand-assembling byte arrays. The GUI (M5) remains deliberately parked until after M4; grayscale/color is also
+deferred until GUI work makes it worth designing the protocol change.

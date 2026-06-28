@@ -1,7 +1,9 @@
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Factories;
+using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
 using ComputerSimulator.Core.Peripherals.Display;
+using Microsoft.Extensions.Logging;
 
 namespace ComputerSimulator.Core;
 
@@ -12,17 +14,17 @@ public interface IComputer : IDisposable
 
 public class Computer : IComputer
 {
-    // The CPU advances in quarter-clock sub-ticks; render every so many to keep the loop responsive
-    // without paying for a full display scan too often.
-    private const int UpdatesPerFrame = 400;
-
     private readonly IDisplayOutput _output;
     private readonly IComputerPart _computerPart;
     private readonly IDisplayAdapter _display;
+    private readonly ComputerSettings _settings;
+    private readonly ILogger<Computer> _logger;
 
-    public Computer(IComponentFactory componentFactory, IDisplayOutput output)
+    public Computer(IComponentFactory componentFactory, IDisplayOutput output, ComputerSettings settings, ILogger<Computer> logger)
     {
         _output = output;
+        _settings = settings;
+        _logger = logger;
         _computerPart = componentFactory.CreateComputerPart();
         _display = componentFactory.CreateDisplayAdapter(_computerPart.IoBus);
         _computerPart.IoBus.ConnectedComponents.Add(_display);
@@ -30,6 +32,8 @@ public class Computer : IComputer
 
     public async Task RunAsync(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Starting computer simulation with settings: {Settings}", _settings);
+
         _output.Initialize(_display.Width, _display.Height);
         LoadProgram(DemoProgram.Build(_display.Width, _display.Height));
 
@@ -38,13 +42,16 @@ public class Computer : IComputer
         {
             _computerPart.Update();
 
-            if (++updates % UpdatesPerFrame != 0)
+            if (++updates % _settings.CpuUpdatesPerFrame != 0)
             {
                 continue;
             }
 
             _display.RenderFrame(_output);
-            await Task.Delay(16, cancellationToken); // ~60 fps; also avoids busy-spinning once the program halts
+            if (_settings.DisplayFrameDelayMs > 0)
+            {
+                await Task.Delay(_settings.DisplayFrameDelayMs, cancellationToken);
+            }
         }
     }
 

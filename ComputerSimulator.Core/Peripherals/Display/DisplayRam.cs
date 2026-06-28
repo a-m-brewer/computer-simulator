@@ -30,10 +30,15 @@ public interface IDisplayRam : IPart
     void UpdateRead();
 
     IRamSlot GetSlot(int x, int y);
+
+    IReadOnlySet<int> DirtyAddresses { get; }
+
+    void ClearDirtyAddresses();
 }
 
 public class DisplayRam : PartsBase, IDisplayRam
 {
+    private readonly HashSet<int> _dirtyAddresses = new();
     private readonly IDecoder _setDecoderX;
     private readonly IDecoder _setDecoderY;
     private readonly IDecoder _enableDecoderX;
@@ -111,6 +116,13 @@ public class DisplayRam : PartsBase, IDisplayRam
         return _slots.GetSlot(x, y);
     }
 
+    public IReadOnlySet<int> DirtyAddresses => _dirtyAddresses;
+
+    public void ClearDirtyAddresses()
+    {
+        _dirtyAddresses.Clear();
+    }
+
     public void Update()
     {
         UpdateWrite();
@@ -124,8 +136,24 @@ public class DisplayRam : PartsBase, IDisplayRam
         _setDecoderX.Update();
         _setDecoderY.Update();
 
-        GetSlot(_setDecoderX.EnabledIndex, _setDecoderY.EnabledIndex)
-            .Update();
+        var slot = GetSlot(_setDecoderX.EnabledIndex, _setDecoderY.EnabledIndex);
+        var previousValue = Set.Value ? slot.Memory.StoredValue.ToInt() : 0;
+
+        slot.Update();
+
+        if (!Set.Value)
+        {
+            return;
+        }
+
+        var currentValue = slot.Memory.StoredValue.ToInt();
+        if (currentValue == previousValue)
+        {
+            return;
+        }
+
+        var addressBitsPerAxis = WireFactory.WordSize / 2;
+        _dirtyAddresses.Add(_setDecoderX.EnabledIndex + (_setDecoderY.EnabledIndex << addressBitsPerAxis));
     }
 
     public void UpdateRead()

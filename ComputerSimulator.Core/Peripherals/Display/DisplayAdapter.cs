@@ -24,16 +24,29 @@ public class DisplayAdapter : AdapterBase, IDisplayAdapter
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private readonly IClock _clock;
     private readonly IDisplayRam _displayRam;
+    private readonly DisplayScanMode _scanMode;
+    private bool _needsFullScan = true;
 
     public DisplayAdapter(
         IIoBus ioBus,
         int width,
         int height,
+        IComponentFactory componentFactory, IWireFactory wireFactory)
+        : this(ioBus, width, height, DisplayScanMode.GateLevel, componentFactory, wireFactory)
+    {
+    }
+
+    public DisplayAdapter(
+        IIoBus ioBus,
+        int width,
+        int height,
+        DisplayScanMode scanMode,
         IComponentFactory componentFactory, IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         IoBus = ioBus;
         Width = width;
         Height = height;
+        _scanMode = scanMode;
 
         _clock = ComponentFactory.CreateClock(WireFactory.CreateWire<bool>("display-clock"));
 
@@ -84,6 +97,17 @@ public class DisplayAdapter : AdapterBase, IDisplayAdapter
 
     public void RenderFrame(IDisplayOutput output)
     {
+        if (_scanMode == DisplayScanMode.ScanBuffer)
+        {
+            RenderScanBufferFrame(output);
+            return;
+        }
+
+        RenderGateLevelFrame(output);
+    }
+
+    private void RenderGateLevelFrame(IDisplayOutput output)
+    {
         _screenControl.Reset();
 
         var pixels = Width * Height;
@@ -104,5 +128,62 @@ public class DisplayAdapter : AdapterBase, IDisplayAdapter
         }
 
         output.Present();
+        _displayRam.ClearDirtyAddresses();
+    }
+
+    private void RenderScanBufferFrame(IDisplayOutput output)
+    {
+        if (!_needsFullScan && _displayRam.DirtyAddresses.Count == 0)
+        {
+            return;
+        }
+
+        if (_needsFullScan)
+        {
+            RenderAllDisplayBytes(output);
+            _needsFullScan = false;
+        }
+        else
+        {
+            foreach (var byteAddress in _displayRam.DirtyAddresses)
+            {
+                RenderDisplayByte(output, byteAddress);
+            }
+        }
+
+        _displayRam.ClearDirtyAddresses();
+        output.Present();
+    }
+
+    private void RenderAllDisplayBytes(IDisplayOutput output)
+    {
+        var bytesPerRow = Width / 8;
+        var byteCount = bytesPerRow * Height;
+        for (var byteAddress = 0; byteAddress < byteCount; byteAddress++)
+        {
+            RenderDisplayByte(output, byteAddress);
+        }
+    }
+
+    private void RenderDisplayByte(IDisplayOutput output, int byteAddress)
+    {
+        var bytesPerRow = Width / 8;
+        var row = byteAddress / bytesPerRow;
+        if (row < 0 || row >= Height)
+        {
+            return;
+        }
+
+        var byteColumn = byteAddress % bytesPerRow;
+        var addressBitsPerAxis = WireFactory.WordSize / 2;
+        var slot = _displayRam.GetSlot(byteAddress & ((1 << addressBitsPerAxis) - 1), byteAddress >> addressBitsPerAxis);
+        var value = slot.Memory.StoredValue;
+
+        for (var bit = 0; bit < 8; bit++)
+        {
+            var x = (byteColumn * 8) + bit;
+            var on = value[bit].Value;
+            output.SetPixel(x, row, on);
+        }
     }
 }

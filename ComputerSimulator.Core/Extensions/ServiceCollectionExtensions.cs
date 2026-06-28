@@ -10,6 +10,15 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         ComputerSettings computerSettings)
     {
+        computerSettings.Validate();
+        services.AddSingleton(computerSettings);
+
+        return services.RegisterCoreServices();
+    }
+
+    public static IServiceCollection RegisterCoreServices(this IServiceCollection services)
+    {
+
         services.Scan(s => s.FromAssemblyOf<IComponent>()
             .AddClasses(f => f.AssignableTo<IComponent>())
             .AsImplementedInterfaces()
@@ -22,8 +31,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<RightShifterWireFactory>();
         services.AddSingleton<LeftShifterWireFactory>();
         
-        services.AddSingleton(computerSettings);
-
         return services;
     }
 }

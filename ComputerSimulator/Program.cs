@@ -7,7 +7,6 @@ var cts = new CancellationTokenSource();
 
 Console.CancelKeyPress += (_, e) =>
 {
-    Console.WriteLine("Bye...");
     cts.Cancel();
     e.Cancel = true;
 };

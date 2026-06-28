@@ -472,7 +472,12 @@ public class ComponentFactory : IComponentFactory
 
     public IDisplayAdapter CreateDisplayAdapter(IIoBus ioBus)
     {
-        return new DisplayAdapter(ioBus, _computerSettings.ScreenWidth, _computerSettings.ScreenHeight, this,
+        return new DisplayAdapter(
+            ioBus,
+            _computerSettings.ScreenWidth,
+            _computerSettings.ScreenHeight,
+            _computerSettings.DisplayScanMode,
+            this,
             _wireFactory);
     }
 
