@@ -59,15 +59,21 @@ original territory: assembler, more peripherals, an OS, higher-level languages.
   encode the current instruction families. `DemoProgram`, display tests, CPU sequencing tests, and full-instruction
   CPU/pin integration tests use it where that improves clarity. Remaining raw bytes are intentional encoding-contract
   assertions, instruction operands, bit-level decoder assertions, or non-instruction test data.
-- [ ] **F2. Program loader (`.bin` images).** Let the simulator load a raw binary image into RAM and run
-  it, instead of baking programs into `DemoProgram`. Accept a file path on the command line (e.g.
-  `dotnet run --project ComputerSimulator -- run demo.bin`); the loader reads the bytes into RAM starting at
-  address 0 and the CPU executes from there. *Touches* `Computer`, `Program.cs`/`Startup`, a small
-  `ProgramLoader`. *Done when* the machine boots an arbitrary `.bin` from disk. *Enables M2–M6.*
-  *Notes:* keep the format dead simple — raw bytes loaded at 0. (A tiny header with a load address/entry
-  point can come later if needed.) This is the **second half** of the assembler flow in M4.
+- [x] **F2. Program loader (`.bin` images).** Let the simulator load a raw binary image into RAM and run
+   it, instead of baking programs into `DemoProgram`. Accept a file path on the command line (e.g.
+   `dotnet run --project ComputerSimulator -- run demo.bin`); the loader reads the bytes into RAM starting at
+   address 0 and the CPU executes from there. *Touches* `Computer`, `Program.cs`/`Startup`, a small
+   `ProgramLoader`. *Done when* the machine boots an arbitrary `.bin` from disk. *Enables M2–M6.*
+   *Notes:* keep the format dead simple — raw bytes loaded at 0. (A tiny header with a load address/entry
+   point can come later if needed.) This is the **second half** of the assembler flow in M4. *Status:*
+   `ProgramLoader` reads raw binary files and loads bytes into RAM at address 0; the simulator accepts
+   `run <path>`, `--program <path>`, and `--program-path <path>` while preserving the built-in demo default.
 - [ ] **F3. Symmetric input abstraction.** Add `Core/Peripherals/Keyboard/IKeyboardInput.cs` (mirror of
-  `IDisplayOutput`): the host pushes key events, the adapter reads them. *Enables M3.*
+   `IDisplayOutput`): the host pushes key events, the adapter reads them. *Enables M3.*
+- [x] **F4. Minimal CPU program emitter.** A narrow C# byte emitter for generated CPU programs before the
+  full M4 assembler exists. *Done when* generated programs can load 16-bit constants, use `InstructionSet`,
+  produce raw bytes, and avoid hand-maintained byte arrays for M2 text programs. *Status:* `MachineProgramBuilder`
+  now emits M2 CPU text programs, including a 16-bit `JMPR` halt for programs beyond the 8-bit `JMP` range.
 
 ---
 
@@ -126,27 +132,36 @@ dual scan modes, which both the terminal and the eventual GUI will reuse.
 
 ## Milestone 2 — Text to the screen (fonts) — *finishes the book*
 
-- [ ] **M2.1 Font data.** An 8×8 bitmap font for printable ASCII (32–126), as 8 bytes/glyph. Store as a
-  C# resource and as a RAM-loadable "font ROM" image. *Touches* `Core` (font resource), F2 loader.
-  *Done when* the font is addressable as `font[ascii*8 + row]`. *Status:* `AsciiFont8x8` provides an
-  addressable `font[ascii*8 + row]` API with tests for the printable range. It is currently a C# table with
-  a fallback glyph; the embedded resource / RAM-loadable ROM image remains open until F2.
-- [ ] **M2.2 Draw-character routine.** Blit a glyph to display RAM at character cell `(cx, cy)`. Validate
-  first as a C# helper, then as a CPU subroutine. Address math: `displayByteAddr = ((cy*8 + r) *
-  bytesPerRow) + cx` for glyph row `r` (cx is a byte column). *Done when* a known glyph appears at a known
-  cell and a test asserts the pixels. *Status:* `GlyphRenderer.DrawCharacter` validates the C# helper path
-  through the existing display IO protocol, with gate-level and scan-buffer tests asserting glyph pixels.
-  Remaining work: CPU subroutine version.
-- [ ] **M2.3 Draw-string routine.** Iterate characters, advance `cx`, handle newline/wrap. *Done when*
-  a string renders correctly across line wraps. *Status:* `GlyphRenderer.DrawString` validates the C# helper
-  path through the existing display IO protocol, with gate-level and scan-buffer tests covering adjacent
-  characters, newline handling, wrapping, and overflow. Remaining work: CPU subroutine version.
-- [ ] **M2.4 "HELLO WORLD" demo.** A program that prints text via the CPU. *Done when* readable text
-  shows on screen (replace or sit alongside `DemoProgram`).
-- [ ] **M2.5 Tests.** Glyph blit + string render assertions using `FakeDisplayOutput`.
-  *Notes:* much easier after M4 (assembler); until then generate the program in C# like `DemoProgram`.
-  *Status:* glyph blit and C# string render assertions exist for both display scan modes; CPU-driven string
-  render assertions remain open.
+- [x] **M2.1 Font data.** An 8×8 bitmap font for printable ASCII (32–126), as 8 bytes/glyph. Store as a
+   C# resource and as a RAM-loadable "font ROM" image. *Touches* `Core` (font resource), F2 loader.
+   *Done when* the font is addressable as `font[ascii*8 + row]`. *Status:* `AsciiFont8x8` provides an
+   addressable `font[ascii*8 + row]` API with tests for the printable range. It now exposes a 1024-byte
+   RAM-loadable ROM image (`AsciiFont8x8.CreateRomImage()`), and M2 text program images place that ROM in
+   simulated RAM at `TextProgram.FontBaseAddress`. Uppercase letters, digits, and common punctuation use
+   hand-tuned glyphs; other printable ASCII slots have deterministic generated glyphs until a nicer font is added.
+- [x] **M2.2 Draw-character routine.** Blit a glyph to display RAM at character cell `(cx, cy)`. Validate
+   first as a C# helper, then as a CPU subroutine. Address math: `displayByteAddr = ((cy*8 + r) *
+   bytesPerRow) + cx` for glyph row `r` (cx is a byte column). *Done when* a known glyph appears at a known
+   cell and a test asserts the pixels. *Status:* `GlyphRenderer.DrawCharacter` validates the C# helper path
+   through the existing display IO protocol, with gate-level and scan-buffer tests asserting glyph pixels.
+   `TextProgram` now emits CPU instructions that load glyph rows from the RAM font ROM and write them through
+   the display IO protocol; tests assert CPU-rendered glyph pixels in both scan modes.
+- [x] **M2.3 Draw-string routine.** Iterate characters, advance `cx`, handle newline/wrap. *Done when*
+   a string renders correctly across line wraps. *Status:* `GlyphRenderer.DrawString` validates the C# helper
+   path through the existing display IO protocol, with gate-level and scan-buffer tests covering adjacent
+   characters, newline handling, wrapping, and overflow. `TextProgram` now emits CPU-driven string programs
+   with newline and wrap handled at generation time, and tests assert CPU-rendered adjacent characters plus
+   newline/wrap behavior.
+- [x] **M2.4 "HELLO WORLD" demo.** A program that prints text via the CPU. *Done when* readable text
+   shows on screen (replace or sit alongside `DemoProgram`). *Status:* `TextProgram.BuildHelloWorldImage`
+   builds a raw CPU image with program bytes at address 0 and the font ROM in RAM. The simulator can run it
+   via `dotnet run --project ComputerSimulator -- --demo hello-world`; the original display-pattern demo remains
+   the default.
+- [x] **M2.5 Tests.** Glyph blit + string render assertions using `FakeDisplayOutput`.
+   *Notes:* much easier after M4 (assembler); until then generate the program in C# like `DemoProgram`.
+   *Status:* glyph blit and C# string render assertions exist for both display scan modes; CPU-driven string
+   render assertions now cover single glyphs, adjacent characters, newline/wrap behavior, HELLO WORLD, font ROM
+   image placement, raw `.bin` loader behavior, and host CLI program selection.
 
 ---
 
@@ -257,8 +272,7 @@ Roughly increasing ambition. Several of these unlock the others.
 
 ## Suggested next step
 
-Continue **M2 (fonts/text)** from the current C# glyph slice: add `DrawString`, then decide whether to build
-the CPU `print_char`/`print_string` routines directly with `InstructionSet` or first take a thin **M4**
-assembler slice. **F1** has a usable encoder now, but the wider literal-byte cleanup is still useful before
-assembler work. The GUI (M5) remains deliberately parked until after M4; grayscale/color is also deferred
-until GUI work makes it worth designing the protocol change.
+Continue to **M3 (keyboard input)** or take the next assembler slice in **M4**. M2 text now works through
+generated CPU programs, but the real `print_char`/`print_string` standard-library shape will become cleaner
+once M4 assembly syntax, labels, and pseudo-instructions exist. The GUI (M5) remains deliberately parked until
+after M4; grayscale/color is also deferred until GUI work makes it worth designing the protocol change.

@@ -41,6 +41,13 @@ public static class HostExtensions
         for (var i = 0; i < args.Length; i++)
         {
             var arg = args[i];
+
+            if (arg.Equals("run", StringComparison.OrdinalIgnoreCase) && i + 1 < args.Length)
+            {
+                normalized.Add($"--Computer:ProgramPath={args[++i]}");
+                continue;
+            }
+
             var equalsIndex = arg.IndexOf('=', StringComparison.Ordinal);
             var switchName = equalsIndex >= 0 ? arg[..equalsIndex] : arg;
 
@@ -86,6 +93,8 @@ public static class HostExtensions
             "--perf-stats-interval" => "Computer:PerformanceStatsIntervalSeconds",
             "--pixel-mode" => "Terminal:PixelMode",
             "--log-lines" => "Terminal:LogLines",
+            "--program" or "--program-path" => "Computer:ProgramPath",
+            "--built-in-program" or "--demo" => "Computer:BuiltInProgram",
             _ => string.Empty
         };
 
@@ -99,6 +108,11 @@ public static class HostExtensions
             normalizeValue = NormalizeScanMode;
         }
 
+        if (configurationKey == "Computer:BuiltInProgram")
+        {
+            normalizeValue = NormalizeBuiltInProgram;
+        }
+
         return true;
     }
 
@@ -108,6 +122,18 @@ public static class HostExtensions
             ? "GateLevel"
             : value.Equals("buffer", StringComparison.OrdinalIgnoreCase)
                 ? "ScanBuffer"
+                : value;
+    }
+
+    private static string NormalizeBuiltInProgram(string value)
+    {
+        return value.Equals("text", StringComparison.OrdinalIgnoreCase)
+               || value.Equals("hello", StringComparison.OrdinalIgnoreCase)
+               || value.Equals("hello-world", StringComparison.OrdinalIgnoreCase)
+            ? "HelloWorld"
+            : value.Equals("pattern", StringComparison.OrdinalIgnoreCase)
+              || value.Equals("display-pattern", StringComparison.OrdinalIgnoreCase)
+                ? "DisplayPattern"
                 : value;
     }
 }

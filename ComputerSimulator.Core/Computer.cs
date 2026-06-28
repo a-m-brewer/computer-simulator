@@ -4,6 +4,7 @@ using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
 using ComputerSimulator.Core.Peripherals.Display;
+using ComputerSimulator.Core.Programs;
 using Microsoft.Extensions.Logging;
 
 namespace ComputerSimulator.Core;
@@ -36,7 +37,7 @@ public class Computer : IComputer
         _logger.LogInformation("Starting computer simulation with settings: {Settings}", _settings);
 
         _output.Initialize(_display.Width, _display.Height);
-        LoadProgram(DemoProgram.Build(_display.Width, _display.Height));
+        LoadProgram();
 
         var updates = 0;
         var stats = new RuntimeStats(_settings.PerformanceStatsIntervalSeconds);
@@ -79,15 +80,23 @@ public class Computer : IComputer
             snapshot.AverageRenderMilliseconds);
     }
 
-    private void LoadProgram(IReadOnlyList<bool[]> program)
+    private void LoadProgram()
     {
-        for (var address = 0; address < program.Count; address++)
+        if (!string.IsNullOrWhiteSpace(_settings.ProgramPath))
         {
-            _computerPart.Ram
-                .GetSlot(address & 0xFF, address >> 8)
-                .Memory
-                .SetRegisterValue(program[address]);
+            var image = ProgramLoader.ReadBinaryImage(_settings.ProgramPath);
+            ProgramLoader.Load(_computerPart.Ram, image);
+            _logger.LogInformation("Loaded {ProgramByteCount} bytes from {ProgramPath}", image.Length, _settings.ProgramPath);
+            return;
         }
+
+        if (_settings.BuiltInProgram == BuiltInProgram.HelloWorld)
+        {
+            ProgramLoader.Load(_computerPart.Ram, TextProgram.BuildHelloWorldImage(_display.Width, _display.Height));
+            return;
+        }
+
+        ProgramLoader.Load(_computerPart.Ram, DemoProgram.Build(_display.Width, _display.Height));
     }
 
     public void Dispose()

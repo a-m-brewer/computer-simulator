@@ -6,6 +6,8 @@ public static class AsciiFont8x8
 {
     public const int GlyphWidth = 8;
     public const int GlyphHeight = 8;
+    public const int AsciiCharacterCount = 128;
+    public const int RomByteCount = AsciiCharacterCount * GlyphHeight;
     public const int FirstPrintable = 32;
     public const int LastPrintable = 126;
 
@@ -28,6 +30,10 @@ public static class AsciiFont8x8
         "        ",
         "  #     ",
         "        ");
+
+    private static readonly IReadOnlyDictionary<char, int[]> GeneratedGlyphs = Enumerable
+        .Range(FirstPrintable, LastPrintable - FirstPrintable + 1)
+        .ToDictionary(ascii => (char)ascii, ascii => GeneratedPrintableGlyph(ascii));
 
     private static readonly IReadOnlyDictionary<char, int[]> Glyphs = new Dictionary<char, int[]>
     {
@@ -88,6 +94,17 @@ public static class AsciiFont8x8
         return GetGlyphRow((char)ascii, row);
     }
 
+    public static byte[] CreateRomImage()
+    {
+        var image = new byte[RomByteCount];
+        for (var address = 0; address < image.Length; address++)
+        {
+            image[address] = (byte)GetByte(address);
+        }
+
+        return image;
+    }
+
     public static int GetGlyphRow(char character, int row)
     {
         if (row is < 0 or >= GlyphHeight)
@@ -106,7 +123,28 @@ public static class AsciiFont8x8
         }
 
         var normalized = char.IsLower(character) ? char.ToUpperInvariant(character) : character;
-        return Glyphs.TryGetValue(normalized, out var glyph) ? glyph : Fallback;
+        if (Glyphs.TryGetValue(normalized, out var glyph))
+        {
+            return glyph;
+        }
+
+        return GeneratedGlyphs.TryGetValue(character, out var generated) ? generated : Fallback;
+    }
+
+    private static int[] GeneratedPrintableGlyph(int ascii)
+    {
+        // Keeps every printable ASCII slot deterministic and non-empty until a hand-tuned glyph is added.
+        return
+        [
+            0b01111110,
+            0b01000010 | ((ascii & 0b00000001) != 0 ? 0b00011000 : 0),
+            0b01000010 | ((ascii & 0b00000010) != 0 ? 0b00011000 : 0),
+            0b01000010 | ((ascii & 0b00000100) != 0 ? 0b00011000 : 0),
+            0b01000010 | ((ascii & 0b00001000) != 0 ? 0b00011000 : 0),
+            0b01000010 | ((ascii & 0b00010000) != 0 ? 0b00011000 : 0),
+            0b01000010 | ((ascii & 0b00100000) != 0 ? 0b00011000 : 0),
+            0b01111110
+        ];
     }
 
     private static int[] Glyph(params string[] rows)

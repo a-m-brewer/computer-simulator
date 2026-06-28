@@ -1,4 +1,5 @@
 using ComputerSimulator.Core.Peripherals.Display;
+using ComputerSimulator.Core.Programs;
 
 namespace ComputerSimulator.Core.Models;
 
@@ -15,6 +16,10 @@ public class ComputerSettings
     public int PerformanceStatsIntervalSeconds { get; set; } = 2;
 
     public DisplayScanMode DisplayScanMode { get; set; } = DisplayScanMode.GateLevel;
+
+    public string? ProgramPath { get; set; }
+
+    public BuiltInProgram BuiltInProgram { get; set; } = BuiltInProgram.DisplayPattern;
 
     /// <summary>
     /// Width of the virtual display in pixels. Must be a multiple of 8 (8 pixels per display-RAM byte).
@@ -76,6 +81,7 @@ public class ComputerSettings
 
     public override string ToString()
     {
-        return $"WordSize: {WordSize}, CpuUpdatesPerFrame: {CpuUpdatesPerFrame}, DisplayFrameDelayMs: {DisplayFrameDelayMs}, DisplayScanMode: {DisplayScanMode}, ScreenWidth: {ScreenWidth}, ScreenHeight: {ScreenHeight}, EnablePerformanceStats: {EnablePerformanceStats}, PerformanceStatsIntervalSeconds: {PerformanceStatsIntervalSeconds}";
+        var programPath = ProgramPath ?? "<built-in demo>";
+        return $"WordSize: {WordSize}, CpuUpdatesPerFrame: {CpuUpdatesPerFrame}, DisplayFrameDelayMs: {DisplayFrameDelayMs}, DisplayScanMode: {DisplayScanMode}, ScreenWidth: {ScreenWidth}, ScreenHeight: {ScreenHeight}, ProgramPath: {programPath}, BuiltInProgram: {BuiltInProgram}, EnablePerformanceStats: {EnablePerformanceStats}, PerformanceStatsIntervalSeconds: {PerformanceStatsIntervalSeconds}";
     }
 }

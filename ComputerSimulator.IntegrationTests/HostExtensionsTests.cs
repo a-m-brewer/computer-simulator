@@ -1,5 +1,6 @@
 using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Peripherals.Display;
+using ComputerSimulator.Core.Programs;
 using ComputerSimulator.Graphics;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,5 +50,35 @@ public class HostExtensionsTests
         computerSettings.EnablePerformanceStats.Should().BeTrue();
         computerSettings.PerformanceStatsIntervalSeconds.Should().Be(3);
         terminalSettings.PixelMode.Should().Be(TerminalPixelMode.Block);
+    }
+
+    [Test]
+    public void RunCommandSetsProgramPath()
+    {
+        using var host = new[] { "run", "demo.bin" }.BuildHost();
+
+        var settings = host.Services.GetRequiredService<ComputerSettings>();
+
+        settings.ProgramPath.Should().Be("demo.bin");
+    }
+
+    [Test]
+    public void ProgramAliasOverridesProgramPath()
+    {
+        using var host = new[] { "--program", "demo.bin" }.BuildHost();
+
+        var settings = host.Services.GetRequiredService<ComputerSettings>();
+
+        settings.ProgramPath.Should().Be("demo.bin");
+    }
+
+    [Test]
+    public void DemoAliasSelectsHelloWorldBuiltInProgram()
+    {
+        using var host = new[] { "--demo", "hello-world" }.BuildHost();
+
+        var settings = host.Services.GetRequiredService<ComputerSettings>();
+
+        settings.BuiltInProgram.Should().Be(BuiltInProgram.HelloWorld);
     }
 }

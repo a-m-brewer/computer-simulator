@@ -30,6 +30,22 @@ public class AsciiFont8x8Tests
     }
 
     [Test]
+    public void RomImageMapsAsciiAddressesToGlyphRows()
+    {
+        var image = AsciiFont8x8.CreateRomImage();
+
+        image.Should().HaveCount(AsciiFont8x8.RomByteCount);
+        for (var ascii = AsciiFont8x8.FirstPrintable; ascii <= AsciiFont8x8.LastPrintable; ascii++)
+        {
+            for (var row = 0; row < AsciiFont8x8.GlyphHeight; row++)
+            {
+                var address = (ascii * AsciiFont8x8.GlyphHeight) + row;
+                image[address].Should().Be((byte)AsciiFont8x8.GetGlyphRow((char)ascii, row));
+            }
+        }
+    }
+
+    [Test]
     public void SpaceGlyphIsBlank()
     {
         AsciiFont8x8.GetGlyphRows(' ')
