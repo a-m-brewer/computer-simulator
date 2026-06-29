@@ -1,11 +1,11 @@
 using System.Linq;
+using ComputerSimulator.Assembler;
 using ComputerSimulator.Core;
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Parts;
 using ComputerSimulator.Core.Peripherals.Display;
 using ComputerSimulator.Core.Peripherals.Display.Text;
 using ComputerSimulator.Core.Peripherals.Keyboard;
-using ComputerSimulator.Core.Programs;
 using ComputerSimulator.IntegrationTests.Peripherals.Display;
 using FluentAssertions;
 using NUnit.Framework;
@@ -14,6 +14,11 @@ namespace ComputerSimulator.IntegrationTests.Peripherals.Keyboard;
 
 public class EchoProgramTests : IntegrationTestBase
 {
+    private const int CursorAddress = 0x02;
+    private const int CursorColumn = 0x03;
+    private const int LineBaseAddress = 0x04;
+    private const int FontBaseAddress = 0x2000;
+
     [Test]
     public void EchoProgramDrawsQueuedCharacter()
     {
@@ -37,7 +42,7 @@ public class EchoProgramTests : IntegrationTestBase
         var keyboard = ComponentFactory.CreateKeyboardAdapter(computerPart.IoBus);
         computerPart.IoBus.ConnectedComponents.Add(display);
         computerPart.IoBus.ConnectedComponents.Add(keyboard);
-        ProgramLoader.Load(computerPart.Ram, EchoProgram.BuildImage(width, height));
+        ProgramLoader.Load(computerPart.Ram, AssembleEchoImage(width));
 
         // Run until the program is inside the Poll loop — ~5000 updates with no key queued
         for (var i = 0; i < 5_000; i++)
@@ -52,8 +57,8 @@ public class EchoProgramTests : IntegrationTestBase
         for (var i = 0; i < 30_000; i++)
         {
             computerPart.Update();
-            if (ReadVariable(computerPart, EchoProgram.CursorAddress) == 1
-                && ReadVariable(computerPart, EchoProgram.CursorColumn) == 1)
+            if (ReadVariable(computerPart, CursorAddress) == 1
+                && ReadVariable(computerPart, CursorColumn) == 1)
             {
                 drawn = true;
                 break;
@@ -84,7 +89,7 @@ public class EchoProgramTests : IntegrationTestBase
         var keyboard = ComponentFactory.CreateKeyboardAdapter(computerPart.IoBus);
         computerPart.IoBus.ConnectedComponents.Add(display);
         computerPart.IoBus.ConnectedComponents.Add(keyboard);
-        ProgramLoader.Load(computerPart.Ram, EchoProgram.BuildImage(width, height));
+        ProgramLoader.Load(computerPart.Ram, AssembleEchoImage(width));
 
         // Let the program reach the poll loop, then dump a burst of keys at once.
         for (var i = 0; i < 5_000; i++)
@@ -103,7 +108,7 @@ public class EchoProgramTests : IntegrationTestBase
         for (var i = 0; i < 200_000; i++)
         {
             computerPart.Update();
-            if (ReadVariable(computerPart, EchoProgram.CursorColumn) == typed.Length)
+            if (ReadVariable(computerPart, CursorColumn) == typed.Length)
             {
                 drawn = true;
                 break;
@@ -145,7 +150,7 @@ public class EchoProgramTests : IntegrationTestBase
         var keyboard = ComponentFactory.CreateKeyboardAdapter(computerPart.IoBus);
         computerPart.IoBus.ConnectedComponents.Add(display);
         computerPart.IoBus.ConnectedComponents.Add(keyboard);
-        ProgramLoader.Load(computerPart.Ram, EchoProgram.BuildImage(width, height));
+        ProgramLoader.Load(computerPart.Ram, AssembleEchoImage(width));
 
         for (var i = 0; i < 5_000; i++)
         {
@@ -158,8 +163,8 @@ public class EchoProgramTests : IntegrationTestBase
         for (var i = 0; i < 60_000; i++)
         {
             computerPart.Update();
-            if (ReadVariable(computerPart, EchoProgram.CursorAddress) == 1
-                && ReadVariable(computerPart, EchoProgram.CursorColumn) == 1)
+            if (ReadVariable(computerPart, CursorAddress) == 1
+                && ReadVariable(computerPart, CursorColumn) == 1)
             {
                 drawn = true;
                 break;
@@ -189,15 +194,15 @@ public class EchoProgramTests : IntegrationTestBase
         var keyboard = ComponentFactory.CreateKeyboardAdapter(computerPart.IoBus);
         computerPart.IoBus.ConnectedComponents.Add(display);
         computerPart.IoBus.ConnectedComponents.Add(keyboard);
-        ProgramLoader.Load(computerPart.Ram, EchoProgram.BuildImage(width, height));
+        ProgramLoader.Load(computerPart.Ram, AssembleEchoImage(width));
 
         keyboardInput.Push((byte)'A');
 
         for (var i = 0; i < 30_000; i++)
         {
             computerPart.Update();
-            if (ReadVariable(computerPart, EchoProgram.CursorAddress) == 1
-                && ReadVariable(computerPart, EchoProgram.CursorColumn) == 1)
+            if (ReadVariable(computerPart, CursorAddress) == 1
+                && ReadVariable(computerPart, CursorColumn) == 1)
             {
                 break;
             }
@@ -212,10 +217,10 @@ public class EchoProgramTests : IntegrationTestBase
     [Test]
     public void EchoImageContainsRamLoadableFontRom()
     {
-        var image = EchoProgram.BuildImage(width: 32, height: 16);
+        var image = AssembleEchoImage(width: 32);
         var fontRom = AsciiFont8x8.CreateRomImage();
 
-        image.Skip(TextProgram.FontBaseAddress).Take(fontRom.Length)
+        image.Skip(FontBaseAddress).Take(fontRom.Length)
             .Should()
             .Equal(fontRom);
     }
@@ -232,7 +237,7 @@ public class EchoProgramTests : IntegrationTestBase
         var keyboard = ComponentFactory.CreateKeyboardAdapter(computerPart.IoBus);
         computerPart.IoBus.ConnectedComponents.Add(display);
         computerPart.IoBus.ConnectedComponents.Add(keyboard);
-        ProgramLoader.Load(computerPart.Ram, EchoProgram.BuildImage(width, height));
+        ProgramLoader.Load(computerPart.Ram, AssembleEchoImage(width));
 
         var expectedCursor = 0;
         var expectedColumn = 0;
@@ -263,9 +268,9 @@ public class EchoProgramTests : IntegrationTestBase
             for (var i = 0; i < 30_000; i++)
             {
                 computerPart.Update();
-                if (ReadVariable(computerPart, EchoProgram.CursorAddress) == expectedCursor
-                    && ReadVariable(computerPart, EchoProgram.CursorColumn) == expectedColumn
-                    && ReadVariable(computerPart, EchoProgram.LineBaseAddress) == expectedLineBase)
+                if (ReadVariable(computerPart, CursorAddress) == expectedCursor
+                    && ReadVariable(computerPart, CursorColumn) == expectedColumn
+                    && ReadVariable(computerPart, LineBaseAddress) == expectedLineBase)
                 {
                     break;
                 }
@@ -281,6 +286,14 @@ public class EchoProgramTests : IntegrationTestBase
     private static int ReadVariable(IComputerPart computerPart, int address)
     {
         return computerPart.Ram.GetSlot(address, 0).Memory.StoredValue.ToInt();
+    }
+
+    private static byte[] AssembleEchoImage(int width)
+    {
+        var options = new AssemblerOptions();
+        options.Defines["SCREEN_WIDTH"] = width;
+        options.Defines["BYTES_PER_ROW"] = width / 8;
+        return ComputerSimulator.IntegrationTests.Assembler.DogfoodProgramTests.AssembleProgram("echo.asm", options);
     }
 
     private static void AssertGlyph(FakeDisplayOutput output, char character, int cellX, int cellY)

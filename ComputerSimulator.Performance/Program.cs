@@ -1,6 +1,7 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
+using ComputerSimulator.Assembler;
 using ComputerSimulator.Core;
 using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Factories;
@@ -147,14 +148,7 @@ public class SimulationBenchmarks
         var (componentFactory, _) = PerformanceFactory.Create(96, 48);
         _computerPart = componentFactory.CreateComputerPart();
 
-        var program = DemoProgram.Build(96, 48);
-        for (var address = 0; address < program.Count; address++)
-        {
-            _computerPart.Ram
-                .GetSlot(address & 0xFF, address >> 8)
-                .Memory
-                .SetRegisterValue(program[address]);
-        }
+        ProgramLoader.Load(_computerPart.Ram, DogfoodProgramImages.BuildDisplayPatternImage(96, 48));
     }
 
     [Benchmark]
@@ -263,7 +257,7 @@ internal static class ProfileRunner
             new TerminalGuiDisplayOutput(new TerminalDisplayBuffer(), new NoopTerminalGuiApplication()));
 
         var computerPart = componentFactory.CreateComputerPart();
-        LoadProgram(computerPart, DemoProgram.Build(options.Width, options.Height));
+        ProgramLoader.Load(computerPart.Ram, DogfoodProgramImages.BuildDisplayPatternImage(options.Width, options.Height));
         Measure("simulation.computer-part-update", 1, () =>
         {
             for (var i = 0; i < options.CpuUpdates; i++)
@@ -297,7 +291,7 @@ internal static class ProfileRunner
         computerPart.IoBus.ConnectedComponents.Add(display);
         var output = outputFactory();
         output.Initialize(display.Width, display.Height);
-        LoadProgram(computerPart, DemoProgram.Build(options.Width, options.Height));
+        ProgramLoader.Load(computerPart.Ram, DogfoodProgramImages.BuildDisplayPatternImage(options.Width, options.Height));
 
         Measure(name, options.Iterations, () =>
         {
@@ -333,15 +327,18 @@ internal static class ProfileRunner
             $"{name}: total={started.Elapsed.TotalMilliseconds:N2} ms, avg={started.Elapsed.TotalMilliseconds / iterations:N2} ms, alloc={allocated:N0} B, gen0={GC.CollectionCount(0) - gen0Before}, gen1={GC.CollectionCount(1) - gen1Before}, gen2={GC.CollectionCount(2) - gen2Before}");
     }
 
-    private static void LoadProgram(IComputerPart computerPart, IReadOnlyList<bool[]> program)
+}
+
+internal static class DogfoodProgramImages
+{
+    public static byte[] BuildDisplayPatternImage(int width, int height)
     {
-        for (var address = 0; address < program.Count; address++)
-        {
-            computerPart.Ram
-                .GetSlot(address & 0xFF, address >> 8)
-                .Memory
-                .SetRegisterValue(program[address]);
-        }
+        var options = new AssemblerOptions();
+        options.Defines["BYTES_PER_FRAME"] = (width / 8) * height;
+
+        return new ScottAssembler().AssembleFileOrThrow(
+            Path.Combine(AppContext.BaseDirectory, "programs", "display-pattern.asm"),
+            options);
     }
 }
 

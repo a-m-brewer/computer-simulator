@@ -13,7 +13,12 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ComputerSimulator.Core\ComputerSimulator.Core.csproj" />
+        <ProjectReference Include="..\ComputerSimulator.Assembler\ComputerSimulator.Assembler.csproj" />
         <ProjectReference Include="..\ComputerSimulator\ComputerSimulator.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\programs\**\*" Link="programs\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

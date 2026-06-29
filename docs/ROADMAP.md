@@ -222,39 +222,57 @@ The assembler is its own command-line program. The simulator just loads and runs
   `DATA`+`SHL`+`ADD`), `MOV`, `HALT`, `CALL`/`RET` if a stack lands (M6.1). *Done when* programs read
   cleanly despite 8-bit immediates and 4 registers. *Status:* `LDI`, `MOV`, `HALT`, and explicit-register
   `JMP16` are implemented. `CALL`/`RET` remain deferred until the stack work in M6.1.
-- [ ] **M4.4 Dogfood.** Re-express `DemoProgram` and the M2/M3 routines as `.asm` files, assemble them to
+- [x] **M4.4 Dogfood.** Re-express `DemoProgram` and the M2/M3 routines as `.asm` files, assemble them to
   `.bin`, and load those. *Done when* the hand-coded byte arrays are gone and programs live as `.asm`.
-  *Status:* `programs/display-pattern.asm` reproduces the display-pattern demo through an integration test.
-  The text and echo programs still use C# emitters.
-- [ ] **M4.5 Standard library (.asm).** Routines the platform lacks in hardware: `mul`, `div`, `memcpy`,
+  *Status:* `programs/display-pattern.asm`, `programs/hello-world.asm`, and `programs/echo.asm` are the source
+  programs. Default-dimension binaries live in `programs/bin/` and are loaded by built-in runtime selection.
+  Integration tests assemble source, load the emitted bytes through `ProgramLoader`, run the simulator, and verify
+  display/keyboard behavior. Tests also compare checked-in default `.bin` files to fresh assembler output so binary
+  assets cannot drift from source. Custom dimensions are handled by assembling with `-D` values and running the
+  resulting `.bin`.
+- [x] **M4.5 Standard library (.asm).** Routines the platform lacks in hardware: `mul`, `div`, `memcpy`,
   `print_char`, `print_string`, `read_line`. *Done when* programs can `include`/reuse them. *Status:*
-  `.include` works and `programs/stdlib/io.asm` contains shared I/O constants. Routine-level stdlib work remains.
+  `programs/stdlib/` contains shared constants plus reusable `math`, `memory`, `display`, and `keyboard` routines.
+  `programs/hello-world.asm` reuses `stdlib_print_string`; integration tests compile stdlib-using programs, load the
+  emitted bytes, run the simulator, and verify `mul`, `div`, `memcpy`, `print_char`, `print_string`, and `read_line`.
 
 ---
 
-## Milestone 5 — Visual workbench (GUI / IDE)
+## Milestone 5 — Visual workbench (TUI)
 
-Deferred until after the assembler on purpose: a real GUI is *not* needed while the terminal display
-works, but once you can write and assemble programs (M4) a full GUI becomes worthwhile — not just a
-prettier screen, but a window where you **watch your assembly execute** next to the live display.
+Reframed from a separate GUI into the **existing Terminal.Gui TUI** (`ComputerSimulator/Tui/`). A second
+native-window renderer is redundant — the TUI *is* the renderer, already drawing the display, logs, and
+feeding keyboard input. Once you can write and assemble programs (M4), the workbench becomes worthwhile:
+not a prettier screen, but a terminal where you **watch your assembly execute** next to the live display.
+The window's `RightFrame` (25% width) is currently empty and is the home for the new debug panels; a
+bottom controls bar drives execution. Same features as the old GUI plan, all inside the TUI.
 
-- [ ] **M5.1 Windowed display renderer.** Implement `IDisplayOutput` against a real window (Silk.NET,
-  Raylib-cs, or SDL2), showing true pixels at the book's 320×200 (or larger). Reuses the M1.1 scan modes
-  unchanged — this is just another renderer behind the existing seam. *Touches* a new host project/class;
-  register it in `Startup` alongside `TerminalDisplayOutput`. *Done when* a window shows the display at full
-  resolution. *Notes:* at 320×200 prefer the **scan-buffer** mode (M1.1); the gate-level scanner will be too
-  slow for real-time.
-- [ ] **M5.2 System view / live execution.** Panels showing CPU registers (`R0`–`R3`, IAR, IR, ACC, TMP,
-  flags), the stepper/clock, and a RAM/hex view — all updating as the program runs, beside the display.
-  *Touches* a GUI app over `ComputerPart` (everything is already inspectable via its public surface, as the
-  diagnostics in `CpuSequencingTests` showed). *Done when* you can see state change instruction-by-instruction.
-- [ ] **M5.3 Debugger controls.** Run / pause / single-step / step-instruction, breakpoints (by address),
-  and a **disassembler** (bytes → mnemonics, the inverse of F1's encoder). *Done when* you can stop on an
-  address and step through. *Notes:* a minimal **CLI** stepping/inspection harness is worth building much
-  earlier (anytime after F1) — it pays for itself on every program; the GUI version is the richer form.
-- [ ] **M5.4 Assembly IDE.** Edit `.asm`, assemble (M4), load (F2), and run — all in the GUI, with errors
-  surfaced and the result visible on the embedded screen. *Done when* you can write a program and watch it
-  run end-to-end without leaving the app.
+- [x] **M5.1 ~~Windowed display renderer~~ — obsolete (the TUI is the renderer).** The Terminal.Gui host
+  already implements `IDisplayOutput` (`TerminalGuiDisplayOutput` → `TerminalDisplayBuffer`) and reuses the
+  M1.1 scan modes unchanged behind the existing seam. No separate Silk.NET/Raylib/SDL window is needed; a
+  real-pixel GUI window can return later as just another renderer behind `IDisplayOutput` if ever wanted.
+- [ ] **M5.2 System view / live execution (TUI panels).** Fill `RightFrame` with stacked views — CPU
+  registers (`R0`–`R3`, IAR, IR, ACC, TMP, hex + decimal), CAEZ flags, and a scrollable RAM/hex view that
+  highlights the IAR row — all updating as the program runs, beside the display. *Touches*
+  `ComputerSimulatorWindow` (new `RegistersView`/`RamHexView`), `TerminalGuiApplication` (a coalesced
+  `RefreshDebug()` driven from `Computer.RunAsync`). State is read from the public `IComputerPart` surface
+  (`Acc`, `Iar`, `Ir`, `Tmp`, `GeneralPurposeRegisters`, `Caez`, `Ram`) via `BinaryHelpers.ToInt`. *Done
+  when* you can see state change instruction-by-instruction in the terminal.
+- [ ] **M5.3 Debugger controls + disassembler.** Add an `IExecutionController` in Core that gates the
+  `Computer.RunAsync` loop: run / pause / single-step (one clock tick) / step-instruction (run to the next
+  fetch boundary via `ICentralProcessingUnit.Stepper.CurrentStep`, fetch = step 1) and address breakpoints
+  (compare `Iar` at the fetch boundary, auto-pause). Drive it from a TUI controls bar (`[Run] [Pause]
+  [Step] [Step Insn] [Breakpoint…]`) with key bindings. Add a **disassembler** in Core
+  (`Instructions/Disassembler.cs`, the inverse of F1's `InstructionSet` encoder, knowing which opcodes
+  consume a trailing operand byte) and a `DisassemblyView` showing a window around IAR with the current
+  instruction highlighted. *Done when* you can stop on an address and step through with live disassembly.
+- [ ] **M5.4 Assembly editor (in-TUI).** An editor dialog (Terminal.Gui `TextView`, opened by a key) to
+  edit `.asm`, assemble via `ScottAssembler.AssembleText` (M4), reload the bytes with `ProgramLoader.Load`
+  (F2), and run — errors surfaced in the log/status line, the result visible on the embedded display.
+  *Done when* you can write a program and watch it run end-to-end without leaving the TUI.
+
+*Start mode:* the simulator free-runs by default; a new `--debug` flag (`Computer:StartPaused`) boots
+paused at entry so you can step from the first instruction.
 
 ---
 
@@ -295,5 +313,6 @@ Roughly increasing ambition. Several of these unlock the others.
 
 Continue to **M4 (assembler)**. M2 text and M3 keyboard echo now work through generated CPU programs, but the
 real `print_char`/`print_string`/`read_key` standard-library shape will become much cleaner once M4 assembly
-syntax, labels, and pseudo-instructions exist. The GUI (M5) remains deliberately parked until after M4;
-grayscale/color is also deferred until GUI work makes it worth designing the protocol change.
+syntax, labels, and pseudo-instructions exist. The visual workbench (M5) is now reframed to land inside the
+existing TUI rather than a separate GUI; grayscale/color (M1.5) stays deferred until it is worth designing
+the protocol change.

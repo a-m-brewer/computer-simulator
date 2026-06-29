@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using ComputerSimulator.Core.Extensions;
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
@@ -94,19 +93,13 @@ public class Computer : IComputer
             return;
         }
 
-        if (_settings.BuiltInProgram == BuiltInProgram.HelloWorld)
-        {
-            ProgramLoader.Load(_computerPart.Ram, TextProgram.BuildHelloWorldImage(_display.Width, _display.Height));
-            return;
-        }
-
-        if (_settings.BuiltInProgram == BuiltInProgram.Echo)
-        {
-            ProgramLoader.Load(_computerPart.Ram, EchoProgram.BuildImage(_display.Width, _display.Height));
-            return;
-        }
-
-        ProgramLoader.Load(_computerPart.Ram, DemoProgram.Build(_display.Width, _display.Height));
+        var builtInProgramPath = BuiltInProgramImages.GetPath(_settings.BuiltInProgram);
+        var builtInImage = ProgramLoader.ReadBinaryImage(builtInProgramPath);
+        ProgramLoader.Load(_computerPart.Ram, builtInImage);
+        _logger.LogInformation(
+            "Loaded built-in program {BuiltInProgram} from {ProgramPath}",
+            _settings.BuiltInProgram,
+            builtInProgramPath);
     }
 
     public void Dispose()

@@ -25,6 +25,11 @@ dotnet run --project ComputerSimulator
 # Assemble a program, then run it
 dotnet run --project ComputerSimulator.Assembler.Cli -- programs/display-pattern.asm -o display-pattern.bin -D BYTES_PER_FRAME=576
 dotnet run --project ComputerSimulator -- run display-pattern.bin
+
+# Default-dimension dogfood binaries
+dotnet run --project ComputerSimulator.Assembler.Cli -- programs/display-pattern.asm -o programs/bin/display-pattern.bin -D BYTES_PER_FRAME=576
+dotnet run --project ComputerSimulator.Assembler.Cli -- programs/hello-world.asm -o programs/bin/hello-world.bin -D BYTES_PER_ROW=12
+dotnet run --project ComputerSimulator.Assembler.Cli -- programs/echo.asm -o programs/bin/echo.bin -D SCREEN_WIDTH=96 -D BYTES_PER_ROW=12
 ```
 
 ## Roadmap
@@ -81,7 +86,12 @@ Key assembler conventions:
 - `LDI` is optimized: one-byte values emit `DATA`; word values require an explicit scratch register and expand to `DATA`/`SHL`/`ADD`.
 - Labels are case-sensitive; mnemonics and registers are case-insensitive.
 - `.org` zero-fills gaps in the raw image. `.incbin` is the path for custom fonts/assets without simulator code changes.
-- See `docs/ASSEMBLY.md` for syntax details and `programs/display-pattern.asm` for the current dogfood program.
+- Dogfood programs live in `programs/*.asm`; checked-in default binaries live in `programs/bin/*.bin` for the default `96x48` display.
+- Built-in runtime demos load `.bin` files through `ProgramLoader`. Do not reintroduce C# `InstructionSet` builders for demo/runtime programs.
+- Custom display dimensions are handled at assembly time with `-D` values such as `BYTES_PER_FRAME`, `BYTES_PER_ROW`, and `SCREEN_WIDTH`, then run via `dotnet run --project ComputerSimulator -- run program.bin`.
+- `programs/assets/font8x8.bin` is loaded by text programs with `.org FONT_BASE` and `.incbin`; keep it in sync with `AsciiFont8x8.CreateRomImage()`.
+- Stdlib routines live in `programs/stdlib/`. They use a no-stack convention: include routine files near the start behind an entry jump, reserve scratch with `.org 0x20`, pass public routine return addresses in `R3`, and expect `STDLIB_TMP0`-`STDLIB_TMP5` to be clobbered.
+- See `docs/ASSEMBLY.md` for syntax details and dogfood program commands.
 
 ### CPU control signals
 
@@ -100,7 +110,8 @@ Key assembler conventions:
 - **Unit tests** (`ComputerSimulator.Core.Tests`): use NUnit + Moq + FluentAssertions. Extend `MockBase<T>` from `ComputerSimulator.TestUtilities` — it provides a `GetMock<TDep>()` helper. Wires are mocked via `Mock.Of<IWire<bool>>`.
 - **Assembler tests** (`ComputerSimulator.Assembler.Tests`): use NUnit + FluentAssertions. Cover parser/emitter behavior, pseudo-instruction expansion, `.include`/`.incbin`, CLI smoke tests, and byte output against `InstructionSet`.
 - **Integration tests** (`ComputerSimulator.IntegrationTests`): extend `IntegrationTestBase`, which boots the full DI host via `HostTestBase`. Use `CreateTestWire`, `CreateTestWireGroup`, `CreateTestBus`, etc. for real wire instances.
-- **Dogfood assembler tests** live in `ComputerSimulator.IntegrationTests/Assembler/` and should assemble `.asm`, load the emitted bytes with `ProgramLoader`, and verify simulated behavior.
+- **Dogfood assembler tests** live in `ComputerSimulator.IntegrationTests/Assembler/` and should assemble `.asm`, load the emitted bytes with `ProgramLoader`, and verify simulated behavior. They should also catch stale checked-in `.bin` files by comparing them to fresh assembler output.
+- **Stdlib assembler tests** should compile programs that include `programs/stdlib/*.asm`, load them into the simulator, and assert RAM/display/keyboard behavior rather than only checking emitted bytes.
 
 ### Coding standards
 

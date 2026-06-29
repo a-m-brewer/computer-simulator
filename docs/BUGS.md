@@ -1,0 +1,1 @@
+- [ ] When using the echo program more than one backspace does not work e.g. Hello,backspace,backspace produces Hell, you would need to add another char to do a backspace again

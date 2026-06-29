@@ -1,12 +1,12 @@
 ; Writes each display RAM byte's address as its pixel byte.
 ; Assemble with BYTES_PER_FRAME=(SCREEN_WIDTH / 8) * SCREEN_HEIGHT.
 
-.equ DISPLAY, 0x07
+.include "stdlib/io.asm"
 
 LDI R2, BYTES_PER_FRAME, R1
 DATA R0, 1
 
-DATA R1, DISPLAY
+DATA R1, IO_DISPLAY
 OUT ADDR, R1
 
 DATA R3, 0

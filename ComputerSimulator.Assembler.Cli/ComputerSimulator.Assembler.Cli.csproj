@@ -11,13 +11,4 @@
       <ProjectReference Include="..\ComputerSimulator.Assembler\ComputerSimulator.Assembler.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Include="..\programs\display-pattern.asm">
-        <Link>programs\display-pattern.asm</Link>
-      </None>
-      <None Include="..\programs\stdlib\io.asm">
-        <Link>programs\stdlib\io.asm</Link>
-      </None>
-    </ItemGroup>
-
 </Project>
