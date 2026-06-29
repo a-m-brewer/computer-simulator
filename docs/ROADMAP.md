@@ -68,8 +68,10 @@ original territory: assembler, more peripherals, an OS, higher-level languages.
    point can come later if needed.) This is the **second half** of the assembler flow in M4. *Status:*
    `ProgramLoader` reads raw binary files and loads bytes into RAM at address 0; the simulator accepts
    `run <path>`, `--program <path>`, and `--program-path <path>` while preserving the built-in demo default.
-- [ ] **F3. Symmetric input abstraction.** Add `Core/Peripherals/Keyboard/IKeyboardInput.cs` (mirror of
-   `IDisplayOutput`): the host pushes key events, the adapter reads them. *Enables M3.*
+- [x] **F3. Symmetric input abstraction.** Add `Core/Peripherals/Keyboard/IKeyboardInput.cs` (mirror of
+   `IDisplayOutput`): the host pushes key events, the adapter reads them. *Enables M3.* *Status:*
+   `IKeyboardInput` and `BufferedKeyboardInput` provide a host-pushed FIFO key queue consumed by
+   `KeyboardAdapter` during `IN Data`.
 - [x] **F4. Minimal CPU program emitter.** A narrow C# byte emitter for generated CPU programs before the
   full M4 assembler exists. *Done when* generated programs can load 16-bit constants, use `InstructionSet`,
   produce raw bytes, and avoid hand-maintained byte arrays for M2 text programs. *Status:* `MachineProgramBuilder`
@@ -167,19 +169,28 @@ dual scan modes, which both the terminal and the eventual GUI will reuse.
 
 ## Milestone 3 — Keyboard input (type and see text)
 
-- [ ] **M3.1 Wire the keyboard into the live machine.** Add `KeyboardAdapter` to
+- [x] **M3.1 Wire the keyboard into the live machine.** Add `KeyboardAdapter` to
   `IoBus.ConnectedComponents` in `Computer`. *Done when* a program can `IN Data` a keycode the host supplied.
-- [ ] **M3.2 Host key source.** Capture real keystrokes (terminal raw mode `Console.ReadKey`, or GUI key
+  *Status:* `Computer` creates the keyboard adapter and connects it alongside the display adapter. The adapter
+  consumes queued keycodes during selected keyboard `IN Data` cycles and returns `0` when no key is available.
+- [x] **M3.2 Host key source.** Capture real keystrokes (terminal raw mode `Console.ReadKey`, or GUI key
   callbacks from M1.1) and feed them to the adapter via F3's `IKeyboardInput`. *Done when* pressing a key
-  makes the adapter return its ASCII code, then `0` until the next key.
-- [ ] **M3.3 Echo loop program.** Poll the keyboard; on a non-zero keycode, draw the character at the
+  makes the adapter return its ASCII code, then `0` until the next key. *Status:* the Terminal.Gui host maps
+  printable ASCII, Enter (`13`), Backspace/Delete (`8`) and pushes them through `IKeyboardInput`.
+- [x] **M3.3 Echo loop program.** Poll the keyboard; on a non-zero keycode, draw the character at the
   cursor (M2 routines) and advance it. Handle Enter (newline) and Backspace. *Done when* typing shows text.
   *Notes:* For the first M3 implementation, Backspace at column `0` is a no-op. This keeps cursor
   bookkeeping simple before the assembler exists. Revisit later if line-wrapping/backspacing across lines
-  becomes important.
-- [ ] **M3.4 Tests.** Inject a keycode on the adapter, run the echo program, assert the glyph appears.
+  becomes important. *Status:* `EchoProgram` is available as `--demo echo` / `--demo keyboard`. It polls the
+  keyboard, draws glyphs from the M2 font ROM, advances cursor state, handles Enter, and erases the previous
+  character for Backspace. Cursor state currently lives in low RAM bytes `0x02`-`0x04` behind an initial jump;
+  this can become cleaner once M4 assembly/pseudo-instructions exist.
+- [x] **M3.4 Tests.** Inject a keycode on the adapter, run the echo program, assert the glyph appears.
   *Notes:* the CPU polls (no interrupts yet — see M6.2). The host must refresh the keyboard's input
-  between CPU ticks. Beware buffering: the adapter holds one keycode and clears on read.
+  between CPU ticks. Beware buffering: the adapter holds one keycode and clears on read. *Status:* tests cover
+  the buffered input queue, adapter one-shot/no-key reads, Terminal.Gui key mapping, CLI aliases, raw echo
+  glyph rendering, runtime keypresses while polling, quickly queued characters, runtime display sizing, lowercase
+  input, font ROM placement, and gate-level echo rendering.
 
 ---
 
@@ -275,7 +286,7 @@ Roughly increasing ambition. Several of these unlock the others.
 
 ## Suggested next step
 
-Continue to **M3 (keyboard input)** or take the next assembler slice in **M4**. M2 text now works through
-generated CPU programs, but the real `print_char`/`print_string` standard-library shape will become cleaner
-once M4 assembly syntax, labels, and pseudo-instructions exist. The GUI (M5) remains deliberately parked until
-after M4; grayscale/color is also deferred until GUI work makes it worth designing the protocol change.
+Continue to **M4 (assembler)**. M2 text and M3 keyboard echo now work through generated CPU programs, but the
+real `print_char`/`print_string`/`read_key` standard-library shape will become much cleaner once M4 assembly
+syntax, labels, and pseudo-instructions exist. The GUI (M5) remains deliberately parked until after M4;
+grayscale/color is also deferred until GUI work makes it worth designing the protocol change.
