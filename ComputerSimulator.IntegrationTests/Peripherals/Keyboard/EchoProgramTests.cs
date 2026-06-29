@@ -69,6 +69,60 @@ public class EchoProgramTests : IntegrationTestBase
     }
 
     [Test]
+    public void EchoProgramDrawsAllCharactersTypedQuickly()
+    {
+        // Simulate fast typing: several keys are queued before the simulation
+        // has a chance to consume them. Every key must still be echoed, in order.
+        const int width = 32;
+        const int height = 16;
+
+        var keyboardInput = GetRequiredService<IKeyboardInput>();
+        while (keyboardInput.TryRead(out _)) { }
+
+        var computerPart = ComponentFactory.CreateComputerPart();
+        var display = new DisplayAdapter(computerPart.IoBus, width, height, DisplayScanMode.ScanBuffer, ComponentFactory, WireFactory);
+        var keyboard = ComponentFactory.CreateKeyboardAdapter(computerPart.IoBus);
+        computerPart.IoBus.ConnectedComponents.Add(display);
+        computerPart.IoBus.ConnectedComponents.Add(keyboard);
+        ProgramLoader.Load(computerPart.Ram, EchoProgram.BuildImage(width, height));
+
+        // Let the program reach the poll loop, then dump a burst of keys at once.
+        for (var i = 0; i < 5_000; i++)
+        {
+            computerPart.Update();
+        }
+
+        const string typed = "ABCD";
+        foreach (var character in typed)
+        {
+            keyboardInput.Push((byte)character);
+        }
+
+        // Run until all four characters have advanced the cursor.
+        var drawn = false;
+        for (var i = 0; i < 200_000; i++)
+        {
+            computerPart.Update();
+            if (ReadVariable(computerPart, EchoProgram.CursorColumn) == typed.Length)
+            {
+                drawn = true;
+                break;
+            }
+        }
+
+        drawn.Should().BeTrue("every quickly typed character should be echoed");
+
+        var output = new FakeDisplayOutput();
+        output.Initialize(width, height);
+        display.RenderFrame(output);
+
+        for (var i = 0; i < typed.Length; i++)
+        {
+            AssertGlyph(output, typed[i], cellX: i, cellY: 0);
+        }
+    }
+
+    [Test]
     public void EchoProgramDrawsCharacterWithRuntimeDisplaySize()
     {
         // Matches appsettings.json: ScreenWidth=96, ScreenHeight=48

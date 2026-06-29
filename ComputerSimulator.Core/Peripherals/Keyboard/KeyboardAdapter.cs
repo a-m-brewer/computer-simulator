@@ -26,7 +26,6 @@ public class KeyboardAdapter : AdapterBase, IKeyboardAdapter
     private readonly IAnd2 _and4;
     private readonly IRegister _keycodeRegister;
     private bool _readActive;
-    private int _readHoldUpdates;
 
     public KeyboardAdapter(
         IIoBus ioBus,
@@ -110,33 +109,26 @@ public class KeyboardAdapter : AdapterBase, IKeyboardAdapter
         
         _and4.Update();
 
+        // A single `In` read keeps the read-enable line (_and4) high for many
+        // update cycles. Dequeue exactly one keycode on the rising edge of the
+        // window and hold it for the whole window; only re-arm once the window
+        // ends. Re-arming mid-window would dequeue a second key that the CPU
+        // never latches, silently dropping it when keys are typed quickly.
         if (_and4.Output.Value)
         {
             if (!_readActive)
             {
                 Input.SetValue(_keyboardInput.TryRead(out var keycode) ? keycode : 0);
                 _readActive = true;
-                _readHoldUpdates = 0;
             }
-
-            _readHoldUpdates++;
         }
         else if (_readActive)
         {
             Input.Reset();
             _keycodeRegister.Reset();
             _readActive = false;
-            _readHoldUpdates = 0;
         }
-         
-        _keycodeRegister.Update();
 
-        if (_readActive && _readHoldUpdates >= 4)
-        {
-            Input.Reset();
-            _keycodeRegister.Reset();
-            _readActive = false;
-            _readHoldUpdates = 0;
-        }
+        _keycodeRegister.Update();
     }
 }

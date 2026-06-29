@@ -86,6 +86,50 @@ public class KeyboardAdapterTests : IntegrationTestBase
         _sut.IoBus.CpuBus.ToInt().Should().Be('B');
     }
 
+    [Test]
+    public void KeyboardAdapterConsumesOnlyOneKeycodePerReadWindow()
+    {
+        // Fast typing queues several keys before the CPU reads. A single `In`
+        // read must consume exactly one keycode no matter how many update
+        // cycles its read window spans, otherwise queued keys are dropped.
+        _keyboardInput.Push((byte)'A');
+        _keyboardInput.Push((byte)'B');
+
+        SelectKeyboard();
+
+        // Hold the read window open across many updates (a real `In` keeps the
+        // read-enable line high for far more than a handful of adapter updates).
+        for (var i = 0; i < 20; i++)
+        {
+            ReadKeyboardData();
+            _sut.IoBus.CpuBus.ToInt().Should().Be('A', "the read window must keep returning the first key");
+        }
+
+        // 'B' must still be queued for the next read.
+        _keyboardInput.TryRead(out var remaining).Should().BeTrue();
+        remaining.Should().Be((byte)'B');
+    }
+
+    [Test]
+    public void KeyboardAdapterReadsQueuedKeysInOrderAcrossSeparateReads()
+    {
+        _keyboardInput.Push((byte)'A');
+        _keyboardInput.Push((byte)'B');
+
+        SelectKeyboard();
+
+        ReadKeyboardData();
+        _sut.IoBus.CpuBus.ToInt().Should().Be('A');
+
+        ReleaseKeyboardData();
+        ReadKeyboardData();
+        _sut.IoBus.CpuBus.ToInt().Should().Be('B');
+
+        ReleaseKeyboardData();
+        ReadKeyboardData();
+        _sut.IoBus.CpuBus.ToInt().Should().Be(0);
+    }
+
     private void SelectKeyboard()
     {
         _sut.IoBus.CpuBus.SetValue((int)IoAddress.Keyboard);
