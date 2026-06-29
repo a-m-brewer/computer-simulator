@@ -9,6 +9,7 @@ public sealed class MachineProgramBuilder
     private readonly List<int> _bytes = [];
     private readonly Dictionary<string, int> _labels = new(StringComparer.Ordinal);
     private readonly List<(int OperandOffset, string Label)> _patches = [];
+    private readonly List<(int LowOffset, int HighOffset, string Label)> _addressPatches = [];
 
     public int Count => _bytes.Count;
 
@@ -59,6 +60,31 @@ public sealed class MachineProgramBuilder
         Add(InstructionSet.Jmpr(addressRegister));
     }
 
+    public void LoadAddress(int register, string label, int tempRegister)
+    {
+        Add(InstructionSet.Data(register));
+        var lowOffset = _bytes.Count;
+        Add(0);
+
+        Add(InstructionSet.Data(tempRegister));
+        var highOffset = _bytes.Count;
+        Add(0);
+
+        for (var i = 0; i < 8; i++)
+        {
+            Add(InstructionSet.Shl(tempRegister, tempRegister));
+        }
+
+        Add(InstructionSet.Add(tempRegister, register));
+        _addressPatches.Add((lowOffset, highOffset, label));
+    }
+
+    public void JumpLong(string label, int addressRegister, int tempRegister)
+    {
+        LoadAddress(addressRegister, label, tempRegister);
+        Add(InstructionSet.Jmpr(addressRegister));
+    }
+
     public void MarkLabel(string label)
     {
         if (!_labels.TryAdd(label, Count))
@@ -93,6 +119,22 @@ public sealed class MachineProgramBuilder
             }
 
             bytes[operandOffset] = address;
+        }
+
+        foreach (var (lowOffset, highOffset, label) in _addressPatches)
+        {
+            if (!_labels.TryGetValue(label, out var address))
+            {
+                throw new ComputerSimulatorException($"Label '{label}' is not defined");
+            }
+
+            if (address > 0xFFFF)
+            {
+                throw new ComputerSimulatorException($"Patched jump target {address} must fit in one word");
+            }
+
+            bytes[lowOffset] = address & 0xFF;
+            bytes[highOffset] = (address >> 8) & 0xFF;
         }
 
         return bytes;

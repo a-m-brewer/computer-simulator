@@ -4,6 +4,7 @@ using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Models;
 using ComputerSimulator.Core.Parts;
 using ComputerSimulator.Core.Peripherals.Display;
+using ComputerSimulator.Core.Peripherals.Keyboard;
 using ComputerSimulator.Core.Programs;
 using Microsoft.Extensions.Logging;
 
@@ -19,6 +20,7 @@ public class Computer : IComputer
     private readonly IDisplayOutput _output;
     private readonly IComputerPart _computerPart;
     private readonly IDisplayAdapter _display;
+    private readonly IKeyboardAdapter _keyboard;
     private readonly ComputerSettings _settings;
     private readonly ILogger<Computer> _logger;
 
@@ -29,7 +31,9 @@ public class Computer : IComputer
         _logger = logger;
         _computerPart = componentFactory.CreateComputerPart();
         _display = componentFactory.CreateDisplayAdapter(_computerPart.IoBus);
+        _keyboard = componentFactory.CreateKeyboardAdapter(_computerPart.IoBus);
         _computerPart.IoBus.ConnectedComponents.Add(_display);
+        _computerPart.IoBus.ConnectedComponents.Add(_keyboard);
     }
 
     public async Task RunAsync(CancellationToken cancellationToken)
@@ -93,6 +97,12 @@ public class Computer : IComputer
         if (_settings.BuiltInProgram == BuiltInProgram.HelloWorld)
         {
             ProgramLoader.Load(_computerPart.Ram, TextProgram.BuildHelloWorldImage(_display.Width, _display.Height));
+            return;
+        }
+
+        if (_settings.BuiltInProgram == BuiltInProgram.Echo)
+        {
+            ProgramLoader.Load(_computerPart.Ram, EchoProgram.BuildImage(_display.Width, _display.Height));
             return;
         }
 

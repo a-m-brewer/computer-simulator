@@ -14,7 +14,7 @@ public static class TerminalFrameRenderer
     {
         if (snapshot.Width <= 0 || snapshot.Height <= 0 || maxWidth <= 0 || maxHeight <= 0)
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         return pixelMode == TerminalPixelMode.Block

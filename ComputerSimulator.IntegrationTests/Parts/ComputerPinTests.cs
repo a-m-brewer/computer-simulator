@@ -566,7 +566,7 @@ public class ComputerPinTests : IntegrationTestBase
             // ALU Op
 
             private static readonly object[] OpCodeCases =
-            {
+            [
                 new object[] { InstructionSet.In(DataAddress.Data, 0), OpCode.Add },
                 new object[] { InstructionSet.Add(0, 0), OpCode.Add },
                 new object[] { InstructionSet.Shr(0, 0), OpCode.Shr },
@@ -576,7 +576,7 @@ public class ComputerPinTests : IntegrationTestBase
                 new object[] { InstructionSet.Or(0, 0), OpCode.Or },
                 new object[] { InstructionSet.XOr(0, 0), OpCode.XOr },
                 new object[] { InstructionSet.Cmp(0, 0), OpCode.Cmp }
-            };
+            ];
 
             [Test]
             [TestCaseSource(nameof(OpCodeCases))]

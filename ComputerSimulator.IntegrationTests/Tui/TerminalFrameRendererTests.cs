@@ -34,7 +34,7 @@ public class TerminalFrameRendererTests
     [Test]
     public void RenderCanUseBlockPixels()
     {
-        var snapshot = new TerminalDisplaySnapshot(3, 1, 0, new[] { true, false, true });
+        var snapshot = new TerminalDisplaySnapshot(3, 1, 0, [true, false, true]);
 
         var lines = TerminalFrameRenderer.Render(snapshot, TerminalPixelMode.Block, 80, 24);
 

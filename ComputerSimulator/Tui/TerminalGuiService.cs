@@ -1,4 +1,5 @@
 using ComputerSimulator.Graphics;
+using ComputerSimulator.Core.Peripherals.Keyboard;
 using Microsoft.Extensions.Hosting;
 using Terminal.Gui.App;
 
@@ -10,6 +11,7 @@ public class TerminalGuiService : IHostedService
     private readonly TerminalSettings _settings;
     private readonly ITerminalLogSink _logSink;
     private readonly ITerminalGuiApplication _terminalGui;
+    private readonly IKeyboardInput _keyboardInput;
     private readonly IHostApplicationLifetime _applicationLifetime;
     private readonly CancellationTokenSource _cts = new();
     private Task? _runTask;
@@ -19,12 +21,14 @@ public class TerminalGuiService : IHostedService
         TerminalSettings settings,
         ITerminalLogSink logSink,
         ITerminalGuiApplication terminalGui,
+        IKeyboardInput keyboardInput,
         IHostApplicationLifetime applicationLifetime)
     {
         _displayBuffer = displayBuffer;
         _settings = settings;
         _logSink = logSink;
         _terminalGui = terminalGui;
+        _keyboardInput = keyboardInput;
         _applicationLifetime = applicationLifetime;
     }
 
@@ -54,6 +58,7 @@ public class TerminalGuiService : IHostedService
             using var app = Application.Create().Init();
             using var window = new ComputerSimulatorWindow(_displayBuffer, _settings, _logSink);
 
+            app.Keyboard.KeyDown += (_, key) => TerminalKeyboardInput.PushMappedKey(_keyboardInput, key);
             _terminalGui.Attach(app, window);
             await app.RunAsync(window, _cts.Token);
         }

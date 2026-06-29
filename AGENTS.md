@@ -78,3 +78,8 @@ ALU operations are defined in `OpCode` (Add, Shr, Shl, Not, And, Or, XOr, Cmp).
 
 - **Unit tests** (`ComputerSimulator.Core.Tests`): use NUnit + Moq + FluentAssertions. Extend `MockBase<T>` from `ComputerSimulator.TestUtilities` — it provides a `GetMock<TDep>()` helper. Wires are mocked via `Mock.Of<IWire<bool>>`.
 - **Integration tests** (`ComputerSimulator.IntegrationTests`): extend `IntegrationTestBase`, which boots the full DI host via `HostTestBase`. Use `CreateTestWire`, `CreateTestWireGroup`, `CreateTestBus`, etc. for real wire instances.
+
+### Coding standards
+
+- Prefer `System.Collections.Concurrent` types over lock objects for thread safety.
+- Prefer collection expressions when creating collections. e.g. [] not `new List<T>()`

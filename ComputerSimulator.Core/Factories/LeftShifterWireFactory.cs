@@ -15,7 +15,7 @@ public class LeftShifterWireFactory : IShifterWireFactory
     {
         var internalWires = _wireFactory.CreateWireSet<bool>(_wireFactory.WordSize - 1);
 
-        var r1OutputGroup = _wireFactory.CreateGroup(internalWires.Concat(new[] { shiftOut }).ToArray());
+        var r1OutputGroup = _wireFactory.CreateGroup(internalWires.Concat([shiftOut]).ToArray());
         var r2InputGroup = _wireFactory.CreateGroup(new[] { shiftIn }.Concat(internalWires).ToArray());
 
         return (r1OutputGroup, r2InputGroup);

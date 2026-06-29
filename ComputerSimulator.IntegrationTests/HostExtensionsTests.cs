@@ -81,4 +81,14 @@ public class HostExtensionsTests
 
         settings.BuiltInProgram.Should().Be(BuiltInProgram.HelloWorld);
     }
+
+    [Test]
+    public void DemoAliasSelectsEchoBuiltInProgram()
+    {
+        using var host = new[] { "--demo", "echo" }.BuildHost();
+
+        var settings = host.Services.GetRequiredService<ComputerSettings>();
+
+        settings.BuiltInProgram.Should().Be(BuiltInProgram.Echo);
+    }
 }

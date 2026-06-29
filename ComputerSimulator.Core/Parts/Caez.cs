@@ -15,7 +15,7 @@ public class Caez<T> : WireGroup<T>, ICaez<T> where T : new()
         IWire<T> a,
         IWire<T> e,
         IWire<T> z
-        ) : base(new [] {c, a, e, z})
+        ) : base([c, a, e, z])
     {
     }
 

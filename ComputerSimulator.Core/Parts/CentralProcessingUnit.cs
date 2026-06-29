@@ -380,7 +380,6 @@ public class CentralProcessingUnit : PartsBase, ICentralProcessingUnit
                 _step4AndIr3X8DecoderAnds[3].Output,
                 _step5AndIr3X8DecoderAnds[4].Output,
                 _step5AndIr3X8DecoderAnds[5].Output,
-                _step5Ir3X8Decoder7NotIr4And.Output,
                 _step6AndIr3X8DecoderAnds[2].Output,
                 _step6AndIr3X8DecoderAnds[5].Output),
             WireFactory.CreateWire<bool>($"{nameof(_iarSetOr)}-output"));

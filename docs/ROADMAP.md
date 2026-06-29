@@ -174,6 +174,9 @@ dual scan modes, which both the terminal and the eventual GUI will reuse.
   makes the adapter return its ASCII code, then `0` until the next key.
 - [ ] **M3.3 Echo loop program.** Poll the keyboard; on a non-zero keycode, draw the character at the
   cursor (M2 routines) and advance it. Handle Enter (newline) and Backspace. *Done when* typing shows text.
+  *Notes:* For the first M3 implementation, Backspace at column `0` is a no-op. This keeps cursor
+  bookkeeping simple before the assembler exists. Revisit later if line-wrapping/backspacing across lines
+  becomes important.
 - [ ] **M3.4 Tests.** Inject a keycode on the adapter, run the echo program, assert the glyph appears.
   *Notes:* the CPU polls (no interrupts yet — see M6.2). The host must refresh the keyboard's input
   between CPU ticks. Beware buffering: the adapter holds one keycode and clears on read.

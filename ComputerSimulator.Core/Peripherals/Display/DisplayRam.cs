@@ -40,7 +40,7 @@ public interface IDisplayRam : IPart
 
 public class DisplayRam : PartsBase, IDisplayRam
 {
-    private readonly HashSet<int> _dirtyAddresses = new();
+    private readonly HashSet<int> _dirtyAddresses = [];
     private readonly IDecoder _setDecoderX;
     private readonly IDecoder _setDecoderY;
     private readonly IDecoder _enableDecoderX;

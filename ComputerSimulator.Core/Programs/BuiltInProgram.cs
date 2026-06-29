@@ -3,5 +3,6 @@ namespace ComputerSimulator.Core.Programs;
 public enum BuiltInProgram
 {
     DisplayPattern,
-    HelloWorld
+    HelloWorld,
+    Echo
 }

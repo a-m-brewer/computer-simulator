@@ -131,6 +131,9 @@ public static class HostExtensions
                || value.Equals("hello", StringComparison.OrdinalIgnoreCase)
                || value.Equals("hello-world", StringComparison.OrdinalIgnoreCase)
             ? "HelloWorld"
+            : value.Equals("echo", StringComparison.OrdinalIgnoreCase)
+              || value.Equals("keyboard", StringComparison.OrdinalIgnoreCase)
+                ? "Echo"
             : value.Equals("pattern", StringComparison.OrdinalIgnoreCase)
               || value.Equals("display-pattern", StringComparison.OrdinalIgnoreCase)
                 ? "DisplayPattern"

@@ -800,6 +800,34 @@ public class ComputerPartTests : IntegrationTestBase
     }
     
     [Test]
+    public void InputIoInstructionDoesNotCorruptInstructionAddressRegister()
+    {
+        // Regression: the IO input (In) instruction must latch the bus value into RegB only.
+        // A control-signal bug also asserted Iar.Set during step 5, latching the device byte
+        // into the program counter, so the CPU jumped to address == input value.
+        var register = ComponentFactory.CreateRegister(
+            _sut.IoBus.Clk.Set,
+            _sut.IoBus.Clk.Enable,
+            _sut.IoBus.CpuBus,
+            _sut.IoBus.CpuBus);
+        register.SetRegisterValue(_max);
+
+        _sut.IoBus.ConnectedComponents.Add(register);
+
+        var instruction = InstructionBits(InstructionSet.In(DataAddress.Data, 0));
+        _sut.Ram.GetSlot(0, 0).Memory.SetRegisterValue(instruction);
+
+        PerformFullStep(6);
+
+        // The instruction at address 0 is not a jump, so the IAR should only have advanced
+        // by one during fetch — it must NOT contain the input value (_maxInt).
+        _sut.Iar.StoredValue
+            .ToInt()
+            .Should()
+            .Be(1);
+    }
+
+    [Test]
     public void CanInputIoAddressToRb()
     {
         var register = ComponentFactory.CreateRegister(

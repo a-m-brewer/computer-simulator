@@ -120,7 +120,7 @@ public interface IComponentFactory
 
     IKeyboardAdapter CreateKeyboardAdapter(
         IIoBus ioBus,
-        IWireGroup<bool> input);
+        IWireGroup<bool>? input = null);
 
     IIoBusControl CreateIoBusControl(
         IIoBus ioBus,
@@ -151,17 +151,20 @@ public class ComponentFactory : IComponentFactory
     private readonly LeftShifterWireFactory _leftShifterWireFactory;
     private readonly RightShifterWireFactory _rightShifterWireFactory;
     private readonly ComputerSettings _computerSettings;
+    private readonly IKeyboardInput _keyboardInput;
 
     public ComponentFactory(
         IWireFactory wireFactory,
         LeftShifterWireFactory leftShifterWireFactory,
         RightShifterWireFactory rightShifterWireFactory,
-        ComputerSettings computerSettings)
+        ComputerSettings computerSettings,
+        IKeyboardInput? keyboardInput = null)
     {
         _wireFactory = wireFactory;
         _leftShifterWireFactory = leftShifterWireFactory;
         _rightShifterWireFactory = rightShifterWireFactory;
         _computerSettings = computerSettings;
+        _keyboardInput = keyboardInput ?? new BufferedKeyboardInput();
     }
     
     public IAnd CreateAnd(IWireGroup<bool> inputs, IWire<bool> output)
@@ -417,11 +420,12 @@ public class ComponentFactory : IComponentFactory
 
     public IKeyboardAdapter CreateKeyboardAdapter(
         IIoBus ioBus,
-        IWireGroup<bool> input)
+        IWireGroup<bool>? input = null)
     {
         return new KeyboardAdapter(
             ioBus,
-            input,
+            input ?? _wireFactory.CreateGroup<bool>(8, "keyboard-input"),
+            _keyboardInput,
             this, _wireFactory);
     }
 

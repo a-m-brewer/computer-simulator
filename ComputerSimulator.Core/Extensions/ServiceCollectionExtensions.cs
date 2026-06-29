@@ -1,5 +1,6 @@
 using ComputerSimulator.Core.Factories;
 using ComputerSimulator.Core.Models;
+using ComputerSimulator.Core.Peripherals.Keyboard;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ComputerSimulator.Core.Extensions;
@@ -27,6 +28,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IComputer, Computer>();
 
         services.AddSingleton<IWireFactory, WireFactory>();
+        services.AddSingleton<IKeyboardInput, BufferedKeyboardInput>();
         services.AddTransient<IComponentFactory, ComponentFactory>();
         services.AddSingleton<RightShifterWireFactory>();
         services.AddSingleton<LeftShifterWireFactory>();

@@ -15,7 +15,7 @@ public interface ITerminalGuiApplication
 
 public class TerminalGuiApplication : ITerminalGuiApplication
 {
-    private readonly object _sync = new();
+    private readonly Lock _sync = new();
     private IApplication? _application;
     private ComputerSimulatorWindow? _window;
     private bool _displayRefreshPending;

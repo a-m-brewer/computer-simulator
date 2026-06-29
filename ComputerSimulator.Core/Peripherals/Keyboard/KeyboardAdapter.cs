@@ -15,6 +15,7 @@ public interface IKeyboardAdapter : IAdapter
 
 public class KeyboardAdapter : AdapterBase, IKeyboardAdapter
 {
+    private readonly IKeyboardInput _keyboardInput;
     private readonly IAnd _and1;
     private readonly INot[] _nots;
     private IAnd _and2;
@@ -24,14 +25,18 @@ public class KeyboardAdapter : AdapterBase, IKeyboardAdapter
     private readonly IMemoryBit _memoryBit;
     private readonly IAnd2 _and4;
     private readonly IRegister _keycodeRegister;
+    private bool _readActive;
+    private int _readHoldUpdates;
 
     public KeyboardAdapter(
         IIoBus ioBus,
         IWireGroup<bool> input,
+        IKeyboardInput keyboardInput,
         IComponentFactory componentFactory, IWireFactory wireFactory) : base(componentFactory, wireFactory)
     {
         IoBus = ioBus;
         Input = input;
+        _keyboardInput = keyboardInput;
 
         _nots = 4
             .InitArray<INot>()
@@ -104,8 +109,34 @@ public class KeyboardAdapter : AdapterBase, IKeyboardAdapter
         _memoryBit.Update();
         
         _and4.Update();
-        
+
+        if (_and4.Output.Value)
+        {
+            if (!_readActive)
+            {
+                Input.SetValue(_keyboardInput.TryRead(out var keycode) ? keycode : 0);
+                _readActive = true;
+                _readHoldUpdates = 0;
+            }
+
+            _readHoldUpdates++;
+        }
+        else if (_readActive)
+        {
+            Input.Reset();
+            _keycodeRegister.Reset();
+            _readActive = false;
+            _readHoldUpdates = 0;
+        }
+         
         _keycodeRegister.Update();
-        _keycodeRegister.Reset();
+
+        if (_readActive && _readHoldUpdates >= 4)
+        {
+            Input.Reset();
+            _keycodeRegister.Reset();
+            _readActive = false;
+            _readHoldUpdates = 0;
+        }
     }
 }

@@ -2,11 +2,11 @@ namespace ComputerSimulator.Tui;
 
 public class TerminalDisplayBuffer
 {
-    private readonly object _sync = new();
+    private readonly Lock _sync = new();
     private int _width;
     private int _height;
     private long _version;
-    private bool[] _pixels = Array.Empty<bool>();
+    private bool[] _pixels = [];
 
     public long Version
     {

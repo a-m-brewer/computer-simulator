@@ -7,7 +7,7 @@ public class TerminalDisplayView : View
 {
     private readonly TerminalDisplayBuffer _displayBuffer;
     private readonly TerminalSettings _settings;
-    private IReadOnlyList<string> _lines = Array.Empty<string>();
+    private IReadOnlyList<string> _lines = [];
     private long _renderedVersion = -1;
     private int _renderedWidth = -1;
     private int _renderedHeight = -1;

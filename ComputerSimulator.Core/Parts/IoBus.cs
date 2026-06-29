@@ -28,5 +28,5 @@ public class IoBus : IIoBus
     public IWire<bool> DataAddress { get; }
     public ISetEnableWire<bool> Clk { get; }
 
-    public List<IComponent> ConnectedComponents { get; } = new();
+    public List<IComponent> ConnectedComponents { get; } = [];
 }

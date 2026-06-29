@@ -1,3 +1,4 @@
+using ComputerSimulator.Tui;
 using FluentAssertions;
 using NUnit.Framework;
 using Terminal.Gui.App;
@@ -21,5 +22,35 @@ public class TerminalGuiTestingToolkitTests
         app.InjectKey(Key.Esc);
 
         keyDownRaised.Should().BeTrue();
+    }
+
+    [Test]
+    public void MapsPrintableKeyToAscii()
+    {
+        TerminalKeyboardInput.TryMapKey(new Key('A'), out var keycode).Should().BeTrue();
+
+        keycode.Should().Be((byte)'A');
+    }
+
+    [Test]
+    public void MapsEnterToCarriageReturn()
+    {
+        TerminalKeyboardInput.TryMapKey(Key.Enter, out var keycode).Should().BeTrue();
+
+        keycode.Should().Be(13);
+    }
+
+    [Test]
+    public void MapsBackspaceToAsciiBackspace()
+    {
+        TerminalKeyboardInput.TryMapKey(Key.Backspace, out var keycode).Should().BeTrue();
+
+        keycode.Should().Be(8);
+    }
+
+    [Test]
+    public void IgnoresNonTextKeys()
+    {
+        TerminalKeyboardInput.TryMapKey(Key.Esc, out _).Should().BeFalse();
     }
 }

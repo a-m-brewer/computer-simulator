@@ -15,6 +15,6 @@ public class ComputerSimulatorWindowTests
         window.DisplayFrame.Title.ToString().Should().Be("Display");
         window.LogFrame.Title.ToString().Should().Be("Logs");
         window.RightFrame.SubViews.Should().BeEmpty();
-        window.SubViews.Should().Contain(new[] { window.DisplayFrame, window.LogFrame, window.RightFrame });
+        window.SubViews.Should().Contain([window.DisplayFrame, window.LogFrame, window.RightFrame]);
     }
 }

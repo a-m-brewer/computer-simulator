@@ -20,7 +20,7 @@ public class Screen
 
     private int _width;
     private int _height;
-    private bool[] _pixels = Array.Empty<bool>();
+    private bool[] _pixels = [];
 
     public Screen(IConsole console)
         : this(console, new TerminalSettings(), new TerminalLogSink())
