@@ -205,23 +205,30 @@ program.asm  ──[ asm CLI ]──►  program.bin  ──[ ComputerSimulator 
 The assembler is its own command-line program. The simulator just loads and runs the resulting binary
 (F2) — it knows nothing about assembly. The shared encoding table (F1) is the only thing both use.
 
-- [ ] **M4.1 Assembly syntax.** Define mnemonics (`DATA, LD, ST, ADD, SHL, SHR, NOT, AND, OR, XOR, CMP,
+- [x] **M4.1 Assembly syntax.** Define mnemonics (`DATA, LD, ST, ADD, SHL, SHR, NOT, AND, OR, XOR, CMP,
   CLF, JMP, JMPR, JC/JA/JE/JZ (+combos), IN, OUT`), `R0`–`R3` operands, labels, immediates, comments.
-  Track the book's notation where sensible.
-- [ ] **M4.2 Assembler CLI (`.asm` → `.bin`).** A standalone command-line tool, e.g.
+  Track the book's notation where sensible. *Status:* implemented in `ComputerSimulator.Assembler`; mutating
+  operations use conventional destination-first syntax while `CMP` preserves written operand order.
+- [x] **M4.2 Assembler CLI (`.asm` → `.bin`).** A standalone command-line tool, e.g.
   `asm program.asm -o program.bin`, that reads assembly text and writes a raw binary. Internally a
   two-pass assembler: pass 1 resolves labels → addresses, pass 2 emits bytes (handling the 2-byte
   `DATA`/`JMP`/jump-if forms and label fixups), built on F1's shared encoder. Put the logic in a library
   (`ComputerSimulator.Assembler`) with a thin CLI project on top. *Touches* a new assembler project; pairs
   with **F2** (the simulator loading `.bin`). *Done when* `asm demo.asm -o demo.bin` then running `demo.bin`
-  on the simulator reproduces the demo, and a multi-label program assembles and runs correctly.
-- [ ] **M4.3 Pseudo-instructions.** Provide conveniences the tight ISA needs: `LDI Rn, imm16` (expands to
+  on the simulator reproduces the demo, and a multi-label program assembles and runs correctly. *Status:*
+  `ComputerSimulator.Assembler.Cli` writes raw binaries, supports `-D NAME=value`, and a dogfood integration
+  test assembles `programs/display-pattern.asm`, loads the binary, and verifies the display output.
+- [x] **M4.3 Pseudo-instructions.** Provide conveniences the tight ISA needs: `LDI Rn, imm16` (expands to
   `DATA`+`SHL`+`ADD`), `MOV`, `HALT`, `CALL`/`RET` if a stack lands (M6.1). *Done when* programs read
-  cleanly despite 8-bit immediates and 4 registers.
+  cleanly despite 8-bit immediates and 4 registers. *Status:* `LDI`, `MOV`, `HALT`, and explicit-register
+  `JMP16` are implemented. `CALL`/`RET` remain deferred until the stack work in M6.1.
 - [ ] **M4.4 Dogfood.** Re-express `DemoProgram` and the M2/M3 routines as `.asm` files, assemble them to
   `.bin`, and load those. *Done when* the hand-coded byte arrays are gone and programs live as `.asm`.
+  *Status:* `programs/display-pattern.asm` reproduces the display-pattern demo through an integration test.
+  The text and echo programs still use C# emitters.
 - [ ] **M4.5 Standard library (.asm).** Routines the platform lacks in hardware: `mul`, `div`, `memcpy`,
-  `print_char`, `print_string`, `read_line`. *Done when* programs can `include`/reuse them.
+  `print_char`, `print_string`, `read_line`. *Done when* programs can `include`/reuse them. *Status:*
+  `.include` works and `programs/stdlib/io.asm` contains shared I/O constants. Routine-level stdlib work remains.
 
 ---
 

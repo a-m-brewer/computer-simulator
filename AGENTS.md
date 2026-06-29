@@ -17,9 +17,14 @@ dotnet test --filter "FullyQualifiedName~TestName"
 # Run tests in a specific project
 dotnet test ComputerSimulator.Core.Tests
 dotnet test ComputerSimulator.IntegrationTests
+dotnet test ComputerSimulator.Assembler.Tests
 
 # Run the simulator
 dotnet run --project ComputerSimulator
+
+# Assemble a program, then run it
+dotnet run --project ComputerSimulator.Assembler.Cli -- programs/display-pattern.asm -o display-pattern.bin -D BYTES_PER_FRAME=576
+dotnet run --project ComputerSimulator -- run display-pattern.bin
 ```
 
 ## Roadmap
@@ -39,6 +44,7 @@ Parts       → CPU, ALU, RAM, Bus, Clock, Stepper, IoBus (Core/Parts/)
 Peripherals → DisplayAdapter, IoBusControl, ScreenControl, DisplayRam (Core/Peripherals/)
 Computer    → IComputer / Computer (Core/Computer.cs)
 Host        → BackgroundService (ComputerSimulator/ComputerService.cs)
+Assembler   → .asm parser/emitter + CLI (ComputerSimulator.Assembler/, ComputerSimulator.Assembler.Cli/)
 ```
 
 ### Update propagation
@@ -62,6 +68,21 @@ Currently defined prefixes (see `Core/Enums/InstructionPrefix.cs` and `Core/Inst
 
 ALU operations are defined in `OpCode` (Add, Shr, Shl, Not, And, Or, XOr, Cmp).
 
+### Assembler
+
+The assembler is a separate toolchain from the simulator. `ComputerSimulator.Assembler` parses `.asm` files and emits raw `.bin` images; `ComputerSimulator.Assembler.Cli` is the thin command-line wrapper. The simulator still only loads bytes through `ProgramLoader` and should not learn assembly syntax.
+
+Key assembler conventions:
+
+- Real instruction bytes must go through `ComputerSimulator.Core.Instructions.InstructionSet`; do not duplicate opcode constants in the assembler.
+- Mutating ALU syntax is destination-first, e.g. `ADD R3, R0` means `R3 = R3 + R0`, even though the book/hardware encoding is `RA,RB` with `RB` as the destination.
+- `CMP` has no destination and preserves written operand order, e.g. `CMP R3, R2` maps to compare A=`R3`, B=`R2`.
+- `JMP` and conditional jumps are real short jumps with one-byte targets. Use explicit-register `JMP16 label, Raddr, Rtmp` for long software jumps.
+- `LDI` is optimized: one-byte values emit `DATA`; word values require an explicit scratch register and expand to `DATA`/`SHL`/`ADD`.
+- Labels are case-sensitive; mnemonics and registers are case-insensitive.
+- `.org` zero-fills gaps in the raw image. `.incbin` is the path for custom fonts/assets without simulator code changes.
+- See `docs/ASSEMBLY.md` for syntax details and `programs/display-pattern.asm` for the current dogfood program.
+
 ### CPU control signals
 
 `CentralProcessingUnit` wires together all control signals using a 7-step clock (see `WireConstants.ExpectedNumberOfSteps = 7`). Steps gate which control lines fire — e.g. step 1 is fetch, step 2 is decode, etc. The stepper advances each clock tick.
@@ -77,7 +98,9 @@ ALU operations are defined in `OpCode` (Add, Shr, Shl, Not, And, Or, XOr, Cmp).
 ### Testing
 
 - **Unit tests** (`ComputerSimulator.Core.Tests`): use NUnit + Moq + FluentAssertions. Extend `MockBase<T>` from `ComputerSimulator.TestUtilities` — it provides a `GetMock<TDep>()` helper. Wires are mocked via `Mock.Of<IWire<bool>>`.
+- **Assembler tests** (`ComputerSimulator.Assembler.Tests`): use NUnit + FluentAssertions. Cover parser/emitter behavior, pseudo-instruction expansion, `.include`/`.incbin`, CLI smoke tests, and byte output against `InstructionSet`.
 - **Integration tests** (`ComputerSimulator.IntegrationTests`): extend `IntegrationTestBase`, which boots the full DI host via `HostTestBase`. Use `CreateTestWire`, `CreateTestWireGroup`, `CreateTestBus`, etc. for real wire instances.
+- **Dogfood assembler tests** live in `ComputerSimulator.IntegrationTests/Assembler/` and should assemble `.asm`, load the emitted bytes with `ProgramLoader`, and verify simulated behavior.
 
 ### Coding standards
 
