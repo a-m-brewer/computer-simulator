@@ -1,0 +1,34 @@
+# Putting a Program in From the Outside
+
+A CPU and RAM are enough to run a program only after the program is already in RAM. That leaves a practical question: how does a program get there? Early in a simulator it is tempting to build a program directly inside C# code, because the host language can create an array of instruction bytes and place them wherever the test needs them. That is useful for proving the CPU works, but it is not how we want to use the computer once it can run larger programs. A program should be able to exist outside the simulator, as its own file, and the simulator should be able to load it without knowing how it was written.
+
+The format used here is deliberately plain. A program image is a raw `.bin` file. There is no header, no entry-point field, no checksum, and no table of sections. The first byte in the file is the first byte loaded into simulated RAM. The second byte goes into the next RAM address. Loading continues in order until the file ends. This keeps the boundary between tools very clean. The assembler may produce the file, a test may produce the file, or a person may inspect it with another tool, but the simulator treats it the same way every time.
+
+Imagine a file named `program.bin` with three bytes in it. The loader reads those bytes from disk. It writes the first one to RAM address `0x0000`, the second one to RAM address `0x0001`, and the third one to RAM address `0x0002`. Internally, the RAM is addressed through low and high address parts, so address `0x0102` means low byte `0x02` and high byte `0x01`, but the program image itself does not need to know that. The image is just ordered bytes, and the loader maps each file offset to the matching RAM address.
+
+Now suppose the first two bytes are a `DATA R0, 7` instruction. The byte at address `0` is the instruction byte. The byte at address `1` is the immediate value. When the CPU begins, it fetches from the start of memory. It sees the `DATA` instruction, advances through the operand byte, and loads the value into `R0`. If the byte at address `2` is an `OUT` instruction, the CPU treats it as the next instruction after the immediate value, not as data belonging to the previous instruction. Nothing in the file marks this boundary. The CPU's instruction decoding gives the stream its structure.
+
+This is one reason a raw binary format is both simple and unforgiving. If a byte is missing near the start of the file, every later byte may be read in the wrong role. An operand can become an instruction. An instruction can become an operand. The [`ProgramLoader`](../../ComputerSimulator.Core/ProgramLoader.cs) will still do its job, because the loader is not an assembler and not a validator of program meaning. It only checks that the image fits in RAM and copies bytes. The responsibility for producing a meaningful byte stream belongs to the assembler and to the tests that exercise assembled programs.
+
+The simulator's startup path follows the same rule. If a program path is supplied, the computer reads that binary file and loads it into RAM. If no external path is supplied, it picks one of the built-in binary images, such as the display pattern, hello-world, or echo program. Those built-in images are still files. They are not special C# routines that draw directly to the display. They enter the simulated machine through the same loader path as an external `.bin` program.
+
+After loading, the program is not run by the loader. The loader has finished. The computer loop begins updating the simulated computer part. The CPU fetches from RAM, RAM responds through the bus, registers latch values when their control wires say to, the ALU updates its outputs, and connected I/O adapters observe the I/O bus. This matters because it prevents a shortcut from sneaking into the design. Loading bytes into RAM is allowed. Drawing pixels or pressing keys on behalf of the program is not the loader's job.
+
+For a concrete display example, imagine an assembled program whose first section selects the display adapter and writes a byte to display RAM address `0`. The loader does not know that the byte sequence will do this. It only places the bytes at addresses starting from `0`. Later, the CPU fetches the instructions that put `0x07` in a register, send it with `OUT ADDR`, put the display RAM byte address in a register, send that with `OUT ADDR`, put a pixel pattern in a register, and send it with `OUT DATA`. Only at that point does the display adapter store the pixel byte. The path from file to pixel goes through RAM and the CPU, not around them.
+
+The same separation is what lets the assembler remain outside the simulator. An assembly source file can contain labels, comments, `.include` directives, `.incbin` data, and pseudo-instructions. None of that appears in RAM as source text. The assembler resolves it all into a raw byte image. When the simulator runs that image, it does not know which label named an address or which pseudo-instruction expanded into a longer sequence. It only knows the bytes that were loaded.
+
+There are limits to this first loading scheme. Because images load at address `0` by default and have no header, there is no built-in way for the file to request a different load address or a different starting instruction. The loader supports a start address internally for tests and controlled uses, but the ordinary program-file flow is intentionally simple: copy the image into RAM starting at zero and let the CPU begin from the start. More elaborate executable formats can wait until the machine needs them.
+
+This small loader changes the feel of the simulator. Programs are no longer part of the host application. They can be assembled, checked in, regenerated, compared in tests, and run as inputs. The simulated computer remains the same machine, but its software has become something that can be handed to it from the outside. That makes the next step possible: using peripherals and adapters so those loaded programs can talk to the world beyond RAM.
+
+Further reading in the simulator
+
+| Topic | Where to look |
+| --- | --- |
+| Raw image reading and RAM loading | [`ComputerSimulator.Core/ProgramLoader.cs`](../../ComputerSimulator.Core/ProgramLoader.cs) |
+| Program loading during computer startup | [`ComputerSimulator.Core/Computer.cs`](../../ComputerSimulator.Core/Computer.cs) |
+| Command-line mapping for `run <path>` and `--program` | [`ComputerSimulator/HostExtensions.cs`](../../ComputerSimulator/HostExtensions.cs) |
+| Built-in binary image selection | [`ComputerSimulator.Core/Programs/BuiltInProgramImages.cs`](../../ComputerSimulator.Core/Programs/BuiltInProgramImages.cs) |
+| Loader behavior tests | [`ComputerSimulator.IntegrationTests/ProgramLoaderTests.cs`](../../ComputerSimulator.IntegrationTests/ProgramLoaderTests.cs) |
+| Assembler-to-binary workflow | [`docs/ASSEMBLY.md`](../ASSEMBLY.md) |

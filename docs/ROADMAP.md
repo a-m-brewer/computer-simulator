@@ -278,14 +278,38 @@ paused at entry so you can step from the first instruction.
 
 ## Milestone 6 — The wilder stuff (toward a real machine + OS)
 
-Roughly increasing ambition. Several of these unlock the others.
+Roughly increasing ambition. Several of these unlock the others. These features are beyond the book's
+machine, so keep the current Scott/book-accurate computer as the default baseline and add them through an
+explicit extended-machine profile rather than mixing optional behavior into the existing CPU. See
+[`EXTENDED-MACHINE-DESIGN.md`](EXTENDED-MACHINE-DESIGN.md) for the agent-facing implementation plan.
 
+- [ ] **M6.0 Extended machine profile.** Before adding stack or interrupts, split the runtime architecture
+  into a book profile and an extended profile. The book profile keeps the current CPU, instruction set, polling
+  keyboard behavior, and existing binaries. The extended profile reuses the same gates, wires, RAM, buses,
+  display adapter, keyboard adapter, program loader, and assembler infrastructure, but can choose an extended
+  CPU and instruction set through configuration/DI. *Suggested shape:* add `MachineProfile.Book` and
+  `MachineProfile.Extended`; introduce a CPU abstraction if needed; register `BookCentralProcessingUnit` /
+  current instruction set for the book profile and `ExtendedCentralProcessingUnit` / extended instruction set
+  for the extended profile. Avoid `if (extended)` branches inside the book CPU. *Done when* the simulator and
+  assembler can be run explicitly in book mode or extended mode, and book-mode tests prove the original machine
+  behavior has not changed. *Design note:* [`docs/EXTENDED-MACHINE-DESIGN.md`](EXTENDED-MACHINE-DESIGN.md).
 - [ ] **M6.1 Stack + `CALL`/`RET`.** The Scott CPU has no stack; subroutines are faked with saved
-  addresses and `JMPR`. Add a stack pointer register + push/pop + `CALL`/`RET` (new control wiring and a
-  couple of instructions). *Why important:* real structured programs and an OS need cheap subroutines.
+  addresses and `JMPR`. Start with a software convention if useful (`programs/stdlib/stack.asm` reserving a
+  register or RAM slot as a stack pointer), then add the hardware-backed extended version: a stack pointer
+  register, `PUSH`, `POP`, `CALL`, and `RET` instructions, and CPU control steps that write/read ordinary RAM.
+  This is not a peripheral; the stack is a RAM discipline plus CPU support. *Suggested shape:* `StackPointerRegister`
+  belongs only to the extended CPU, stack instructions live only in the extended instruction set/assembler dialect,
+  and book-mode programs continue to use explicit return-address registers. *Why important:* real structured
+  programs and an OS need cheap subroutines.
 - [ ] **M6.2 Interrupts.** Add an IRQ line + vector + state save/restore so the keyboard/timer can be
-  event-driven instead of polled. A genuine architectural extension; design carefully (new control wiring,
-  maybe `STI`/`CLI`/`IRET`).
+  event-driven instead of polled. This is a larger architectural extension than the stack because it changes the
+  CPU's control flow between instructions and asks peripherals to signal the CPU. *Suggested shape:* add an
+  extended-only `InterruptController` that collects `IInterruptSource` requests; let interrupt-capable adapters
+  such as a future `InterruptKeyboardAdapter` raise an IRQ; teach `ExtendedCentralProcessingUnit` to check for a
+  pending interrupt at a safe boundary, save the current instruction address, disable further interrupts, load a
+  handler address/vector, and acknowledge the source. Add explicit extended instructions such as `EI`/`DI`/`IRET`
+  only after the save/restore convention is designed. *Done when* book mode still polls the keyboard exactly as
+  before, while extended mode can service keyboard or timer input without a polling loop.
 - [ ] **M6.3 More peripherals.** Each is an `IAdapter` on the IO bus with its own address:
   - [ ] **Timer** (tick counter / interval) — system clock, delays, animation.
   - [ ] **Storage / "disk"** (block read/write to a backing file) — persistence for programs and data.
@@ -306,6 +330,23 @@ Roughly increasing ambition. Several of these unlock the others.
 - [ ] **M6.9 (very wild) ISA expansion.** Document and optionally extend the architecture: more registers,
   wider immediates, indexed/relative addressing, larger address space. Diverges from the book but is what
   "real software" wants. Keep a compatibility note since it touches the whole CPU.
+- [ ] **M6.10 (very wild) Run someone else's compiler output (LLVM Scott CPU backend).** Prove the
+  simulator is faithful enough to run programs *we did not write or assemble* by feeding it output from the
+  third-party LLVM Scott CPU backend
+  ([realkompot/llvm-project-scott-cpu](https://github.com/realkompot/llvm-project-scott-cpu), the backend
+  referenced by [djhworld/simple-computer](https://github.com/djhworld/simple-computer)). Target program:
+  the backend's [`_scott-cpu` Snake game](https://github.com/realkompot/llvm-project-scott-cpu/tree/scott-cpu/_scott-cpu).
+  *Why important:* it is the ultimate fidelity test — independent confirmation that our gates → CPU → IO →
+  display/keyboard model matches the canonical Scott CPU, not just our own assumptions. *Approach:* build/obtain
+  the backend, compile the Snake source to a Scott CPU image, then load it via `ProgramLoader` (F2) and run it.
+  *Done when* a binary produced entirely by the external toolchain boots and behaves correctly on our simulator
+  (Snake renders and responds to keys). *Notes / likely gotchas:* expect mismatches to surface here first —
+  confirm the binary/image format and load address match `ProgramLoader`'s raw-bytes-at-0 assumption; check that
+  the backend's instruction encodings agree with `Core/Instructions/InstructionSet` (this is also a great
+  cross-check on M6.9 ISA decisions); reconcile the IO protocol and device addresses
+  (`Core/Peripherals/IoAddress.cs`) with whatever Snake expects for display and keyboard; and watch for
+  timing/interrupt assumptions (we still poll — see M6.2). Capture any divergences as their own roadmap items.
+  *Depends on* F2 (loader), M2 (display/text), M3 (keyboard); pairs naturally with the Snake entry in M6.6.
 
 ---
 
